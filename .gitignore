@@ -1,0 +1,46 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+.env
+*.egg-info/
+dist/
+build/
+
+# Dev databases (too large for git)
+jobs_database.db
+title_esco_matches.db
+req_resp_embeddings.db
+job_nace.db
+title_esco_3approaches.db
+comprehensive_esco.db
+kzis_occupations_descriptions.db
+app_data.db
+skill_trends.db
+req_resp_slim.db
+
+# Dev FAISS indexes (huge)
+faiss_indexes/
+app_deploy/faiss_indexes/
+
+# Raw source data (not needed for deployment)
+jobads/
+trainings/data/
+ESCO dataset - v1.2.1/
+df_skills_en_emb.parquet
+kariyer_job_links.csv
+
+# Misc
+*.log
+*.shm
+*.wal
+*-shm
+*-wal
+.DS_Store
+output/
+*.ipynb
+scikit_learn_data/
+nltk_data/
+node_modules/
+package.json
+package-lock.json
