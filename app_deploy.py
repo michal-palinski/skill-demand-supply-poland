@@ -2043,42 +2043,48 @@ def _render_ai_tab():
     data = _load_ai_cache()
     ov = data["overview"]
 
-    st.markdown(
-        '<div class="sec-label">AI Skills Demand in Polish Job Market — 2025</div>',
-        unsafe_allow_html=True,
-    )
-    st.markdown(
-        '<div style="font-size:0.88rem;color:#778596;margin-bottom:0.6rem">'
-        'Analysis of AI-related skills demand based on ESCO skill matching and keyword detection '
-        'in job titles, requirements and responsibilities. '
-        f'Based on <b>{ov["total_offers"]:,}</b> job ads collected in 2025.'
-        '</div>',
-        unsafe_allow_html=True,
-    )
-
-    if st.button("How are AI offers identified?", key="btn_ai_method", type="secondary"):
-        _show_ai_methodology()
-
-    c1, c2, _gap = st.columns([1, 1, 2])
+    # ── Header row: title + KPIs + methodology button ──
     _kpi_style = (
         'background:#fff;border:1px solid #e4e4ea;border-radius:12px;'
-        'padding:1rem 1.2rem;text-align:center;'
+        'padding:0.9rem 1.4rem;text-align:center;height:100%;'
     )
-    _kpi_val = 'font-size:1.6rem;font-weight:700;color:#1a1a2e;margin:0;line-height:1.3;'
-    _kpi_lbl = 'font-size:0.75rem;color:#888;margin:0;'
+    _kpi_val = 'font-size:1.7rem;font-weight:700;color:#1a1a2e;margin:0;line-height:1.2;'
+    _kpi_lbl = 'font-size:0.72rem;color:#888;margin:0.15rem 0 0;'
 
-    with c1:
+    col_txt, col_k1, col_k2, col_btn = st.columns([3, 1, 1, 1.2])
+
+    with col_txt:
+        st.markdown(
+            '<div style="font-size:0.78rem;font-weight:700;letter-spacing:.06em;'
+            'text-transform:uppercase;color:#8896a7;margin-bottom:0.25rem">'
+            'AI Skills Demand in Polish Job Market — 2025</div>'
+            '<div style="font-size:0.84rem;color:#778596;line-height:1.5">'
+            'AI offers identified by ESCO skill matching and keyword detection '
+            'in job titles, requirements and responsibilities. '
+            f'Based on <b>{ov["total_offers"]:,}</b> job ads collected in 2025.'
+            '</div>',
+            unsafe_allow_html=True,
+        )
+
+    with col_k1:
         st.markdown(
             f'<div style="{_kpi_style}"><p style="{_kpi_val}">{ov["pct_ai_all"]}%</p>'
             f'<p style="{_kpi_lbl}">of all 2025 offers</p></div>',
             unsafe_allow_html=True,
         )
-    with c2:
+
+    with col_k2:
         st.markdown(
             f'<div style="{_kpi_style}"><p style="{_kpi_val}">{ov["pct_ai_ict"]}%</p>'
             f'<p style="{_kpi_lbl}">of ICT offers</p></div>',
             unsafe_allow_html=True,
         )
+
+    with col_btn:
+        st.markdown('<div style="height:0.5rem"></div>', unsafe_allow_html=True)
+        if st.button("How are AI offers identified?", key="btn_ai_method", type="secondary",
+                     use_container_width=True):
+            _show_ai_methodology()
 
     st.markdown('<hr class="divider">', unsafe_allow_html=True)
 
