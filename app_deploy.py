@@ -2046,12 +2046,12 @@ def _render_ai_tab():
     # ── Header row: title + KPIs + methodology button ──
     _kpi_style = (
         'background:#fff;border:1px solid #e4e4ea;border-radius:12px;'
-        'padding:0.9rem 1.4rem;text-align:center;height:100%;'
+        'padding:0.7rem 0.6rem;text-align:center;white-space:nowrap;'
     )
-    _kpi_val = 'font-size:1.7rem;font-weight:700;color:#1a1a2e;margin:0;line-height:1.2;'
-    _kpi_lbl = 'font-size:0.72rem;color:#888;margin:0.15rem 0 0;'
+    _kpi_val = 'font-size:1.5rem;font-weight:700;color:#1a1a2e;margin:0;line-height:1.2;'
+    _kpi_lbl = 'font-size:0.7rem;color:#888;margin:0.15rem 0 0;'
 
-    col_txt, col_k1, col_k2, col_btn = st.columns([3, 1, 1, 1.2])
+    col_txt, col_k1, col_k2, col_btn = st.columns([3.5, 1, 1, 1.5])
 
     with col_txt:
         st.markdown(
@@ -2097,14 +2097,14 @@ def _render_ai_tab():
     st.markdown(
         '<div style="font-size:0.85rem;color:#778596;margin-bottom:0.8rem">'
         'How often each AI-related skill appears in AI job offers. '
-        'Colors indicate skill category (e.g. Core ML, NLP, Data Science).'
+        'Red = Strict AI (core ML, deep learning), blue = Extended AI (data science, analytics).'
         '</div>',
         unsafe_allow_html=True,
     )
     sf = data["skills_freq"]
     sf_top = sf[:20]
-    _SCOPE_COLORS = {"Core AI": "#E55B52", "Extended AI": "#3B82F6"}
-    scope_order = ["Core AI", "Extended AI"]
+    _SCOPE_COLORS = {"Strict AI": "#E55B52", "Extended AI": "#3B82F6"}
+    scope_order = ["Strict AI", "Extended AI"]
     fig_skills = pgo.Figure()
     for scope in scope_order:
         items = [s for s in sf_top if s["scope"] == scope]
