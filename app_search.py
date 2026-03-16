@@ -1,25 +1,25 @@
 #!/usr/bin/env python3
 """
-Skill Demand and Supply in Poland 2025 — Streamlit Cloud deployment version.
-
-Differences from app_search.py:
-  - No FAISS, no VoyageAI, no API keys required.
-  - Job-title search uses SQLite FTS5 (built by prepare_deploy.py).
-  - Data is read from the deploy/ subfolder (~144 MB total).
+Job Search — search offers, get KZIS occupations + ESCO skills
 """
 
 import streamlit as st
 import sqlite3
 import numpy as np
 import json
+import faiss
+import pickle
 import os
-import re
 import warnings
 import io
 import collections
 import pandas as pd
+from dotenv import load_dotenv
+import voyageai
 import plotly.graph_objects as pgo
 from statsmodels.tsa.arima.model import ARIMA
+
+load_dotenv()
 
 st.set_page_config(
     page_title="Skill Demand and Supply",
@@ -149,8 +149,8 @@ div[role="radiogroup"] label p { color: #333 !important; }
 }
 
 /* Selectbox - force white bg and dark text */
-.stSelectbox div[data-baseweb="select"] {
-    background-color: #fff !important;
+.stSelectbox div[data-baseweb="select"] { 
+    background-color: #fff !important; 
     background: #fff !important;
 }
 .stSelectbox div[data-baseweb="select"] * { color: #222 !important; }
@@ -158,43 +158,44 @@ div[role="radiogroup"] label p { color: #333 !important; }
     background-color: #fff !important;
     background: #fff !important;
 }
-.stSelectbox input {
-    color: #222 !important;
+.stSelectbox input { 
+    color: #222 !important; 
     -webkit-text-fill-color: #222 !important;
     background-color: #fff !important;
     background: #fff !important;
 }
-.stSelectbox [role="combobox"] {
-    background-color: #fff !important;
+.stSelectbox [role="combobox"] { 
+    background-color: #fff !important; 
     color: #222 !important;
 }
-.stSelectbox [role="listbox"] {
+.stSelectbox [role="listbox"] { 
+    background-color: #fff !important; 
+}
+.stSelectbox [role="option"] { 
+    color: #222 !important; 
     background-color: #fff !important;
 }
-.stSelectbox [role="option"] {
-    color: #222 !important;
-    background-color: #fff !important;
+.stSelectbox [role="option"]:hover { 
+    background-color: #f0f0f0 !important; 
 }
-.stSelectbox [role="option"]:hover {
-    background-color: #f0f0f0 !important;
+.stSelectbox div[data-testid="stMarkdownContainer"] { 
+    color: #222 !important; 
 }
-.stSelectbox div[data-testid="stMarkdownContainer"] {
-    color: #222 !important;
-}
-[data-baseweb="select"] > div {
-    background-color: #fff !important;
-    color: #222 !important;
+/* Override any dark theme */
+[data-baseweb="select"] > div { 
+    background-color: #fff !important; 
+    color: #222 !important; 
 }
 
 /* Text input */
-.stTextInput input {
-    color: #222 !important;
+.stTextInput input { 
+    color: #222 !important; 
     -webkit-text-fill-color: #222 !important;
     background-color: #fff !important;
     background: #fff !important;
 }
-.stTextInput input::placeholder {
-    color: #999 !important;
+.stTextInput input::placeholder { 
+    color: #999 !important; 
     opacity: 1 !important;
     -webkit-text-fill-color: #999 !important;
 }
@@ -208,7 +209,7 @@ div[role="radiogroup"] label p { color: #333 !important; }
 /* Chart iframe spacing */
 iframe { margin-bottom: 0 !important; }
 
-/* Remove whitespace around Datawrapper iframes */
+/* Remove whitespace around Datawrapper iframes in tab1 and tab2 */
 div[data-testid="stIFrame"] {
     margin: 0 !important;
     padding: 0 !important;
@@ -305,70 +306,66 @@ div[data-testid="stElementContainer"]:has(.nace-card-footer-anchor) + div[data-t
 """, unsafe_allow_html=True)
 
 
-# ── Data paths ─────────────────────────────────────────────────
+# ── Data ──────────────────────────────────────────────────────
 
-DATA_DIR     = os.path.join(os.path.dirname(__file__), "deploy")
+DATA_DIR = os.path.join(os.path.dirname(__file__), "app_deploy")
 APP_DATA_DB  = os.path.join(DATA_DIR, "app_data.db")
 REQ_RESP_DB  = os.path.join(DATA_DIR, "req_resp_slim.db")
 TRENDS_DB    = os.path.join(DATA_DIR, "skill_trends.db")
+FAISS_DIR    = os.path.join(DATA_DIR, "faiss_indexes")
+
+@st.cache_resource
+def load_faiss_indexes():
+    job_index  = faiss.read_index(os.path.join(FAISS_DIR, "job_titles.index"))
+    kzis_index = faiss.read_index(os.path.join(FAISS_DIR, "kzis_occupations.index"))
+    with open(os.path.join(FAISS_DIR, "job_titles_metadata.pkl"), 'rb') as f:
+        job_meta = pickle.load(f)
+    with open(os.path.join(FAISS_DIR, "kzis_occupations_metadata.pkl"), 'rb') as f:
+        kzis_meta = pickle.load(f)
+    return job_index, job_meta, kzis_index, kzis_meta
 
 
-# ── FTS5 job-title search (replaces FAISS + VoyageAI) ─────────
-
-def _fts_query(text: str) -> str:
-    """Build a safe FTS5 MATCH expression from user input."""
-    words = re.split(r"\s+", text.strip())
-    terms = []
-    for w in words:
-        safe = w.replace('"', '""')
-        if safe:
-            terms.append(f'"{safe}"*')
-    return " OR ".join(terms) if terms else '""'
+@st.cache_data
+def get_all_titles_sorted():
+    _, meta, _, _ = load_faiss_indexes()
+    titles = sorted(meta['titles'])
+    return titles, [t.lower() for t in titles]
 
 
-@st.cache_data(ttl=300, show_spinner=False)
-def search_jobs_fts(query: str, top_k: int = 30):
-    """Full-text search over job titles using SQLite FTS5 (BM25 ranking)."""
-    q = query.strip()
-    if not q:
-        return [], None
+def filter_titles(query, limit=50):
+    if len(query) < 3:
+        return []
+    titles, titles_lower = get_all_titles_sorted()
+    q = query.lower()
+    prefix, substring = [], []
+    for t, tl in zip(titles, titles_lower):
+        if tl.startswith(q):
+            prefix.append(t)
+        elif q in tl:
+            substring.append(t)
+        if len(prefix) + len(substring) >= limit:
+            break
+    return prefix + substring
 
-    fts_expr = _fts_query(q)
-    conn = sqlite3.connect(APP_DATA_DB)
-    try:
-        rows = conn.execute(
-            "SELECT title, rank FROM job_titles_fts WHERE job_titles_fts MATCH ? ORDER BY rank LIMIT ?",
-            (fts_expr, top_k),
-        ).fetchall()
-    except Exception as exc:
-        conn.close()
-        return None, str(exc)
-    conn.close()
 
-    if not rows:
-        return [], None
-
-    # BM25 rank: more negative = better match. Normalise to 0.5–0.95 range.
-    ranks = [r[1] for r in rows]
-    best  = min(ranks)
-    span  = (max(ranks) - best) or 1.0
-    results = []
-    for title, rank in rows:
-        norm = 1.0 - (rank - best) / span   # 1.0 best → 0.0 worst in this set
-        similarity = 0.5 + 0.45 * norm      # maps to 0.95 … 0.50
-        results.append({"title": title, "similarity": similarity})
-    return results, None
+def search_jobs_by_text(query_text, top_k=30):
+    api_key = os.getenv("VOYAGE_API_KEY")
+    if not api_key:
+        return None, "VOYAGE_API_KEY not found in .env"
+    vo = voyageai.Client(api_key=api_key)
+    result = vo.embed(texts=[query_text], model="voyage-4-large", input_type="query", output_dimension=1024)
+    qv = np.array(result.embeddings[0], dtype=np.float32).reshape(1, -1)
+    faiss.normalize_L2(qv)
+    job_index, job_meta, _, _ = load_faiss_indexes()
+    distances, indices = job_index.search(qv, top_k)
+    return [{'title': job_meta['titles'][i], 'similarity': float(d)} for d, i in zip(distances[0], indices[0])], None
 
 
 @st.cache_data(ttl=3600)
 def get_kzis_matches(job_title):
     conn = sqlite3.connect(APP_DATA_DB)
     c = conn.cursor()
-    c.execute(
-        "SELECT kzis_occupation_name, similarity_score, rank "
-        "FROM job_kzis_matches WHERE job_title = ? ORDER BY rank",
-        (job_title,),
-    )
+    c.execute("SELECT kzis_occupation_name, similarity_score, rank FROM job_kzis_matches WHERE job_title = ? ORDER BY rank", (job_title,))
     rows = c.fetchall()
     conn.close()
     return rows
@@ -400,23 +397,17 @@ def get_sample_offers():
 def get_offer_skills(job_id):
     conn = sqlite3.connect(REQ_RESP_DB)
     c = conn.cursor()
-    c.execute(
-        """
+    c.execute("""
         SELECT item_type, item_text, skill_label, skill_type, similarity
         FROM skill_matches WHERE job_id = ? AND rank = 1
         ORDER BY item_type, similarity DESC
-        """,
-        (job_id,),
-    )
+    """, (job_id,))
     top1 = c.fetchall()
-    c.execute(
-        """
+    c.execute("""
         SELECT skill_label, skill_type, MAX(similarity), COUNT(*)
         FROM skill_matches WHERE job_id = ? AND rank = 1
         GROUP BY skill_label ORDER BY MAX(similarity) DESC
-        """,
-        (job_id,),
-    )
+    """, (job_id,))
     unique_skills = c.fetchall()
     conn.close()
     return top1, unique_skills
@@ -429,14 +420,28 @@ def get_sample_titles_for_filter():
     return titles, [t.lower() for t in titles]
 
 
+def filter_sample_titles(query, limit=50):
+    if len(query) < 3:
+        return []
+    titles, titles_lower = get_sample_titles_for_filter()
+    q = query.lower()
+    prefix, substring = [], []
+    for t, tl in zip(titles, titles_lower):
+        if tl.startswith(q):
+            prefix.append(t)
+        elif q in tl:
+            substring.append(t)
+        if len(prefix) + len(substring) >= limit:
+            break
+    return prefix + substring
+
+
 # ── Skills Stats Data ─────────────────────────────────────────
 
 SKILLS_CACHE_PATH = os.path.join(DATA_DIR, "skills_stats_cache.json")
 
-
 def _cache_mtime():
     return os.path.getmtime(SKILLS_CACHE_PATH)
-
 
 @st.cache_data
 def load_skills_cache(_mtime):
@@ -457,7 +462,12 @@ def _node_count(node: dict) -> int:
 
 
 def build_treemap_data(cache: dict, view: str = "skills", top_leaves: int = 20):
+    """
+    Recursive treemap builder for nested tree with up to 4 hierarchy levels.
+    Filters L1 codes by view: "skills" (S*/T*/L*) or "knowledge" (digit codes).
+    """
     tree = cache["tree"]
+
     ids, labels, parents, values, custom = [], [], [], [], []
 
     def add(id_: str, label: str, parent: str, value: int, info: str = ""):
@@ -468,25 +478,31 @@ def build_treemap_data(cache: dict, view: str = "skills", top_leaves: int = 20):
         custom.append(info)
 
     def walk(node_children: dict, parent_id: str, depth: int):
+        """Recursively add children. At the deepest level, only top N by count."""
         items = sorted(node_children.items(), key=lambda x: -_node_count(x[1]))
         has_deeper = any(n.get("children") for _, n in items)
+
         if not has_deeper:
             items = items[:top_leaves]
+
         for code, node in items:
             cnt = _node_count(node)
             if cnt == 0:
                 continue
             node_id = f"{parent_id}/{code}"
             children = node.get("children", {})
+
             if children and has_deeper:
-                add(node_id, f"{code}  {node['title']}", parent_id, cnt, f"{code} · {cnt:,}")
+                add(node_id, f"{code}  {node['title']}", parent_id, cnt,
+                    f"{code} · {cnt:,}")
                 walk(children, node_id, depth + 1)
             else:
                 add(node_id, node["title"], parent_id, cnt, f"{cnt:,}")
 
     is_target = _is_skills_code if view == "skills" else _is_knowledge_code
+
     matched_codes = [c for c in tree if is_target(c)]
-    lang_codes    = [c for c in matched_codes if c.startswith("L")] if view == "skills" else []
+    lang_codes = [c for c in matched_codes if c.startswith("L")] if view == "skills" else []
     regular_codes = [c for c in matched_codes if c not in lang_codes]
 
     def sort_key(code):
@@ -494,22 +510,25 @@ def build_treemap_data(cache: dict, view: str = "skills", top_leaves: int = 20):
             return (0, code)
         elif code.startswith("T"):
             return (1, code)
-        return (2, code)
+        else:
+            return (2, code)
 
+    # Compute "Other" total first so root value includes it
     other_codes = [c for c in tree if not _is_skills_code(c) and not _is_knowledge_code(c)]
-    other_total  = sum(_node_count(tree[c]) for c in other_codes)
+    other_total = sum(_node_count(tree[c]) for c in other_codes)
     other_total += cache["meta"].get("unmatched_mentions", 0)
 
     ROOT = "root"
     total_view = sum(_node_count(tree[c]) for c in matched_codes) + other_total
-    root_label  = "Skills & Competences" if view == "skills" else "Knowledge"
+    root_label = "Skills & Competences" if view == "skills" else "Knowledge"
     add(ROOT, root_label, "", total_view, f"{total_view:,} mentions")
 
     for l1_code in sorted(regular_codes, key=sort_key):
         l1_node = tree[l1_code]
         cnt = _node_count(l1_node)
         l1_id = f"{ROOT}/{l1_code}"
-        add(l1_id, f"{l1_code}  {l1_node['title']}", ROOT, cnt, f"{l1_code} · {cnt:,}")
+        add(l1_id, f"{l1_code}  {l1_node['title']}", ROOT, cnt,
+            f"{l1_code} · {cnt:,}")
         walk(l1_node.get("children", {}), l1_id, 2)
 
     if lang_codes:
@@ -518,7 +537,7 @@ def build_treemap_data(cache: dict, view: str = "skills", top_leaves: int = 20):
         add(lang_id, "Languages", ROOT, lang_total, f"{lang_total:,} mentions")
         for lc in sorted(lang_codes):
             lc_node = tree[lc]
-            lc_cnt  = _node_count(lc_node)
+            lc_cnt = _node_count(lc_node)
             add(f"{lang_id}/{lc}", lc_node["title"], lang_id, lc_cnt, f"{lc_cnt:,}")
 
     if other_total > 0:
@@ -540,13 +559,16 @@ def get_period_totals():
 
 
 @st.cache_data(ttl=3600)
-def get_top_skills(limit: int = 200):
+def search_skill_labels(query: str, limit: int = 30):
+    if len(query) < 2:
+        return []
     conn = sqlite3.connect(TRENDS_DB)
     c = conn.cursor()
     c.execute(
         "SELECT skill_id, label, total_mentions, total_offers "
-        "FROM skill_labels ORDER BY total_mentions DESC LIMIT ?",
-        (limit,),
+        "FROM skill_labels WHERE label LIKE ? "
+        "ORDER BY total_mentions DESC LIMIT ?",
+        (f"%{query}%", limit),
     )
     rows = c.fetchall()
     conn.close()
@@ -567,17 +589,33 @@ def get_skill_trend(skill_id: int):
     return rows
 
 
+@st.cache_data(ttl=3600)
+def get_top_skills(limit: int = 200):
+    conn = sqlite3.connect(TRENDS_DB)
+    c = conn.cursor()
+    c.execute(
+        "SELECT skill_id, label, total_mentions, total_offers "
+        "FROM skill_labels ORDER BY total_mentions DESC LIMIT ?",
+        (limit,),
+    )
+    rows = c.fetchall()
+    conn.close()
+    return rows
+
+
 # ── Rendering ─────────────────────────────────────────────────
 
 def get_score_color(score):
+    """Return (bg_color, text_color) based on similarity score."""
     score_pct = score * 100
     if score_pct >= 90:
-        return "#2d5a2d", "#fff"
+        return "#2d5a2d", "#fff"  # dark green
     elif score_pct >= 80:
-        return "#4a7a4a", "#fff"
+        return "#4a7a4a", "#fff"  # green
     elif score_pct >= 75:
-        return "#76b076", "#fff"
-    return "#d97d3a", "#fff"
+        return "#76b076", "#fff"  # light green
+    else:
+        return "#d97d3a", "#fff"  # orange
 
 
 def build_kzis_html(kzis_matches):
@@ -586,87 +624,56 @@ def build_kzis_html(kzis_matches):
     rows = ""
     for name, sim, rank in kzis_matches:
         bg, fg = get_score_color(sim)
-        rows += (
-            f'<div class="kr"><span class="kr-n">{rank}. {name}</span>'
-            f'<span class="kr-s" style="background:{bg};color:{fg}">{sim:.2f}</span></div>'
-        )
+        rows += f'<div class="kr"><span class="kr-n">{rank}. {name}</span><span class="kr-s" style="background:{bg};color:{fg}">{sim:.2f}</span></div>'
     return f'<div class="kzis-sec"><div class="kzis-lbl">Standardized KZIS Occupations</div>{rows}</div>'
 
 
 def render_card(title, count, similarity=None, kzis_matches=None):
     meta = f"{count} job offer{'s' if count != 1 else ''}"
     if similarity is not None:
-        meta += f" &middot; relevance: {similarity:.2f}"
+        meta += f" &middot; match: {similarity:.2f}"
     kzis_html = build_kzis_html(kzis_matches)
-    st.markdown(
-        f'<div class="rcard"><div class="rcard-title">{title}</div>'
-        f'<div class="rcard-meta">{meta}</div>{kzis_html}</div>',
-        unsafe_allow_html=True,
-    )
+    st.markdown(f'<div class="rcard"><div class="rcard-title">{title}</div><div class="rcard-meta">{meta}</div>{kzis_html}</div>', unsafe_allow_html=True)
 
 
 def render_offer_with_skills(job_id, title):
     count = get_job_count(title)
-    kzis  = get_kzis_matches(title)
+    kzis = get_kzis_matches(title)
     top1_items, unique_skills = get_offer_skills(job_id)
 
     kzis_html = build_kzis_html(kzis)
-    st.markdown(
-        f'<div class="rcard"><div class="rcard-title">{title}</div>'
-        f'<div class="rcard-meta">{count} job offer{"s" if count != 1 else ""}</div>'
-        f'{kzis_html}</div>',
-        unsafe_allow_html=True,
-    )
+    st.markdown(f'<div class="rcard"><div class="rcard-title">{title}</div><div class="rcard-meta">{count} job offer{"s" if count != 1 else ""}</div>{kzis_html}</div>', unsafe_allow_html=True)
 
+    # Unique skills
     if unique_skills:
         html = ""
         for label, stype, sim, cnt in unique_skills[:20]:
             tag = (stype or "").replace("skill/competence", "competence")
             bg, fg = get_score_color(sim)
-            html += (
-                f'<div class="skill-row"><span class="skill-name">{label}</span>'
-                f'<span class="skill-type-tag">{tag}</span>'
-                f'<span class="skill-score" style="background:{bg};color:{fg}">{sim:.2f}</span></div>'
-            )
+            html += f'<div class="skill-row"><span class="skill-name">{label}</span><span class="skill-type-tag">{tag}</span><span class="skill-score" style="background:{bg};color:{fg}">{sim:.2f}</span></div>'
         extra = len(unique_skills) - 20
         if extra > 0:
             html += f'<div class="info-box">+ {extra} more skills</div>'
-        st.markdown(
-            f'<div class="sec-label">Mapped ESCO Skills ({len(unique_skills)} unique)</div>{html}',
-            unsafe_allow_html=True,
-        )
+        st.markdown(f'<div class="sec-label">Mapped ESCO Skills ({len(unique_skills)} unique)</div>{html}', unsafe_allow_html=True)
 
+    # Items
     if top1_items:
-        req  = [(t, s, sim) for typ, t, s, _, sim in top1_items if typ == "requirement"]
+        req = [(t, s, sim) for typ, t, s, _, sim in top1_items if typ == "requirement"]
         resp = [(t, s, sim) for typ, t, s, _, sim in top1_items if typ == "responsibility"]
 
         if req:
             rows = ""
             for text, skill, sim in req:
                 bg, fg = get_score_color(sim)
-                rows += (
-                    f'<div class="item-row"><span class="item-type item-type-req">req</span>'
-                    f'{text}<div class="item-skill">&#8594; <span class="item-skill-name">{skill}</span> '
-                    f'<span class="skill-score" style="background:{bg};color:{fg}">{sim:.2f}</span></div></div>'
-                )
-            st.markdown(
-                f'<div class="sec-label">Requirements ({len(req)})</div><div class="rcard">{rows}</div>',
-                unsafe_allow_html=True,
-            )
+                rows += f'<div class="item-row"><span class="item-type item-type-req">req</span>{text}<div class="item-skill">&#8594; <span class="item-skill-name">{skill}</span> <span class="skill-score" style="background:{bg};color:{fg}">{sim:.2f}</span></div></div>'
+            st.markdown(f'<div class="sec-label">Requirements ({len(req)})</div><div class="rcard">{rows}</div>', unsafe_allow_html=True)
 
         if resp:
             rows = ""
             for text, skill, sim in resp:
                 bg, fg = get_score_color(sim)
-                rows += (
-                    f'<div class="item-row"><span class="item-type item-type-resp">resp</span>'
-                    f'{text}<div class="item-skill">&#8594; <span class="item-skill-name">{skill}</span> '
-                    f'<span class="skill-score" style="background:{bg};color:{fg}">{sim:.2f}</span></div></div>'
-                )
-            st.markdown(
-                f'<div class="sec-label">Responsibilities ({len(resp)})</div><div class="rcard">{rows}</div>',
-                unsafe_allow_html=True,
-            )
+                rows += f'<div class="item-row"><span class="item-type item-type-resp">resp</span>{text}<div class="item-skill">&#8594; <span class="item-skill-name">{skill}</span> <span class="skill-score" style="background:{bg};color:{fg}">{sim:.2f}</span></div></div>'
+            st.markdown(f'<div class="sec-label">Responsibilities ({len(resp)})</div><div class="rcard">{rows}</div>', unsafe_allow_html=True)
 
 
 # ── NACE Methodology Dialog ───────────────────────────────────
@@ -890,7 +897,7 @@ This means that two ads with the same title can still receive different NACE ass
     padding:1rem 1rem 0.95rem 1rem;
   ">
     <div style="font-size:0.74rem; font-weight:700; letter-spacing:0.08em; text-transform:uppercase; color:#5d83ab;">Offer-level example</div>
-    <div style="font-size:1.02rem; font-weight:600; color:#3e648a; margin-top:0.45rem;">Job title: "Cloud Engineer" (<i>Inżynier Chmurowy</i>)</div>
+    <div style="font-size:1.02rem; font-weight:600; color:#3e648a; margin-top:0.45rem;">Job title: “Cloud Engineer” (<i>Inżynier Chmurowy</i>)</div>
     <div style="font-size:0.88rem; line-height:1.58; color:#607184; margin-top:0.55rem;">
       Responsibilities mention cloud architecture, migration, client needs,
       landing zones and solution design.
@@ -960,7 +967,7 @@ def main():
         '<div class="app-title">Skill Demand and Supply in Poland 2025</div>'
         '<div class="app-sub">KZIS occupations, ESCO skills, NACE sectors</div>'
         '</div>',
-        unsafe_allow_html=True,
+        unsafe_allow_html=True
     )
 
     tab1, tab2, tab3, tab4, tab5, tab6, tab7 = st.tabs([
@@ -968,22 +975,23 @@ def main():
         "UA-Targeted", "AI Skills",
     ])
 
-    # ── Tab 1: Job Titles ──────────────────────────────────────
+    # ── Tab 1: Job Titles ──
     with tab1:
+        # KZIS Categories Chart
         st.markdown('<div class="sec-label">Job Offers by KZIS Category</div>', unsafe_allow_html=True)
         st.components.v1.iframe(
             "https://datawrapper.dwcdn.net/U2ao5/11/",
             height=320,
-            scrolling=False,
+            scrolling=False
         )
         st.markdown('<hr class="divider">', unsafe_allow_html=True)
-
+        
         st.markdown('<div class="sec-label">Search job offers by title or keyword</div>', unsafe_allow_html=True)
 
         query = st.text_input(
             "Search query",
             placeholder="Type a job title or keyword, e.g. pielęgniarz, data scientist...",
-            label_visibility="collapsed",
+            label_visibility="collapsed"
         )
 
         col1, col2 = st.columns([1, 5])
@@ -992,30 +1000,26 @@ def main():
 
         if go and query:
             with st.spinner("Searching..."):
-                results, err = search_jobs_fts(query, top_k=30)
+                results, err = search_jobs_by_text(query, top_k=30)
             if err:
-                st.error(f"Search error: {err}")
+                st.error(err)
             elif results:
                 seen = {}
                 for r in results:
-                    tl = r["title"].lower()
-                    if tl not in seen or r["similarity"] > seen[tl]["similarity"]:
+                    tl = r['title'].lower()
+                    if tl not in seen or r['similarity'] > seen[tl]['similarity']:
                         seen[tl] = r
 
                 enriched = []
                 total_matching = 0
                 for data in seen.values():
-                    t   = data["title"]
+                    t = data['title']
                     cnt = get_job_count(t)
                     total_matching += cnt
-                    enriched.append((t, cnt, data["similarity"], get_kzis_matches(t)))
+                    enriched.append((t, cnt, data['similarity'], get_kzis_matches(t)))
                 enriched.sort(key=lambda x: x[2], reverse=True)
 
-                st.markdown(
-                    f'<div class="sec-label">Matching job offers &mdash; '
-                    f'{total_matching:,} offers across {len(enriched)} titles</div>',
-                    unsafe_allow_html=True,
-                )
+                st.markdown(f'<div class="sec-label">Matching job offers &mdash; {total_matching:,} offers across {len(enriched)} titles</div>', unsafe_allow_html=True)
 
                 for t, cnt, sim, kzis in enriched[:5]:
                     render_card(t, cnt, sim, kzis)
@@ -1027,40 +1031,41 @@ def main():
             else:
                 st.markdown('<div class="info-box">No results found.</div>', unsafe_allow_html=True)
 
-    # ── Tab 2: Skills Search ───────────────────────────────────
+    # ── Tab 2: Skills ──
     with tab2:
+        # Top Skills Chart
         st.markdown('<div class="sec-label">Top Skills in Job Offers</div>', unsafe_allow_html=True)
         st.components.v1.iframe(
             "https://datawrapper.dwcdn.net/FMGJD/5/",
             height=320,
-            scrolling=False,
+            scrolling=False
         )
         st.markdown('<hr class="divider">', unsafe_allow_html=True)
-
+        
         st.markdown('<div class="sec-label">Explore job offers with mapped ESCO skills</div>', unsafe_allow_html=True)
 
         all_titles = get_sample_titles_for_filter()[0]
-
+        
         chosen_title = st.selectbox(
             "Select an offer",
             [""] + all_titles,
             index=0,
             placeholder="Start typing to filter 4,000 sample offers...",
             label_visibility="collapsed",
-            key="skills_pick",
+            key="skills_pick"
         )
 
         if chosen_title:
-            offers  = get_sample_offers()
+            offers = get_sample_offers()
             matching = [(jid, t) for jid, t in offers if t == chosen_title]
             if matching:
                 job_id, title = matching[0]
                 render_offer_with_skills(job_id, title)
 
-    # ── Tab 3: Skills Stats ────────────────────────────────────
+    # ── Tab 3: Skills Stats ──
     with tab3:
         cache = load_skills_cache(_cache_mtime())
-        meta  = cache["meta"]
+        meta = cache["meta"]
 
         matched_pct = meta["matched_mentions"] / meta["total_mentions"] * 100
 
@@ -1088,8 +1093,16 @@ def main():
         ids, labels_tm, parents, values, custom = build_treemap_data(cache, view=view_key)
 
         VIEW_COLORS = {
-            "skills":    {"root": "#1a1a2e", "S": "#3a6b8c", "T": "#2d6a2d", "LANG": "#6a2d5a"},
-            "knowledge": {"root": "#1a1a2e", "default": "#7a5a1a"},
+            "skills": {
+                "root": "#1a1a2e",
+                "S": "#3a6b8c",
+                "T": "#2d6a2d",
+                "LANG": "#6a2d5a",
+            },
+            "knowledge": {
+                "root": "#1a1a2e",
+                "default": "#7a5a1a",
+            },
         }
         palette = VIEW_COLORS[view_key]
 
@@ -1118,7 +1131,10 @@ def main():
             values=values,
             customdata=custom,
             branchvalues="total",
-            marker=dict(colors=node_colors, line=dict(width=1.5, color="#fff")),
+            marker=dict(
+                colors=node_colors,
+                line=dict(width=1.5, color="#fff"),
+            ),
             hovertemplate="<b>%{label}</b><br>%{customdata}<extra></extra>",
             textinfo="label+percent parent",
             textfont=dict(size=13),
@@ -1133,16 +1149,13 @@ def main():
         )
         st.plotly_chart(fig, width="stretch")
 
-    # ── Tab 4: Skill Trends ────────────────────────────────────
+    # ── Tab 4: Skill Trends ──
     with tab4:
-        st.markdown(
-            '<div class="sec-label">Search for a skill or knowledge area to see weekly trends</div>',
-            unsafe_allow_html=True,
-        )
+        st.markdown('<div class="sec-label">Search for a skill or knowledge area to see weekly trends</div>', unsafe_allow_html=True)
 
-        top_skills  = get_top_skills(500)
+        top_skills = get_top_skills(500)
         all_options = [f"{label}  ({total_m:,})" for sid, label, total_m, _ in top_skills]
-        all_map     = {opt: (sid, label) for opt, (sid, label, _, _) in zip(all_options, top_skills)}
+        all_map = {opt: (sid, label) for opt, (sid, label, _, _) in zip(all_options, top_skills)}
 
         chosen = st.selectbox(
             "Select skill",
@@ -1153,21 +1166,22 @@ def main():
             key="trend_pick",
         )
 
-        sid   = None
+        sid = None
         label = None
         if chosen and chosen in all_map:
             sid, label = all_map[chosen]
 
         if sid is not None:
-            trend        = get_skill_trend(sid)
+            trend = get_skill_trend(sid)
             period_totals = get_period_totals()
 
             if trend:
-                weeks    = [r[0] for r in trend]
+                weeks = [r[0] for r in trend]
                 mentions = [r[1] for r in trend]
-                pct      = [r[2] / period_totals.get(r[0], 1) * 100 for r in trend]
+                pct = [r[2] / period_totals.get(r[0], 1) * 100 for r in trend]
                 week_labels = [w.replace("2025-", "") for w in weeks]
 
+                # 4-week rolling average (≈ monthly smoothing)
                 WIN = 4
                 def rolling_avg(series, window=WIN):
                     out = []
@@ -1177,7 +1191,7 @@ def main():
                     return out
 
                 smooth_mentions = rolling_avg(mentions)
-                smooth_pct      = rolling_avg(pct)
+                smooth_pct = rolling_avg(pct)
 
                 FORECAST_N = 4
                 def arima_forecast(series, steps=FORECAST_N):
@@ -1185,9 +1199,9 @@ def main():
                         with warnings.catch_warnings():
                             warnings.simplefilter("ignore")
                             model = ARIMA(series, order=(1, 1, 1))
-                            fit   = model.fit()
-                            fc    = fit.forecast(steps=steps)
-                            ci    = fit.get_forecast(steps=steps).conf_int(alpha=0.2)
+                            fit = model.fit()
+                            fc = fit.forecast(steps=steps)
+                            ci = fit.get_forecast(steps=steps).conf_int(alpha=0.2)
                             return list(fc), list(ci[:, 0]), list(ci[:, 1])
                     except Exception:
                         return None, None, None
@@ -1196,25 +1210,25 @@ def main():
                 fc_m_vals, fc_lo_m, fc_hi_m = arima_forecast(smooth_mentions)
                 fc_p_vals, fc_lo_p, fc_hi_p = arima_forecast(smooth_pct)
 
-                st.markdown(
-                    f'<div class="rcard-title" style="margin-top:1rem">{label}</div>',
-                    unsafe_allow_html=True,
-                )
+                st.markdown(f'<div class="rcard-title" style="margin-top:1rem">{label}</div>', unsafe_allow_html=True)
 
-                TICK       = dict(size=14, color="#000")
+                TICK = dict(size=14, color="#000")
                 AXIS_TITLE = dict(size=14, color="#000")
                 CHART_FONT = dict(size=14, color="#000")
 
+                # ── Mentions chart ──
                 fig = pgo.Figure()
                 fig.add_trace(pgo.Scatter(
-                    x=week_labels, y=mentions, name="Weekly",
+                    x=week_labels, y=mentions,
+                    name="Weekly",
                     mode="lines+markers",
                     line=dict(color="rgba(58,107,140,0.25)", width=1),
                     marker=dict(size=3, color="rgba(58,107,140,0.35)"),
                     hovertemplate="%{x}<br><b>%{y:,}</b> mentions<extra></extra>",
                 ))
                 fig.add_trace(pgo.Scatter(
-                    x=week_labels, y=smooth_mentions, name="Smoothed (4w avg)",
+                    x=week_labels, y=smooth_mentions,
+                    name="Smoothed (4w avg)",
                     mode="lines",
                     line=dict(color="#3a6b8c", width=3.5),
                     hovertemplate="%{x}<br><b>%{y:,.0f}</b> (4w avg)<extra></extra>",
@@ -1223,12 +1237,12 @@ def main():
                     ci_x = [week_labels[-1]] + fc_labels + fc_labels[::-1] + [week_labels[-1]]
                     ci_y = [smooth_mentions[-1]] + fc_hi_m + fc_lo_m[::-1] + [smooth_mentions[-1]]
                     fig.add_trace(pgo.Scatter(
-                        x=ci_x, y=ci_y, fill="toself",
-                        fillcolor="rgba(58,107,140,0.18)",
-                        line=dict(width=0), mode="none",
-                        name="Forecast range", hoverinfo="skip",
+                        x=ci_x, y=ci_y,
+                        fill="toself", fillcolor="rgba(58,107,140,0.18)",
+                        line=dict(width=0), mode="none", name="Forecast range",
+                        hoverinfo="skip",
                     ))
-                all_m  = mentions + (fc_hi_m if fc_hi_m else [])
+                all_m = mentions + (fc_hi_m if fc_hi_m else [])
                 y_lo_m = min(mentions + (fc_lo_m if fc_lo_m else [])) * 0.85
                 y_hi_m = max(all_m) * 1.08
                 fig.update_layout(
@@ -1238,26 +1252,27 @@ def main():
                     plot_bgcolor="#fff", paper_bgcolor="#fff",
                     font=CHART_FONT,
                     xaxis=dict(showgrid=False, tickfont=TICK, tickangle=-45),
-                    yaxis=dict(
-                        showgrid=True, gridcolor="#e0e0e0",
-                        title=dict(text="Mentions", font=AXIS_TITLE),
-                        tickfont=TICK, range=[y_lo_m, y_hi_m],
-                    ),
+                    yaxis=dict(showgrid=True, gridcolor="#e0e0e0",
+                               title=dict(text="Mentions", font=AXIS_TITLE),
+                               tickfont=TICK, range=[y_lo_m, y_hi_m]),
                     hovermode="x unified",
                     legend=dict(orientation="h", y=1.12, x=0, font=dict(size=13, color="#000")),
                 )
                 st.plotly_chart(fig, width="stretch")
 
+                # ── % chart ──
                 fig2 = pgo.Figure()
                 fig2.add_trace(pgo.Scatter(
-                    x=week_labels, y=pct, name="Weekly",
+                    x=week_labels, y=pct,
+                    name="Weekly",
                     mode="lines+markers",
                     line=dict(color="rgba(45,106,45,0.25)", width=1),
                     marker=dict(size=3, color="rgba(45,106,45,0.35)"),
                     hovertemplate="%{x}<br><b>%{y:.2f}%</b> of offers<extra></extra>",
                 ))
                 fig2.add_trace(pgo.Scatter(
-                    x=week_labels, y=smooth_pct, name="Smoothed (4w avg)",
+                    x=week_labels, y=smooth_pct,
+                    name="Smoothed (4w avg)",
                     mode="lines",
                     line=dict(color="#2d6a2d", width=3.5),
                     hovertemplate="%{x}<br><b>%{y:.2f}%</b> (4w avg)<extra></extra>",
@@ -1266,12 +1281,12 @@ def main():
                     ci_x = [week_labels[-1]] + fc_labels + fc_labels[::-1] + [week_labels[-1]]
                     ci_y = [smooth_pct[-1]] + fc_hi_p + fc_lo_p[::-1] + [smooth_pct[-1]]
                     fig2.add_trace(pgo.Scatter(
-                        x=ci_x, y=ci_y, fill="toself",
-                        fillcolor="rgba(45,106,45,0.18)",
-                        line=dict(width=0), mode="none",
-                        name="Forecast range", hoverinfo="skip",
+                        x=ci_x, y=ci_y,
+                        fill="toself", fillcolor="rgba(45,106,45,0.18)",
+                        line=dict(width=0), mode="none", name="Forecast range",
+                        hoverinfo="skip",
                     ))
-                all_p  = pct + (fc_hi_p if fc_hi_p else [])
+                all_p = pct + (fc_hi_p if fc_hi_p else [])
                 y_lo_p = min(pct + (fc_lo_p if fc_lo_p else [])) * 0.85
                 y_hi_p = max(all_p) * 1.08
                 fig2.update_layout(
@@ -1281,34 +1296,33 @@ def main():
                     plot_bgcolor="#fff", paper_bgcolor="#fff",
                     font=CHART_FONT,
                     xaxis=dict(showgrid=False, tickfont=TICK, tickangle=-45),
-                    yaxis=dict(
-                        showgrid=True, gridcolor="#e0e0e0",
-                        title=dict(text="% of offers", font=AXIS_TITLE),
-                        tickfont=TICK, range=[y_lo_p, y_hi_p],
-                    ),
+                    yaxis=dict(showgrid=True, gridcolor="#e0e0e0",
+                               title=dict(text="% of offers", font=AXIS_TITLE),
+                               tickfont=TICK, range=[y_lo_p, y_hi_p]),
                     hovermode="x unified",
                     legend=dict(orientation="h", y=1.12, x=0, font=dict(size=13, color="#000")),
                 )
                 st.plotly_chart(fig2, width="stretch")
 
+                # ── Export to .dta ──
                 df_export = pd.DataFrame({
-                    "week":                 weeks,
-                    "mentions":             mentions,
-                    "mentions_smooth_4w":   smooth_mentions,
-                    "offer_count":          [r[2] for r in trend],
-                    "total_offers":         [period_totals.get(r[0], 0) for r in trend],
-                    "pct_offers":           pct,
+                    "week": weeks,
+                    "mentions": mentions,
+                    "mentions_smooth_4w": smooth_mentions,
+                    "offer_count": [r[2] for r in trend],
+                    "total_offers": [period_totals.get(r[0], 0) for r in trend],
+                    "pct_offers": pct,
                     "pct_offers_smooth_4w": smooth_pct,
                 })
                 if fc_m_vals is not None:
                     df_fc = pd.DataFrame({
-                        "week":             fc_labels,
+                        "week": fc_labels,
                         "fc_mentions_smooth": fc_m_vals,
-                        "fc_mentions_lo":   fc_lo_m,
-                        "fc_mentions_hi":   fc_hi_m,
-                        "fc_pct_smooth":    fc_p_vals if fc_p_vals else [None] * FORECAST_N,
-                        "fc_pct_lo":        fc_lo_p   if fc_lo_p   else [None] * FORECAST_N,
-                        "fc_pct_hi":        fc_hi_p   if fc_hi_p   else [None] * FORECAST_N,
+                        "fc_mentions_lo": fc_lo_m,
+                        "fc_mentions_hi": fc_hi_m,
+                        "fc_pct_smooth": fc_p_vals if fc_p_vals else [None]*FORECAST_N,
+                        "fc_pct_lo": fc_lo_p if fc_lo_p else [None]*FORECAST_N,
+                        "fc_pct_hi": fc_hi_p if fc_hi_p else [None]*FORECAST_N,
                     })
                     df_export = pd.concat([df_export, df_fc], ignore_index=True)
 
@@ -1323,7 +1337,7 @@ def main():
                     mime="application/x-stata",
                 )
 
-    # ── Tab 5: NACE ────────────────────────────────────────────
+    # ── Tab 5: NACE ──
     with tab5:
         st.markdown('<div class="sec-label">NACE sector assignment</div>', unsafe_allow_html=True)
 
@@ -1347,6 +1361,7 @@ def main():
             key="nace_info",
             type="secondary",
         )
+
         if show_method:
             _show_nace_methodology()
 
@@ -1364,16 +1379,18 @@ def main():
         total_ours  = sum(count_ours)
         total_offers_ours = sum(offers_ours)
 
-        TICK_S = dict(size=13, color="#425466")
-        AXIS_T = dict(size=13, color="#425466")
-        FONT_S = dict(size=13, color="#425466")
+        TICK_S  = dict(size=13, color="#425466")
+        AXIS_T  = dict(size=13, color="#425466")
+        FONT_S  = dict(size=13, color="#425466")
+
+        fig = pgo.Figure()
 
         pct_all  = [v / total_all  * 100 for v in count_all]
         pct_ours = [v / total_ours * 100 for v in count_ours]
 
-        fig = pgo.Figure()
         fig.add_trace(pgo.Bar(
-            x=bins, y=pct_all,
+            x=bins,
+            y=pct_all,
             name=f"All ESCO occupations (n={total_all:,})",
             marker_color="#93C5FD",
             marker_line=dict(width=1, color="#fff"),
@@ -1384,7 +1401,8 @@ def main():
             hovertemplate=(
                 "<b>%{x} NACE code(s)</b><br>"
                 "All ESCO: <b>%{customdata[0]:,}</b> occupations "
-                "(<b>%{customdata[1]}%</b>)<extra></extra>"
+                "(<b>%{customdata[1]}%</b>)"
+                "<extra></extra>"
             ),
         ))
 
@@ -1393,7 +1411,8 @@ def main():
             for v in offers_ours
         ]
         fig.add_trace(pgo.Bar(
-            x=bins, y=pct_ours,
+            x=bins,
+            y=pct_ours,
             name=f"Job titles in our dataset (n={total_ours:,})",
             marker_color="#1D4ED8",
             marker_line=dict(width=1, color="#fff"),
@@ -1411,44 +1430,58 @@ def main():
                 "Our job ads: <b>%{customdata[0]:,}</b> occupations "
                 "(<b>%{customdata[1]}%</b>)<br>"
                 "Offers covered: <b>%{customdata[2]:,}</b> "
-                "(<b>%{customdata[3]}%</b> of all offers)<extra></extra>"
+                "(<b>%{customdata[3]}%</b> of all offers)"
+                "<extra></extra>"
             ),
         ))
 
         y_max = max(max(pct_all), max(pct_ours)) * 1.18
+
         fig.update_layout(
             barmode="group",
             height=480,
             margin=dict(l=60, r=20, t=30, b=60),
-            plot_bgcolor="#fff", paper_bgcolor="#fff",
+            plot_bgcolor="#fff",
+            paper_bgcolor="#fff",
             font=FONT_S,
             xaxis=dict(
                 title=dict(text="Number of NACE codes per ESCO occupation", font=AXIS_T),
-                tickfont=TICK_S, showgrid=False,
+                tickfont=TICK_S,
+                showgrid=False,
             ),
             yaxis=dict(
                 title=dict(text="% of ESCO occupations", font=AXIS_T),
-                tickfont=TICK_S, showgrid=True, gridcolor="#e8e8e8",
-                ticksuffix="%", range=[0, y_max],
+                tickfont=TICK_S,
+                showgrid=True,
+                gridcolor="#e8e8e8",
+                ticksuffix="%",
+                range=[0, y_max],
             ),
-            legend=dict(orientation="h", y=1.05, x=0, font=dict(size=13, color="#516274")),
-            bargap=0.2, bargroupgap=0.05,
+            legend=dict(
+                orientation="h",
+                y=1.05,
+                x=0,
+                font=dict(size=13, color="#516274"),
+            ),
+            bargap=0.2,
+            bargroupgap=0.05,
         )
+
         st.plotly_chart(fig, use_container_width=True)
         _dta_btn(
             pd.DataFrame({
                 "nace_codes_per_occupation": bins,
-                "pct_all_esco":      [round(v, 2) for v in pct_all],
-                "n_all_esco":        count_all,
-                "pct_our_job_ads":   [round(v, 2) for v in pct_ours],
-                "n_our_job_ads":     count_ours,
-                "n_offers_ours":     offers_ours,
-                "pct_offers_ours":   [round(v, 2) for v in pct_offers_ours],
+                "pct_all_esco": [round(v, 2) for v in pct_all],
+                "n_all_esco": count_all,
+                "pct_our_job_ads": [round(v, 2) for v in pct_ours],
+                "n_our_job_ads": count_ours,
+                "n_offers_ours": offers_ours,
+                "pct_offers_ours": [round(v, 2) for v in pct_offers_ours],
             }),
             "nace_histogram.dta", "dta_nace_hist",
         )
 
-        # ── NACE Treemap ──────────────────────────────────────
+        # ── NACE Treemap ─────────────────────────────────────────
         st.markdown('<hr class="divider">', unsafe_allow_html=True)
         st.markdown('<div class="sec-label">Job offers by NACE sector</div>', unsafe_allow_html=True)
         st.markdown(
@@ -1463,6 +1496,8 @@ def main():
         conn_tm.close()
         tm = json.loads(tm_json)
 
+
+        # ── English NACE Rev 2 labels — section letters ───────────
         _NACE_EN_SEC = {
             'A': 'Agriculture, forestry and fishing',
             'B': 'Mining and quarrying',
@@ -1488,6 +1523,9 @@ def main():
             'V': 'Other',
         }
 
+        # ── English NACE Rev 2 labels — keyed by 2-digit numeric code ─
+        # Division numbers are globally unique in NACE Rev 2, so we can
+        # strip the section letter and look up purely by number.
         _NACE_EN_DIV = {
             '01': 'Crop and animal production, hunting and related service activities',
             '02': 'Forestry and logging',
@@ -1580,27 +1618,50 @@ def main():
         }
 
         def _nace_en_label(nid: str, pl_fallback: str) -> str:
+            """Return English NACE label for any node id; Polish fallback."""
             if nid == 'root':
                 return pl_fallback
+            # Section letter only (depth-1)
             if len(nid) == 1:
                 return _NACE_EN_SEC.get(nid, pl_fallback)
+            # Division or group — strip leading letters to get numeric part
             numeric = nid.lstrip('ABCDEFGHIJKLMNOPQRSTUVWXYZ')
+            # Use first 2 digits for the division lookup
             div2 = numeric[:2] if len(numeric) >= 2 else numeric
             en = _NACE_EN_DIV.get(div2)
-            return en if en else pl_fallback
+            if en:
+                return en
+            return pl_fallback
 
         fixed_labels = [
-            _nace_en_label(nid, lbl)
-            for nid, lbl in zip(tm['ids'], tm['labels'])
+            _nace_en_label(nid, label)
+            for nid, label in zip(tm['ids'], tm['labels'])
         ]
 
+        # ── Color palette — distinct per section letter ───────────
         _SEC_COLORS = {
-            'N': '#1B4F9C', 'G': '#16803D', 'C': '#C2410C', 'H': '#0E7490',
-            'K': '#5B21B6', 'O': '#3730A3', 'J': '#0369A1', 'M': '#065F46',
-            'F': '#92400E', 'Q': '#991B1B', 'P': '#0C4A6E', 'L': '#831843',
-            'I': '#9A3412', 'R': '#7E22CE', 'S': '#3F6212', 'T': '#78350F',
-            'D': '#BE185D', 'A': '#0F766E', 'E': '#155E75', 'B': '#374151',
-            'U': '#475569', 'V': '#64748B',
+            'N': '#1B4F9C',  # deep blue    – Business admin
+            'G': '#16803D',  # forest green – Trade
+            'C': '#C2410C',  # burnt orange – Manufacturing
+            'H': '#0E7490',  # dark cyan    – Transport
+            'K': '#5B21B6',  # violet       – Finance
+            'O': '#3730A3',  # indigo       – Public admin
+            'J': '#0369A1',  # blue         – IT / comms
+            'M': '#065F46',  # dark emerald – Professional svcs
+            'F': '#92400E',  # brown        – Construction
+            'Q': '#991B1B',  # dark red     – Health
+            'P': '#0C4A6E',  # navy         – Education
+            'L': '#831843',  # dark rose    – Real estate
+            'I': '#9A3412',  # rust         – Accommodation
+            'R': '#7E22CE',  # purple       – Culture & sport
+            'S': '#3F6212',  # olive        – Other services
+            'T': '#78350F',  # dark brown   – Repair / personal
+            'D': '#BE185D',  # dark pink    – Energy
+            'A': '#0F766E',  # teal         – Agriculture
+            'E': '#155E75',  # dark cyan    – Utilities
+            'B': '#374151',  # dark grey    – Mining
+            'U': '#475569',  # slate        – Households
+            'V': '#64748B',  # light slate  – Extraterritorial
         }
 
         def _lighten(hex_c: str, f: float) -> str:
@@ -1616,16 +1677,18 @@ def main():
             parts = label.split()
             if not parts:
                 return label
-            lines, current, consumed = [], "", 0
+            lines = []
+            current = ""
+            consumed = 0
             for part in parts:
                 candidate = part if not current else f"{current} {part}"
                 if len(candidate) <= width:
-                    current  = candidate
+                    current = candidate
                     consumed += 1
                 else:
                     if current:
                         lines.append(current)
-                    current  = part
+                    current = part
                     consumed += 1
                     if len(lines) >= max_lines - 1:
                         break
@@ -1640,6 +1703,7 @@ def main():
 
         _parent_map_tm = dict(zip(tm['ids'], tm['parents']))
 
+
         def _sec_letter(nid: str) -> str:
             curr = nid
             while curr and curr != 'root':
@@ -1652,7 +1716,7 @@ def main():
         def _depth_tm(nid: str) -> int:
             if nid == 'root':
                 return 0
-            p  = _parent_map_tm.get(nid, 'root')
+            p = _parent_map_tm.get(nid, 'root')
             if p in ('root', ''):
                 return 1
             pp = _parent_map_tm.get(p, 'root')
@@ -1660,11 +1724,11 @@ def main():
                 return 2
             return 3
 
-        node_colors  = []
+        node_colors = []
         display_text = []
-        for nid, lbl, c in zip(tm['ids'], fixed_labels, tm['custom']):
-            d    = _depth_tm(nid)
-            sec  = _sec_letter(nid)
+        for nid, label, c in zip(tm['ids'], fixed_labels, tm['custom']):
+            d = _depth_tm(nid)
+            sec = _sec_letter(nid)
             base = _SEC_COLORS.get(sec, '#64748B')
             code = c.get('code', '') or nid
             if nid == 'root':
@@ -1672,7 +1736,7 @@ def main():
                 display_text.append('')
             elif d == 1:
                 node_colors.append(base)
-                display_text.append(f"<b>{_wrap_tm_label(lbl, width=18, max_lines=2)}</b>")
+                display_text.append(f"<b>{_wrap_tm_label(label, width=18, max_lines=2)}</b>")
             elif d == 2:
                 node_colors.append(_lighten(base, 0.28))
                 display_text.append(code)
@@ -1693,7 +1757,10 @@ def main():
             values=tm['values'],
             customdata=tm_custom,
             branchvalues='total',
-            marker=dict(colors=node_colors, line=dict(width=1.5, color='rgba(255,255,255,0.6)')),
+            marker=dict(
+                colors=node_colors,
+                line=dict(width=1.5, color='rgba(255,255,255,0.6)'),
+            ),
             hovertemplate='<b>%{label}</b><br>%{customdata}<extra></extra>',
             textinfo='text',
             texttemplate='%{text}',
@@ -1712,17 +1779,17 @@ def main():
         st.plotly_chart(fig_tm, use_container_width=True)
         _dta_btn(
             pd.DataFrame({
-                "nace_id":      tm["ids"],
-                "sector_name":  tm["labels"],
-                "parent_id":    tm["parents"],
-                "job_count":    tm["values"],
-                "nace_code":    [c.get("code", "") for c in tm["custom"]],
-                "pct_of_total": [c.get("pct", 0.0)  for c in tm["custom"]],
+                "nace_id":     tm["ids"],
+                "sector_name": tm["labels"],
+                "parent_id":   tm["parents"],
+                "job_count":   tm["values"],
+                "nace_code":   [c.get("code", "") for c in tm["custom"]],
+                "pct_of_total":[c.get("pct",  0.0) for c in tm["custom"]],
             }),
             "nace_treemap.dta", "dta_nace_tm",
         )
 
-        # ── Monthly NACE section share ────────────────────────
+        # ── Monthly NACE section share ────────────────────────────
         st.markdown('<hr class="divider">', unsafe_allow_html=True)
         st.markdown(
             '<div class="sec-label">Monthly share of job offers by NACE section</div>',
@@ -1741,19 +1808,23 @@ def main():
         conn_mo.close()
         mo = json.loads(mo_json)
 
-        _month_totals: dict[str, int]             = collections.defaultdict(int)
+        _month_totals: dict[str, int] = collections.defaultdict(int)
         _sec_month_cnt: dict[str, dict[str, int]] = collections.defaultdict(lambda: collections.defaultdict(int))
         for m, s, c in zip(mo['months'], mo['sections'], mo['counts']):
-            _month_totals[m]      += c
-            _sec_month_cnt[s][m]  += c
+            _month_totals[m] += c
+            _sec_month_cnt[s][m] += c
 
-        _all_months  = sorted(_month_totals.keys())
-        _sec_totals  = {s: sum(cnts.values()) for s, cnts in _sec_month_cnt.items()}
+        _all_months = sorted(_month_totals.keys())
+
+        _sec_totals = {s: sum(cnts.values()) for s, cnts in _sec_month_cnt.items()}
         _ranked_secs = sorted(_sec_totals, key=lambda s: _sec_totals[s], reverse=True)
 
-        _sec_options     = [f"{s} — {_NACE_EN_SEC.get(s, s)}" for s in _ranked_secs]
+        _sec_options = [
+            f"{s} — {_NACE_EN_SEC.get(s, s)}" for s in _ranked_secs
+        ]
         _option_to_letter = {opt: opt[0] for opt in _sec_options}
-        _default_top5    = _sec_options[:5]
+
+        _default_top5 = _sec_options[:5]
 
         chosen = st.multiselect(
             "Sectors (max 5)",
@@ -1767,6 +1838,7 @@ def main():
         chosen_letters = [_option_to_letter[o] for o in chosen]
 
         if chosen_letters:
+            # pills showing current selection
             _pill_colors = {s: _SEC_COLORS.get(s, '#64748B') for s in chosen_letters}
             _pills_row = "".join(
                 f'<span style="display:inline-block;background:{_pill_colors[s]};color:#fff;'
@@ -1780,36 +1852,40 @@ def main():
                 unsafe_allow_html=True,
             )
 
-            fig_mo       = pgo.Figure()
+            fig_mo = pgo.Figure()
             _mo_export_rows = []
 
             for sec in chosen_letters:
-                cnts  = _sec_month_cnt[sec]
-                pcts  = [
+                cnts = _sec_month_cnt[sec]
+                pcts = [
                     round(cnts.get(m, 0) / _month_totals[m] * 100, 2) if _month_totals[m] else 0
                     for m in _all_months
                 ]
-                lbl_mo = _NACE_EN_SEC.get(sec, sec)
-                color  = _SEC_COLORS.get(sec, '#64748B')
+                label = _NACE_EN_SEC.get(sec, sec)
+                color = _SEC_COLORS.get(sec, '#64748B')
 
                 fig_mo.add_trace(pgo.Scatter(
-                    x=_all_months, y=pcts,
-                    name=f"{sec} — {lbl_mo}",
+                    x=_all_months,
+                    y=pcts,
+                    name=f"{sec} — {label}",
                     mode='lines+markers',
                     line=dict(width=2.5, color=color),
                     marker=dict(size=7, color=color),
                     hovertemplate=(
-                        f"<b>{sec} — {lbl_mo}</b><br>"
-                        "%{x}<br>Share: <b>%{y:.2f}%</b><extra></extra>"
+                        f"<b>{sec} — {label}</b><br>"
+                        "%{x}<br>"
+                        "Share: <b>%{y:.2f}%</b>"
+                        "<extra></extra>"
                     ),
                 ))
+
                 for m, p in zip(_all_months, pcts):
                     _mo_export_rows.append({
-                        "month":                  m,
-                        "nace_section":           sec,
-                        "section_name":           lbl_mo,
-                        "pct_of_monthly_offers":  p,
-                        "count":                  cnts.get(m, 0),
+                        "month": m,
+                        "nace_section": sec,
+                        "section_name": label,
+                        "pct_of_monthly_offers": p,
+                        "count": cnts.get(m, 0),
                     })
 
             _month_labels = [
@@ -1820,26 +1896,36 @@ def main():
             fig_mo.update_layout(
                 height=440,
                 margin=dict(l=55, r=20, t=20, b=55),
-                plot_bgcolor="#fff", paper_bgcolor="#fff",
+                plot_bgcolor="#fff",
+                paper_bgcolor="#fff",
                 font=dict(size=13, color="#425466"),
                 xaxis=dict(
-                    tickvals=_all_months, ticktext=_month_labels,
+                    tickvals=_all_months,
+                    ticktext=_month_labels,
                     tickfont=dict(size=12, color="#425466"),
-                    showgrid=False, tickangle=-45,
+                    showgrid=False,
+                    tickangle=-45,
                 ),
                 yaxis=dict(
                     title=dict(text="% of monthly offers", font=dict(size=13, color="#425466")),
                     tickfont=dict(size=12, color="#425466"),
-                    showgrid=True, gridcolor="#eaeaea",
-                    ticksuffix="%", rangemode="tozero",
+                    showgrid=True,
+                    gridcolor="#eaeaea",
+                    ticksuffix="%",
+                    rangemode="tozero",
                 ),
                 legend=dict(
-                    orientation="h", y=-0.22, x=0.5, xanchor="center",
+                    orientation="h",
+                    y=-0.22,
+                    x=0.5,
+                    xanchor="center",
                     font=dict(size=11.5, color="#516274"),
                 ),
                 hovermode="x unified",
             )
+
             st.plotly_chart(fig_mo, use_container_width=True)
+
             _dta_btn(
                 pd.DataFrame(_mo_export_rows),
                 "nace_monthly_share.dta", "dta_nace_mo",
@@ -1847,11 +1933,10 @@ def main():
         else:
             st.info("Select at least one NACE section above to display the chart.")
 
-    # ── Tab 6: Ukrainian-Targeted Job Ads ──────────────────────
+    # ── Tab 6: Ukrainian-Targeted Job Ads ──────────────────────────
     with tab6:
         _render_ua_tab()
 
-    # ── Tab 7: AI Skills ───────────────────────────────────────
     with tab7:
         _render_ai_tab()
 
@@ -1863,6 +1948,7 @@ AI_TAB_CACHE = os.path.join(DATA_DIR, "ai_tab_cache.json")
 
 _AI_COLOR = "#E55B52"
 _ALL_COLOR_AI = "#94A3B8"
+_ICT_COLOR = "#3B82F6"
 
 _CAT_COLORS = {
     "Core AI & Machine Learning": "#E55B52",
@@ -2059,6 +2145,7 @@ def _render_ai_tab():
     if st.button("How are AI offers identified?", key="btn_ai_method", type="secondary"):
         _show_ai_methodology()
 
+    # ── KPI cards ──
     c1, c2, c3 = st.columns(3)
     _kpi_style = (
         'background:#fff;border:1px solid #e4e4ea;border-radius:12px;'
@@ -2069,24 +2156,29 @@ def _render_ai_tab():
 
     with c1:
         st.markdown(
-            f'<div style="{_kpi_style}"><p style="{_kpi_val}">{ov["pct_ai_all"]}%</p>'
+            f'<div style="{_kpi_style}">'
+            f'<p style="{_kpi_val}">{ov["pct_ai_all"]}%</p>'
             f'<p style="{_kpi_lbl}">of all 2025 offers</p></div>',
             unsafe_allow_html=True,
         )
     with c2:
         st.markdown(
-            f'<div style="{_kpi_style}"><p style="{_kpi_val}">{ov["pct_ai_ict"]}%</p>'
+            f'<div style="{_kpi_style}">'
+            f'<p style="{_kpi_val}">{ov["pct_ai_ict"]}%</p>'
             f'<p style="{_kpi_lbl}">of ICT offers</p></div>',
             unsafe_allow_html=True,
         )
     with c3:
         st.markdown(
-            f'<div style="{_kpi_style}"><p style="{_kpi_val}">{ov["ai_strict"]:,}</p>'
+            f'<div style="{_kpi_style}">'
+            f'<p style="{_kpi_val}">{ov["ai_strict"]:,}</p>'
             f'<p style="{_kpi_lbl}">Core AI offers</p></div>',
             unsafe_allow_html=True,
         )
 
     st.markdown('<hr class="divider">', unsafe_allow_html=True)
+
+    # ── Detection method breakdown ──
     st.markdown(
         '<div style="font-size:0.82rem;color:#778596;margin:0.5rem 0 1rem">'
         f'ESCO skill match: <b>{ov["ai_esco"]:,}</b> · '
@@ -2111,10 +2203,12 @@ def _render_ai_tab():
         '</div>',
         unsafe_allow_html=True,
     )
+
     sf = data["skills_freq"]
     sf_labels = [s["name_en"] for s in sf[:20]]
     sf_pct = [s["pct_ai"] for s in sf[:20]]
     sf_colors = [_CAT_COLORS.get(s["category"], "#94A3B8") for s in sf[:20]]
+
     fig_skills = pgo.Figure(pgo.Bar(
         y=sf_labels, x=sf_pct, orientation="h",
         marker=dict(color=sf_colors, cornerradius=4),
@@ -2130,6 +2224,7 @@ def _render_ai_tab():
         xaxis=dict(visible=False),
     )
     st.plotly_chart(fig_skills, use_container_width=True)
+
     sf_df = pd.DataFrame(sf)
     sf_df.columns = ["Skill (EN)", "Skill (PL)", "Category", "Scope",
                      "N offers", "% AI offers", "% all offers", "% ICT offers"]
@@ -2150,9 +2245,12 @@ def _render_ai_tab():
         '</div>',
         unsafe_allow_html=True,
     )
+
     kf = data["kw_freq"][:20]
     fig_kw = pgo.Figure(pgo.Bar(
-        y=[k["keyword"] for k in kf], x=[k["pct_ai"] for k in kf], orientation="h",
+        y=[k["keyword"] for k in kf],
+        x=[k["pct_ai"] for k in kf],
+        orientation="h",
         marker=dict(color=_AI_COLOR, cornerradius=4),
         text=[f'{k["n"]:,}' for k in kf],
         textposition="outside", textfont=dict(size=11, color="#555"),
@@ -2165,7 +2263,11 @@ def _render_ai_tab():
         xaxis=dict(visible=False),
     )
     st.plotly_chart(fig_kw, use_container_width=True)
-    _dta_btn(pd.DataFrame(kf), "ai_keywords_freq.dta", "dta_ai_kw")
+
+    _dta_btn(
+        pd.DataFrame(kf),
+        "ai_keywords_freq.dta", "dta_ai_kw",
+    )
 
     st.markdown('<hr class="divider">', unsafe_allow_html=True)
 
@@ -2178,30 +2280,48 @@ def _render_ai_tab():
         unsafe_allow_html=True,
     )
     col_s, col_c = st.columns(2)
+
     with col_s:
         st.markdown(
             '<div style="font-size:1.02rem;font-weight:600;color:#1a1a2e;margin:0.15rem 0 0.45rem 0;">'
-            'Seniority Level</div>', unsafe_allow_html=True,
+            'Seniority Level</div>',
+            unsafe_allow_html=True,
         )
         sen = data["seniority"]
         st.plotly_chart(
-            _ai_grouped_bar("Seniority", [s["level"] for s in sen],
-                            [s["pct_ai"] for s in sen], [s["pct_all"] for s in sen]),
+            _ai_grouped_bar(
+                "Seniority",
+                [s["level"] for s in sen],
+                [s["pct_ai"] for s in sen],
+                [s["pct_all"] for s in sen],
+            ),
             use_container_width=True,
         )
-        _dta_btn(pd.DataFrame(sen), "ai_seniority.dta", "dta_ai_sen")
+        _dta_btn(
+            pd.DataFrame(sen),
+            "ai_seniority.dta", "dta_ai_sen",
+        )
+
     with col_c:
         st.markdown(
             '<div style="font-size:1.02rem;font-weight:600;color:#1a1a2e;margin:0.15rem 0 0.45rem 0;">'
-            'Contract Type</div>', unsafe_allow_html=True,
+            'Contract Type</div>',
+            unsafe_allow_html=True,
         )
         ct = data["contracts"]
         st.plotly_chart(
-            _ai_grouped_bar("Contract", [c["type"] for c in ct],
-                            [c["pct_ai"] for c in ct], [c["pct_all"] for c in ct]),
+            _ai_grouped_bar(
+                "Contract",
+                [c["type"] for c in ct],
+                [c["pct_ai"] for c in ct],
+                [c["pct_all"] for c in ct],
+            ),
             use_container_width=True,
         )
-        _dta_btn(pd.DataFrame(ct), "ai_contracts.dta", "dta_ai_ct")
+        _dta_btn(
+            pd.DataFrame(ct),
+            "ai_contracts.dta", "dta_ai_ct",
+        )
 
     st.markdown('<hr class="divider">', unsafe_allow_html=True)
 
@@ -2220,17 +2340,20 @@ def _render_ai_tab():
     )
     if st.button("How is the overrepresentation ratio calculated?", key="btn_ai_overrep", type="secondary"):
         _show_overrep_methodology()
+
     tech = data["technologies"][:25]
     fig_tech = pgo.Figure()
     fig_tech.add_trace(pgo.Bar(
-        y=[t["tech"] for t in tech], x=[t["pct_ai"] for t in tech],
+        y=[t["tech"] for t in tech],
+        x=[t["pct_ai"] for t in tech],
         name="% in AI offers", orientation="h",
         marker=dict(color=_AI_COLOR, cornerradius=4),
         text=[f'{t["pct_ai"]:.1f}%' for t in tech],
         textposition="outside", textfont=dict(size=10, color=_AI_COLOR),
     ))
     fig_tech.add_trace(pgo.Bar(
-        y=[t["tech"] for t in tech], x=[t["pct_non_ai"] for t in tech],
+        y=[t["tech"] for t in tech],
+        x=[t["pct_non_ai"] for t in tech],
         name="% in non-AI offers", orientation="h",
         marker=dict(color=_ALL_COLOR_AI, cornerradius=4),
         text=[f'{t["pct_non_ai"]:.1f}%' for t in tech],
@@ -2247,7 +2370,11 @@ def _render_ai_tab():
         bargap=0.2, bargroupgap=0.06,
     )
     st.plotly_chart(fig_tech, use_container_width=True)
-    _dta_btn(pd.DataFrame(data["technologies"]), "ai_technologies.dta", "dta_ai_tech")
+
+    _dta_btn(
+        pd.DataFrame(data["technologies"]),
+        "ai_technologies.dta", "dta_ai_tech",
+    )
 
     st.markdown('<hr class="divider">', unsafe_allow_html=True)
 
@@ -2266,14 +2393,17 @@ def _render_ai_tab():
     )
     if st.button("How are co-occurring skills identified?", key="btn_ai_cooccur", type="secondary"):
         _show_cooccur_methodology()
+
     co = data["cooccur"]
     co_non_trans = [c for c in co if not c["transversal"]][:20]
     co_trans = [c for c in co if c["transversal"]][:15]
+
     fig_co = pgo.Figure()
     fig_co.add_trace(pgo.Bar(
         y=[c["name_en"] or c["name_pl"] for c in co_non_trans],
         x=[c["pct_ai"] for c in co_non_trans],
-        orientation="h", marker=dict(color="#8B5CF6", cornerradius=4),
+        name="% in AI offers", orientation="h",
+        marker=dict(color="#8B5CF6", cornerradius=4),
         text=[f'{c["ratio"]}x' for c in co_non_trans],
         textposition="outside", textfont=dict(size=10, color="#8B5CF6"),
     ))
@@ -2282,10 +2412,15 @@ def _render_ai_tab():
         margin=dict(l=10, r=50, t=10, b=20),
         plot_bgcolor="#fff", paper_bgcolor="#f8f9fa",
         yaxis=dict(autorange="reversed", tickfont=dict(size=11, color="#425466")),
-        xaxis=dict(visible=False), showlegend=False,
+        xaxis=dict(visible=False),
+        showlegend=False,
     )
     st.plotly_chart(fig_co, use_container_width=True)
-    _dta_btn(pd.DataFrame(co), "ai_cooccurring_skills.dta", "dta_ai_cooccur")
+
+    _dta_btn(
+        pd.DataFrame(co),
+        "ai_cooccurring_skills.dta", "dta_ai_cooccur",
+    )
 
     if co_trans:
         st.markdown(
@@ -2304,7 +2439,8 @@ def _render_ai_tab():
         fig_trans.add_trace(pgo.Bar(
             y=[c["name_en"] or c["name_pl"] for c in co_trans],
             x=[c["pct_ai"] for c in co_trans],
-            orientation="h", marker=dict(color="#10B981", cornerradius=4),
+            name="% in AI offers", orientation="h",
+            marker=dict(color="#10B981", cornerradius=4),
             text=[f'{c["ratio"]}x' for c in co_trans],
             textposition="outside", textfont=dict(size=10, color="#10B981"),
         ))
@@ -2313,7 +2449,8 @@ def _render_ai_tab():
             margin=dict(l=10, r=50, t=10, b=20),
             plot_bgcolor="#fff", paper_bgcolor="#f8f9fa",
             yaxis=dict(autorange="reversed", tickfont=dict(size=11, color="#425466")),
-            xaxis=dict(visible=False), showlegend=False,
+            xaxis=dict(visible=False),
+            showlegend=False,
         )
         st.plotly_chart(fig_trans, use_container_width=True)
 
@@ -2333,13 +2470,21 @@ def _render_ai_tab():
         '</div>',
         unsafe_allow_html=True,
     )
+
     loc = data["locations"][:20]
     st.plotly_chart(
-        _ai_grouped_bar("Location", [l["city"] for l in loc],
-                        [l["pct_ai"] for l in loc], [l["pct_all"] for l in loc]),
+        _ai_grouped_bar(
+            "Location",
+            [l["city"] for l in loc],
+            [l["pct_ai"] for l in loc],
+            [l["pct_all"] for l in loc],
+        ),
         use_container_width=True,
     )
-    _dta_btn(pd.DataFrame(data["locations"]), "ai_locations.dta", "dta_ai_loc")
+    _dta_btn(
+        pd.DataFrame(data["locations"]),
+        "ai_locations.dta", "dta_ai_loc",
+    )
 
     st.markdown('<hr class="divider">', unsafe_allow_html=True)
 
@@ -2356,10 +2501,12 @@ def _render_ai_tab():
         '</div>',
         unsafe_allow_html=True,
     )
+
     et = data["esco_titles"][:20]
     fig_et = pgo.Figure(pgo.Bar(
         y=[t["title_en"] or t["title_pl"] for t in et],
-        x=[t["pct_ai"] for t in et], orientation="h",
+        x=[t["pct_ai"] for t in et],
+        orientation="h",
         marker=dict(color="#3B82F6", cornerradius=4),
         text=[f'{t["n"]:,}' for t in et],
         textposition="outside", textfont=dict(size=11, color="#555"),
@@ -2372,7 +2519,11 @@ def _render_ai_tab():
         xaxis=dict(visible=False),
     )
     st.plotly_chart(fig_et, use_container_width=True)
-    _dta_btn(pd.DataFrame(data["esco_titles"]), "ai_esco_titles.dta", "dta_ai_titles")
+
+    _dta_btn(
+        pd.DataFrame(data["esco_titles"]),
+        "ai_esco_titles.dta", "dta_ai_titles",
+    )
 
     st.markdown('<hr class="divider">', unsafe_allow_html=True)
 
@@ -2390,10 +2541,13 @@ def _render_ai_tab():
         '</div>',
         unsafe_allow_html=True,
     )
+
     ns = data["nace_sections"]
     ns_labels = [f'{s["section"]} — {s["name"]}' for s in ns]
     fig_ns = pgo.Figure(pgo.Bar(
-        y=ns_labels, x=[s["pct_ai"] for s in ns], orientation="h",
+        y=ns_labels,
+        x=[s["pct_ai"] for s in ns],
+        orientation="h",
         marker=dict(color="#F59E0B", cornerradius=4),
         text=[f'{s["n"]:,}' for s in ns],
         textposition="outside", textfont=dict(size=11, color="#555"),
@@ -2406,12 +2560,18 @@ def _render_ai_tab():
         xaxis=dict(visible=False),
     )
     st.plotly_chart(fig_ns, use_container_width=True)
-    _dta_btn(pd.DataFrame(ns), "ai_nace_sections.dta", "dta_ai_nace")
+
+    _dta_btn(
+        pd.DataFrame(ns),
+        "ai_nace_sections.dta", "dta_ai_nace",
+    )
 
 
-# ── Helpers ────────────────────────────────────────────────────
+# ── Ukrainian-Targeted Job Ads helpers ─────────────────────────────────────
+
 
 def _dta_btn(df: pd.DataFrame, filename: str, key: str) -> None:
+    """Render a small .dta download button for the given DataFrame."""
     buf = io.BytesIO()
     df.to_stata(buf, write_index=False, version=118)
     buf.seek(0)
@@ -2425,24 +2585,36 @@ def _dta_btn(df: pd.DataFrame, filename: str, key: str) -> None:
     )
 
 
-_UA_COLOR  = "#FBBF24"
-_ALL_COLOR = "#3B82F6"
+_UA_COLOR  = "#FBBF24"   # amber  – Ukrainian-targeted ads
+_ALL_COLOR = "#3B82F6"   # blue   – all jobs
 
 _UA_DATA = {
     "Position Level": {
         "labels": [
-            "Intern / Trainee", "Assistant", "Junior Specialist",
-            "Specialist (Mid)", "Senior Specialist", "Expert",
-            "Manager / Coordinator", "Senior Manager", "Director", "Manual Worker",
+            "Intern / Trainee",
+            "Assistant",
+            "Junior Specialist",
+            "Specialist (Mid)",
+            "Senior Specialist",
+            "Expert",
+            "Manager / Coordinator",
+            "Senior Manager",
+            "Director",
+            "Manual Worker",
         ],
-        "all_pct": [0.8,  3.0,  9.3, 41.5, 11.6, 2.6, 8.2, 4.3, 1.1, 17.5],
-        "ua_pct":  [0.9,  2.2,  7.7, 23.9,  9.4, 1.7, 7.5, 1.7, 0.2, 44.9],
+        "all_pct":  [0.8,  3.0,  9.3, 41.5, 11.6, 2.6, 8.2, 4.3, 1.1, 17.5],
+        "ua_pct":   [0.9,  2.2,  7.7, 23.9,  9.4, 1.7, 7.5, 1.7, 0.2, 44.9],
     },
     "Contract Type": {
         "labels": [
-            "Employment Contract", "Work-for-Hire", "Commission Contract",
-            "B2B Contract", "Substitute Contract", "Agency Contract",
-            "Temporary Employment", "Internship / Apprenticeship",
+            "Employment Contract",
+            "Work-for-Hire",
+            "Commission Contract",
+            "B2B Contract",
+            "Substitute Contract",
+            "Agency Contract",
+            "Temporary Employment",
+            "Internship / Apprenticeship",
         ],
         "all_pct": [61.2, 0.8, 13.3, 21.9, 0.7, 1.0, 0.6, 0.5],
         "ua_pct":  [51.9, 0.8, 24.3, 19.1, 0.3, 0.7, 1.8, 1.1],
@@ -2459,14 +2631,16 @@ _UA_DATA = {
     },
     "Salary Transparency": {
         "labels": ["Job ads showing salary range"],
+        # all: 21 124 / 73 507 tryb-pracy total ≈ 28.7 %
+        # ua:  2 653 / 5 360 tryb-pracy total  ≈ 49.5 %
         "all_pct": [28.7],
         "ua_pct":  [49.5],
     },
 }
 
-_UA_TICK = dict(size=12, color="#425466")
-_UA_AXIS = dict(size=12, color="#425466")
-_UA_FONT = dict(size=12, color="#425466")
+_UA_TICK  = dict(size=12, color="#425466")
+_UA_AXIS  = dict(size=12, color="#425466")
+_UA_FONT  = dict(size=12, color="#425466")
 
 _UA_LAYOUT_BASE = dict(
     plot_bgcolor="#fff",
@@ -2474,7 +2648,11 @@ _UA_LAYOUT_BASE = dict(
     font=_UA_FONT,
     margin=dict(l=10, r=20, t=58, b=10),
     legend=dict(
-        orientation="h", y=1.03, yanchor="bottom", x=0, xanchor="left",
+        orientation="h",
+        y=1.03,
+        yanchor="bottom",
+        x=0,
+        xanchor="left",
         font=dict(size=12, color="#516274"),
         bgcolor="rgba(0,0,0,0)",
     ),
@@ -2483,65 +2661,104 @@ _UA_LAYOUT_BASE = dict(
 
 
 def _ua_grouped_bar_h(title: str, labels, all_pct, ua_pct):
-    order   = sorted(range(len(labels)), key=lambda i: (all_pct[i] + ua_pct[i]) / 2)
+    """Horizontal grouped bar – good for many categories."""
+    # Sort ascending by avg of both series; autorange="reversed" puts highest at top
+    order = sorted(range(len(labels)), key=lambda i: (all_pct[i] + ua_pct[i]) / 2)
     labels  = [labels[i]  for i in order]
     all_pct = [all_pct[i] for i in order]
     ua_pct  = [ua_pct[i]  for i in order]
 
     fig = pgo.Figure()
     fig.add_trace(pgo.Bar(
-        y=labels, x=all_pct, name="All job ads",
-        orientation="h", marker_color=_ALL_COLOR, marker_line=dict(width=0),
-        text=[f"{v:.1f}%" for v in all_pct], textposition="outside",
+        y=labels,
+        x=all_pct,
+        name="All job ads",
+        orientation="h",
+        marker_color=_ALL_COLOR,
+        marker_line=dict(width=0),
+        text=[f"{v:.1f}%" for v in all_pct],
+        textposition="outside",
         textfont=dict(size=10, color=_ALL_COLOR),
         hovertemplate="<b>%{y}</b><br>All jobs: <b>%{x:.1f}%</b><extra></extra>",
     ))
     fig.add_trace(pgo.Bar(
-        y=labels, x=ua_pct, name="Ukrainian-targeted ads",
-        orientation="h", marker_color=_UA_COLOR, marker_line=dict(width=0),
-        text=[f"{v:.1f}%" for v in ua_pct], textposition="outside",
+        y=labels,
+        x=ua_pct,
+        name="Ukrainian-targeted ads",
+        orientation="h",
+        marker_color=_UA_COLOR,
+        marker_line=dict(width=0),
+        text=[f"{v:.1f}%" for v in ua_pct],
+        textposition="outside",
         textfont=dict(size=10, color="#B45309"),
         hovertemplate="<b>%{y}</b><br>Ukrainian-targeted: <b>%{x:.1f}%</b><extra></extra>",
     ))
-    x_max  = max(max(all_pct), max(ua_pct)) * 1.22
-    n      = len(labels)
+    x_max = max(max(all_pct), max(ua_pct)) * 1.22
+    n = len(labels)
     height = max(340, n * 52)
     fig.update_layout(
         **_UA_LAYOUT_BASE,
-        barmode="group", height=height,
-        xaxis=dict(ticksuffix="%", tickfont=_UA_TICK, showgrid=True, gridcolor="#eeeeee", range=[0, x_max]),
-        yaxis=dict(tickfont=dict(size=11, color="#425466"), autorange="reversed"),
+        barmode="group",
+        height=height,
+        xaxis=dict(
+            ticksuffix="%",
+            tickfont=_UA_TICK,
+            showgrid=True,
+            gridcolor="#eeeeee",
+            range=[0, x_max],
+        ),
+        yaxis=dict(
+            tickfont=dict(size=11, color="#425466"),
+            autorange="reversed",
+        ),
     )
     return fig
 
 
 def _ua_grouped_bar_v(title: str, labels, all_pct, ua_pct):
-    order   = sorted(range(len(labels)), key=lambda i: (all_pct[i] + ua_pct[i]) / 2, reverse=True)
+    """Vertical grouped bar – good for few categories."""
+    # Sort descending by avg of both series; highest bar appears first (left)
+    order = sorted(range(len(labels)), key=lambda i: (all_pct[i] + ua_pct[i]) / 2, reverse=True)
     labels  = [labels[i]  for i in order]
     all_pct = [all_pct[i] for i in order]
     ua_pct  = [ua_pct[i]  for i in order]
 
     fig = pgo.Figure()
     fig.add_trace(pgo.Bar(
-        x=labels, y=all_pct, name="All job ads",
-        marker_color=_ALL_COLOR, marker_line=dict(width=0),
-        text=[f"{v:.1f}%" for v in all_pct], textposition="outside",
+        x=labels,
+        y=all_pct,
+        name="All job ads",
+        marker_color=_ALL_COLOR,
+        marker_line=dict(width=0),
+        text=[f"{v:.1f}%" for v in all_pct],
+        textposition="outside",
         textfont=dict(size=11, color=_ALL_COLOR),
         hovertemplate="<b>%{x}</b><br>All jobs: <b>%{y:.1f}%</b><extra></extra>",
     ))
     fig.add_trace(pgo.Bar(
-        x=labels, y=ua_pct, name="Ukrainian-targeted ads",
-        marker_color=_UA_COLOR, marker_line=dict(width=0),
-        text=[f"{v:.1f}%" for v in ua_pct], textposition="outside",
+        x=labels,
+        y=ua_pct,
+        name="Ukrainian-targeted ads",
+        marker_color=_UA_COLOR,
+        marker_line=dict(width=0),
+        text=[f"{v:.1f}%" for v in ua_pct],
+        textposition="outside",
         textfont=dict(size=11, color="#B45309"),
         hovertemplate="<b>%{x}</b><br>Ukrainian-targeted: <b>%{y:.1f}%</b><extra></extra>",
     ))
     y_max = max(max(all_pct), max(ua_pct)) * 1.22
     fig.update_layout(
         **_UA_LAYOUT_BASE,
-        barmode="group", height=360,
+        barmode="group",
+        height=360,
         xaxis=dict(tickfont=dict(size=11, color="#425466"), showgrid=False),
-        yaxis=dict(ticksuffix="%", tickfont=_UA_TICK, showgrid=True, gridcolor="#eeeeee", range=[0, y_max]),
+        yaxis=dict(
+            ticksuffix="%",
+            tickfont=_UA_TICK,
+            showgrid=True,
+            gridcolor="#eeeeee",
+            range=[0, y_max],
+        ),
     )
     return fig
 
@@ -2560,12 +2777,16 @@ def _render_ua_tab():
         unsafe_allow_html=True,
     )
 
+    # Position Level — horizontal (11 categories)
     d = _UA_DATA["Position Level"]
     st.markdown(
         '<div style="font-size:1.02rem;font-weight:600;color:#1a1a2e;margin:0.15rem 0 0.45rem 0;">Position Level</div>',
         unsafe_allow_html=True,
     )
-    st.plotly_chart(_ua_grouped_bar_h("Position Level", d["labels"], d["all_pct"], d["ua_pct"]), use_container_width=True)
+    st.plotly_chart(
+        _ua_grouped_bar_h("Position Level", d["labels"], d["all_pct"], d["ua_pct"]),
+        use_container_width=True,
+    )
     _dta_btn(
         pd.DataFrame({"option": d["labels"], "pct_all_jobs": d["all_pct"], "pct_ua_targeted": d["ua_pct"]}),
         "ua_position_level.dta", "dta_pos",
@@ -2573,12 +2794,16 @@ def _render_ua_tab():
 
     st.markdown('<hr style="border:none;border-top:1px solid #eee;margin:0.5rem 0 1rem">', unsafe_allow_html=True)
 
+    # Contract Type — horizontal (8 categories)
     d = _UA_DATA["Contract Type"]
     st.markdown(
         '<div style="font-size:1.02rem;font-weight:600;color:#1a1a2e;margin:0.15rem 0 0.45rem 0;">Contract Type</div>',
         unsafe_allow_html=True,
     )
-    st.plotly_chart(_ua_grouped_bar_h("Contract Type", d["labels"], d["all_pct"], d["ua_pct"]), use_container_width=True)
+    st.plotly_chart(
+        _ua_grouped_bar_h("Contract Type", d["labels"], d["all_pct"], d["ua_pct"]),
+        use_container_width=True,
+    )
     _dta_btn(
         pd.DataFrame({"option": d["labels"], "pct_all_jobs": d["all_pct"], "pct_ua_targeted": d["ua_pct"]}),
         "ua_contract_type.dta", "dta_contract",
@@ -2586,6 +2811,7 @@ def _render_ua_tab():
 
     st.markdown('<hr style="border:none;border-top:1px solid #eee;margin:0.5rem 0 1rem">', unsafe_allow_html=True)
 
+    # Work Dimension + Work Mode — side by side
     col1, col2 = st.columns(2)
     with col1:
         d = _UA_DATA["Work Dimension"]
@@ -2593,7 +2819,10 @@ def _render_ua_tab():
             '<div style="font-size:1.02rem;font-weight:600;color:#1a1a2e;margin:0.15rem 0 0.45rem 0;">Work Dimension</div>',
             unsafe_allow_html=True,
         )
-        st.plotly_chart(_ua_grouped_bar_v("Work Dimension", d["labels"], d["all_pct"], d["ua_pct"]), use_container_width=True)
+        st.plotly_chart(
+            _ua_grouped_bar_v("Work Dimension", d["labels"], d["all_pct"], d["ua_pct"]),
+            use_container_width=True,
+        )
         _dta_btn(
             pd.DataFrame({"option": d["labels"], "pct_all_jobs": d["all_pct"], "pct_ua_targeted": d["ua_pct"]}),
             "ua_work_dimension.dta", "dta_dim",
@@ -2604,7 +2833,10 @@ def _render_ua_tab():
             '<div style="font-size:1.02rem;font-weight:600;color:#1a1a2e;margin:0.15rem 0 0.45rem 0;">Work Mode</div>',
             unsafe_allow_html=True,
         )
-        st.plotly_chart(_ua_grouped_bar_v("Work Mode", d["labels"], d["all_pct"], d["ua_pct"]), use_container_width=True)
+        st.plotly_chart(
+            _ua_grouped_bar_v("Work Mode", d["labels"], d["all_pct"], d["ua_pct"]),
+            use_container_width=True,
+        )
         _dta_btn(
             pd.DataFrame({"option": d["labels"], "pct_all_jobs": d["all_pct"], "pct_ua_targeted": d["ua_pct"]}),
             "ua_work_mode.dta", "dta_mode",
@@ -2612,12 +2844,16 @@ def _render_ua_tab():
 
     st.markdown('<hr style="border:none;border-top:1px solid #eee;margin:0.5rem 0 1rem">', unsafe_allow_html=True)
 
+    # Salary Transparency
     d = _UA_DATA["Salary Transparency"]
     st.markdown(
         '<div style="font-size:1.02rem;font-weight:600;color:#1a1a2e;margin:0.15rem 0 0.45rem 0;">Salary Transparency</div>',
         unsafe_allow_html=True,
     )
-    st.plotly_chart(_ua_grouped_bar_v("Salary Transparency", d["labels"], d["all_pct"], d["ua_pct"]), use_container_width=True)
+    st.plotly_chart(
+        _ua_grouped_bar_v("Salary Transparency", d["labels"], d["all_pct"], d["ua_pct"]),
+        use_container_width=True,
+    )
     _dta_btn(
         pd.DataFrame({"option": d["labels"], "pct_all_jobs": d["all_pct"], "pct_ua_targeted": d["ua_pct"]}),
         "ua_salary_transparency.dta", "dta_salary",
