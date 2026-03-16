@@ -2260,7 +2260,9 @@ def _render_ai_tab():
         '</div>',
         unsafe_allow_html=True,
     )
-    loc = data["locations"][:10]
+    loc_all = data["locations"]
+    loc_filtered = [l for l in loc_all if str(l.get("city", "")).strip().lower() != "other"]
+    loc = loc_filtered[:10]
     loc_h = max(300, len(loc) * 30 + 75)
     fig_loc = _ai_grouped_bar(
         "Location", [l["city"] for l in loc],
@@ -2269,7 +2271,7 @@ def _render_ai_tab():
     )
     st.plotly_chart(fig_loc, use_container_width=True, config={"displayModeBar": False})
     _export_chart_and_dta(
-        fig_loc, pd.DataFrame(data["locations"]),
+        fig_loc, pd.DataFrame(loc_filtered),
         "ai_locations.dta", "dta_ai_loc",
         "ai_locations.png", "png_ai_loc",
     )
@@ -2324,7 +2326,12 @@ def _render_ai_tab():
         '</div>',
         unsafe_allow_html=True,
     )
-    et = data["esco_titles"][:15]
+    esco_titles_all = data["esco_titles"]
+    esco_titles_filtered = [
+        t for t in esco_titles_all
+        if "youth programme director" not in str(t.get("title_en", "")).strip().lower()
+    ]
+    et = esco_titles_filtered[:15]
     et_x_max = (max([float(t["pct_ai"]) for t in et]) * 1.18) if et else 1.0
     fig_et = pgo.Figure(pgo.Bar(
         y=[t["title_en"] or t["title_pl"] for t in et],
@@ -2345,7 +2352,7 @@ def _render_ai_tab():
     )
     st.plotly_chart(fig_et, use_container_width=True, config={"displayModeBar": False})
     _export_chart_and_dta(
-        fig_et, pd.DataFrame(data["esco_titles"]),
+        fig_et, pd.DataFrame(esco_titles_filtered),
         "ai_esco_titles.dta", "dta_ai_titles",
         "ai_esco_titles.png", "png_ai_titles",
     )
@@ -2410,6 +2417,7 @@ def _dta_btn(df: pd.DataFrame, filename: str, key: str) -> None:
         mime="application/x-stata",
         key=key,
         type="secondary",
+        use_container_width=True,
     )
 
 
@@ -2421,7 +2429,7 @@ def _export_chart_and_dta(
     png_filename: str,
     png_key: str,
 ) -> None:
-    c1, c2, _ = st.columns([1.1, 1.6, 3.3])
+    c1, c2 = st.columns([1, 1])
     with c1:
         _dta_btn(df, dta_filename, dta_key)
     with c2:
@@ -2445,9 +2453,11 @@ def _export_chart_and_dta(
                 mime="image/png",
                 key=png_key,
                 type="secondary",
+                use_container_width=True,
             )
         else:
-            st.caption("PNG export unavailable (install `kaleido`).")
+            st.button("Export chart", key=f"{png_key}_disabled", disabled=True, use_container_width=True)
+            st.caption("PNG unavailable")
 
 
 _UA_COLOR  = "#FBBF24"
