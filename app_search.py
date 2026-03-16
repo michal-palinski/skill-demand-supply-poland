@@ -2194,24 +2194,25 @@ def _render_ai_tab():
     sf = data["skills_freq"]
     sf_top = sf[:20]
 
-    # one trace per category so Plotly renders a proper colour legend
-    from collections import OrderedDict
-    cat_order = list(dict.fromkeys(s["category"] for s in sf_top))
+    _SCOPE_COLORS = {"Core AI": "#E55B52", "Extended AI": "#3B82F6"}
+    scope_order = ["Core AI", "Extended AI"]
     fig_skills = pgo.Figure()
-    for cat in cat_order:
-        items = [s for s in sf_top if s["category"] == cat]
+    for scope in scope_order:
+        items = [s for s in sf_top if s["scope"] == scope]
+        if not items:
+            continue
         fig_skills.add_trace(pgo.Bar(
             y=[s["name_en"] for s in items],
             x=[s["pct_ai"] for s in items],
-            name=cat,
+            name=scope,
             orientation="h",
-            marker=dict(color=_CAT_COLORS.get(cat, "#94A3B8"), cornerradius=4),
+            marker=dict(color=_SCOPE_COLORS[scope], cornerradius=4),
             text=[f"{s['pct_ai']:.1f}%" for s in items],
             textposition="outside", textfont=dict(size=10),
             hovertemplate="<b>%{y}</b><br>%{x:.2f}% of AI offers<extra></extra>",
         ))
     fig_skills.update_layout(
-        height=max(360, len(sf_top) * 22 + 120),
+        height=max(360, len(sf_top) * 22 + 100),
         margin=dict(l=10, r=50, t=10, b=10),
         plot_bgcolor="#fff", paper_bgcolor="#f8f9fa",
         yaxis=dict(autorange="reversed", tickfont=dict(size=10, color="#425466"), categoryorder="array",
@@ -2221,7 +2222,7 @@ def _render_ai_tab():
         legend=dict(
             orientation="h", yanchor="bottom", y=1.01,
             xanchor="left", x=0,
-            font=dict(size=10, color="#425466"),
+            font=dict(size=11, color="#425466"),
             tracegroupgap=0,
         ),
         bargap=0.25,
