@@ -2229,22 +2229,6 @@ def _render_ai_tab():
         )
 
     with col_right:
-        btn_col, dl_col = st.columns([1.25, 1.15])
-        with btn_col:
-            if st.button("How are AI offers identified?", key="btn_ai_method", type="secondary",
-                         use_container_width=True):
-                _show_ai_methodology()
-        with dl_col:
-            st.download_button(
-                "Download AI keyword sources (.xlsx)",
-                data=_build_ai_keyword_sources_xlsx(data),
-                file_name="ai_keyword_sources.xlsx",
-                mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-                key="dl_ai_keyword_sources",
-                type="secondary",
-                use_container_width=True,
-            )
-
         k1, k2 = st.columns(2)
         with k1:
             st.markdown(
@@ -2259,6 +2243,22 @@ def _render_ai_tab():
                 f'<p style="{_kpi_val}">{ov["pct_ai_ict"]}%</p>'
                 f'<p style="{_kpi_lbl}">of ICT offers</p></div>',
                 unsafe_allow_html=True,
+            )
+        st.markdown('<div style="height:0.45rem"></div>', unsafe_allow_html=True)
+        btn_col, dl_col = st.columns([1.05, 0.95])
+        with btn_col:
+            if st.button("How are AI offers identified?", key="btn_ai_method", type="secondary",
+                         use_container_width=True):
+                _show_ai_methodology()
+        with dl_col:
+            st.download_button(
+                "AI keywords",
+                data=_build_ai_keyword_sources_xlsx(data),
+                file_name="ai_keyword_sources.xlsx",
+                mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                key="dl_ai_keyword_sources",
+                type="secondary",
+                use_container_width=True,
             )
 
     st.markdown('<hr class="divider">', unsafe_allow_html=True)
