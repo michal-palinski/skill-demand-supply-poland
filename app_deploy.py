@@ -73,15 +73,15 @@ st.markdown("""
 .item-skill { font-size: 0.82rem; color: #666; margin-top: 0.15rem; }
 .item-skill-name { color: #444; }
 
-/* Small export buttons */
-.export-row div[data-testid="stDownloadButton"] button,
-.export-row div[data-testid="stButton"] button {
-    padding: 0.2rem 0.7rem !important;
-    font-size: 0.72rem !important;
+/* Small export buttons — targets secondary download + disabled buttons globally */
+div[data-testid="stDownloadButton"] button[kind="secondary"],
+button[kind="secondary"][disabled] {
+    padding: 0.25rem 0.75rem !important;
+    font-size: 0.75rem !important;
     min-height: 0 !important;
     height: auto !important;
     white-space: nowrap !important;
-    line-height: 1.4 !important;
+    line-height: 1.5 !important;
 }
 
 /* Tabs */
@@ -2483,31 +2483,28 @@ def _export_chart_and_dta(
     except Exception:
         png_bytes = None
 
-    with st.container():
-        st.markdown('<div class="export-row">', unsafe_allow_html=True)
-        c1, c2, _ = st.columns([0.9, 0.9, 6.2])
-        with c1:
+    c1, c2, _ = st.columns([0.9, 0.9, 6.2])
+    with c1:
+        st.download_button(
+            label="Export .dta",
+            data=buf,
+            file_name=dta_filename,
+            mime="application/x-stata",
+            key=dta_key,
+            type="secondary",
+        )
+    with c2:
+        if png_bytes:
             st.download_button(
-                label="Export .dta",
-                data=buf,
-                file_name=dta_filename,
-                mime="application/x-stata",
-                key=dta_key,
+                label="Export chart",
+                data=png_bytes,
+                file_name=png_filename,
+                mime="image/png",
+                key=png_key,
                 type="secondary",
             )
-        with c2:
-            if png_bytes:
-                st.download_button(
-                    label="Export chart",
-                    data=png_bytes,
-                    file_name=png_filename,
-                    mime="image/png",
-                    key=png_key,
-                    type="secondary",
-                )
-            else:
-                st.button("Export chart", key=f"{png_key}_disabled", disabled=True)
-        st.markdown('</div>', unsafe_allow_html=True)
+        else:
+            st.button("Export chart", key=f"{png_key}_disabled", disabled=True, type="secondary")
 
 
 _UA_COLOR  = "#FBBF24"
