@@ -2578,6 +2578,11 @@ def _export_chart_and_dta(
     except Exception:
         png_bytes = None
 
+    st.markdown(
+        "<style>div[data-testid='stDownloadButton']>button,"
+        "div[data-testid='stButton']>button{white-space:nowrap!important;}</style>",
+        unsafe_allow_html=True,
+    )
     c1, c2, _ = st.columns([1.2, 1.2, 5.6])
     with c1:
         st.download_button(
