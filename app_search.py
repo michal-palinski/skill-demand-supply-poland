@@ -1996,13 +1996,13 @@ def _ai_grouped_bar(
         y=labels, x=pct_ai, name=name_a, orientation="h",
         marker=dict(color=color_a, cornerradius=4),
         text=[f"{v:.1f}%" for v in pct_ai],
-        textposition="outside", textfont=dict(size=11, color=color_a),
+        textposition="outside", textfont=dict(size=13, color=color_a),
     ))
     fig.add_trace(pgo.Bar(
         y=labels, x=pct_all, name=name_b, orientation="h",
         marker=dict(color=color_b, cornerradius=4),
         text=[f"{v:.1f}%" for v in pct_all],
-        textposition="outside", textfont=dict(size=11, color=color_b),
+        textposition="outside", textfont=dict(size=13, color=color_b),
     ))
     fig.update_traces(cliponaxis=False)
     fig_h = height if height is not None else max(240, len(labels) * 30 + 70)
@@ -2235,7 +2235,7 @@ def _render_ai_tab():
             orientation="h",
             marker=dict(color=_SCOPE_COLORS[scope], cornerradius=4),
             text=[f"{s['pct_ai']:.1f}%" for s in items],
-            textposition="outside", textfont=dict(size=10),
+            textposition="outside", textfont=dict(size=13),
             hovertemplate="<b>%{y}</b><br>%{x:.2f}% of AI offers<extra></extra>",
         ))
     fig_skills.update_traces(cliponaxis=False)
@@ -2289,7 +2289,7 @@ def _render_ai_tab():
         orientation="h",
         marker=dict(color=_AI_COLOR, cornerradius=4),
         text=[f'{k["pct_ai"]:.1f}%' for k in kf],
-        textposition="outside", textfont=dict(size=11, color="#555"),
+        textposition="outside", textfont=dict(size=13, color="#555"),
         hovertemplate="<b>%{y}</b><br>%{x:.2f}% of AI offers<br>n = %{customdata:,}<extra></extra>",
         customdata=[k["n"] for k in kf],
         cliponaxis=False,
@@ -2405,9 +2405,13 @@ def _render_ai_tab():
 
     # ── 5. Transversal skills ──
     co = data.get("cooccur", [])
-    co_trans = [c for c in co if c.get("transversal")]
+    co_trans = [
+        c for c in co
+        if c.get("transversal")
+        and "apply basic programming" not in str(c.get("name_en", "")).lower()
+    ]
     if co_trans:
-        co_trans = sorted(co_trans, key=lambda x: float(x.get("ratio", 0)), reverse=True)[:10]
+        co_trans = sorted(co_trans, key=lambda x: float(x.get("pct_ai", 0)) - float(x.get("pct_non_ai", 0)), reverse=True)[:10]
         st.markdown(
             '<div style="font-size:1.02rem;font-weight:600;color:#1a1a2e;margin:0.5rem 0 0.45rem 0;">'
             'Transversal Skills in AI Offers</div>',
@@ -2416,7 +2420,7 @@ def _render_ai_tab():
         st.markdown(
             '<div style="font-size:0.85rem;color:#778596;margin-bottom:0.6rem">'
             'Comparison of soft skills in AI offers vs non-AI offers. '
-            'Sorted by overrepresentation ratio.'
+            'Sorted by percentage point difference.'
             '</div>',
             unsafe_allow_html=True,
         )
@@ -2465,7 +2469,7 @@ def _render_ai_tab():
         orientation="h",
         marker=dict(color=_AI_COLOR, cornerradius=4),
         text=[f'{t["pct_ai"]:.1f}%' for t in et],
-        textposition="outside", textfont=dict(size=11, color=_AI_COLOR),
+        textposition="outside", textfont=dict(size=13, color=_AI_COLOR),
         hovertemplate="<b>%{y}</b><br>%{x:.2f}% of AI offers<br>n = %{customdata:,}<extra></extra>",
         customdata=[t["n"] for t in et],
         cliponaxis=False,
@@ -2515,7 +2519,7 @@ def _render_ai_tab():
         orientation="h",
         marker=dict(color=_AI_COLOR, cornerradius=4),
         text=[f'{s["pct_ai"]:.1f}%' for s in ns],
-        textposition="outside", textfont=dict(size=11, color=_AI_COLOR),
+        textposition="outside", textfont=dict(size=13, color=_AI_COLOR),
         hovertemplate="<b>%{y}</b><br>%{x:.2f}% of AI offers<br>n = %{customdata:,}<extra></extra>",
         customdata=[s["n"] for s in ns],
         cliponaxis=False,
