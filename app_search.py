@@ -2554,11 +2554,25 @@ def _export_chart_and_dta(
 
     png_bytes = None
     try:
-        fig_h = int(fig.layout.height) if fig.layout.height else 700
-        png_bytes = fig.to_image(
+        import copy
+        fig_export = copy.deepcopy(fig)
+        fig_h = int(fig.layout.height) if fig.layout.height else 500
+        cur_margin = fig.layout.margin or {}
+        fig_export.update_layout(
+            paper_bgcolor="white",
+            plot_bgcolor="white",
+            font=dict(color="#111111"),
+            margin=dict(
+                l=max((cur_margin.l or 0), 180),
+                r=max((cur_margin.r or 0), 160),
+                t=max((cur_margin.t or 0), 80),
+                b=max((cur_margin.b or 0), 60),
+            ),
+        )
+        png_bytes = fig_export.to_image(
             format="png",
-            width=2200,
-            height=max(1200, fig_h * 3),
+            width=2000,
+            height=max(900, fig_h * 3),
             scale=2,
         )
     except Exception:
