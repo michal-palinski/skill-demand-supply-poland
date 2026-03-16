@@ -2385,6 +2385,42 @@ def _render_ai_tab():
 
     st.markdown('<hr class="divider">', unsafe_allow_html=True)
 
+    # ── 5. Transversal skills ──
+    co = data.get("cooccur", [])
+    co_trans = [c for c in co if c.get("transversal")]
+    if co_trans:
+        co_trans = sorted(co_trans, key=lambda x: float(x.get("ratio", 0)), reverse=True)[:10]
+        st.markdown(
+            '<div style="font-size:1.02rem;font-weight:600;color:#1a1a2e;margin:0.5rem 0 0.45rem 0;">'
+            'Transversal Skills in AI Offers</div>',
+            unsafe_allow_html=True,
+        )
+        st.markdown(
+            '<div style="font-size:0.85rem;color:#778596;margin-bottom:0.6rem">'
+            'Comparison of soft skills in AI offers vs non-AI offers. '
+            'Sorted by overrepresentation ratio.'
+            '</div>',
+            unsafe_allow_html=True,
+        )
+
+        fig_trans = _ai_grouped_bar(
+            "Transversal",
+            [c["name_en"] or c["name_pl"] for c in co_trans],
+            [c["pct_ai"] for c in co_trans],
+            [c["pct_non_ai"] for c in co_trans],
+            name_a="% in AI offers",
+            name_b="% in non-AI offers",
+            height=max(280, len(co_trans) * 30 + 70),
+        )
+        st.plotly_chart(fig_trans, use_container_width=True, config={"displayModeBar": False})
+        _export_chart_and_dta(
+            fig_trans, pd.DataFrame(co_trans),
+            "ai_transversal_skills.dta", "dta_ai_trans",
+            "ai_transversal_skills.png", "png_ai_trans",
+        )
+
+        st.markdown('<hr class="divider">', unsafe_allow_html=True)
+
     # ── 7. ESCO Job Titles ──
     st.markdown(
         '<div style="font-size:1.02rem;font-weight:600;color:#1a1a2e;margin:0.5rem 0 0.45rem 0;">'
