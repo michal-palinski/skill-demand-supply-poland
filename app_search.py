@@ -1982,14 +1982,14 @@ def _ai_grouped_bar(title, labels, pct_ai, pct_all, color_a=_AI_COLOR, color_b=_
         textposition="outside", textfont=dict(size=11, color=color_b),
     ))
     fig.update_layout(
-        barmode="group", height=max(260, len(labels) * 42 + 80),
-        margin=dict(l=10, r=40, t=10, b=30),
+        barmode="group", height=max(220, len(labels) * 32 + 70),
+        margin=dict(l=10, r=40, t=10, b=10),
         plot_bgcolor="#fff", paper_bgcolor="#f8f9fa",
-        yaxis=dict(autorange="reversed", tickfont=dict(size=12, color="#425466")),
+        yaxis=dict(autorange="reversed", tickfont=dict(size=10, color="#425466")),
         xaxis=dict(visible=False),
         legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="center", x=0.5,
-                    font=dict(size=12, color="#425466")),
-        bargap=0.25, bargroupgap=0.08,
+                    font=dict(size=10, color="#425466")),
+        bargap=0.3, bargroupgap=0.06,
     )
     return fig
 
@@ -2187,23 +2187,39 @@ def _render_ai_tab():
     )
 
     sf = data["skills_freq"]
-    sf_labels = [s["name_en"] for s in sf[:20]]
-    sf_pct = [s["pct_ai"] for s in sf[:20]]
-    sf_colors = [_CAT_COLORS.get(s["category"], "#94A3B8") for s in sf[:20]]
+    sf_top = sf[:20]
 
-    fig_skills = pgo.Figure(pgo.Bar(
-        y=sf_labels, x=sf_pct, orientation="h",
-        marker=dict(color=sf_colors, cornerradius=4),
-        text=[f"{v:.1f}%" for v in sf_pct],
-        textposition="outside", textfont=dict(size=11),
-        hovertemplate="<b>%{y}</b><br>%{x:.2f}% of AI offers<extra></extra>",
-    ))
+    # one trace per category so Plotly renders a proper colour legend
+    from collections import OrderedDict
+    cat_order = list(dict.fromkeys(s["category"] for s in sf_top))
+    fig_skills = pgo.Figure()
+    for cat in cat_order:
+        items = [s for s in sf_top if s["category"] == cat]
+        fig_skills.add_trace(pgo.Bar(
+            y=[s["name_en"] for s in items],
+            x=[s["pct_ai"] for s in items],
+            name=cat,
+            orientation="h",
+            marker=dict(color=_CAT_COLORS.get(cat, "#94A3B8"), cornerradius=4),
+            text=[f"{s['pct_ai']:.1f}%" for s in items],
+            textposition="outside", textfont=dict(size=10),
+            hovertemplate="<b>%{y}</b><br>%{x:.2f}% of AI offers<extra></extra>",
+        ))
     fig_skills.update_layout(
-        height=max(400, len(sf_labels) * 28 + 60),
-        margin=dict(l=10, r=50, t=10, b=20),
+        height=max(360, len(sf_top) * 22 + 120),
+        margin=dict(l=10, r=50, t=10, b=10),
         plot_bgcolor="#fff", paper_bgcolor="#f8f9fa",
-        yaxis=dict(autorange="reversed", tickfont=dict(size=11, color="#425466")),
+        yaxis=dict(autorange="reversed", tickfont=dict(size=10, color="#425466"), categoryorder="array",
+                   categoryarray=[s["name_en"] for s in sf_top]),
         xaxis=dict(visible=False),
+        barmode="overlay",
+        legend=dict(
+            orientation="h", yanchor="bottom", y=1.01,
+            xanchor="left", x=0,
+            font=dict(size=10, color="#425466"),
+            tracegroupgap=0,
+        ),
+        bargap=0.25,
     )
     st.plotly_chart(fig_skills, use_container_width=True)
 
@@ -2237,8 +2253,8 @@ def _render_ai_tab():
         textposition="outside", textfont=dict(size=11, color="#555"),
     ))
     fig_kw.update_layout(
-        height=max(360, len(kf) * 28 + 60),
-        margin=dict(l=10, r=50, t=10, b=20),
+        height=max(300, len(kf) * 22 + 60),
+        margin=dict(l=10, r=50, t=10, b=10),
         plot_bgcolor="#fff", paper_bgcolor="#f8f9fa",
         yaxis=dict(autorange="reversed", tickfont=dict(size=11, color="#425466")),
         xaxis=dict(visible=False),
@@ -2339,14 +2355,14 @@ def _render_ai_tab():
         textposition="outside", textfont=dict(size=10, color=_ALL_COLOR_AI),
     ))
     fig_tech.update_layout(
-        barmode="group", height=max(420, len(tech) * 34 + 60),
-        margin=dict(l=10, r=50, t=10, b=30),
+        barmode="group", height=max(340, len(tech) * 26 + 60),
+        margin=dict(l=10, r=50, t=10, b=10),
         plot_bgcolor="#fff", paper_bgcolor="#f8f9fa",
-        yaxis=dict(autorange="reversed", tickfont=dict(size=11, color="#425466")),
+        yaxis=dict(autorange="reversed", tickfont=dict(size=10, color="#425466")),
         xaxis=dict(visible=False),
         legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="center", x=0.5,
-                    font=dict(size=11, color="#425466")),
-        bargap=0.2, bargroupgap=0.06,
+                    font=dict(size=10, color="#425466")),
+        bargap=0.3, bargroupgap=0.06,
     )
     st.plotly_chart(fig_tech, use_container_width=True)
 
@@ -2387,10 +2403,10 @@ def _render_ai_tab():
         textposition="outside", textfont=dict(size=10, color="#8B5CF6"),
     ))
     fig_co.update_layout(
-        height=max(380, len(co_non_trans) * 30 + 60),
-        margin=dict(l=10, r=50, t=10, b=20),
+        height=max(300, len(co_non_trans) * 22 + 60),
+        margin=dict(l=10, r=50, t=10, b=10),
         plot_bgcolor="#fff", paper_bgcolor="#f8f9fa",
-        yaxis=dict(autorange="reversed", tickfont=dict(size=11, color="#425466")),
+        yaxis=dict(autorange="reversed", tickfont=dict(size=10, color="#425466")),
         xaxis=dict(visible=False),
         showlegend=False,
     )
@@ -2423,10 +2439,10 @@ def _render_ai_tab():
             textposition="outside", textfont=dict(size=10, color="#10B981"),
         ))
         fig_trans.update_layout(
-            height=max(300, len(co_trans) * 30 + 60),
-            margin=dict(l=10, r=50, t=10, b=20),
+            height=max(220, len(co_trans) * 22 + 60),
+            margin=dict(l=10, r=50, t=10, b=10),
             plot_bgcolor="#fff", paper_bgcolor="#f8f9fa",
-            yaxis=dict(autorange="reversed", tickfont=dict(size=11, color="#425466")),
+            yaxis=dict(autorange="reversed", tickfont=dict(size=10, color="#425466")),
             xaxis=dict(visible=False),
             showlegend=False,
         )
@@ -2488,10 +2504,10 @@ def _render_ai_tab():
         textposition="outside", textfont=dict(size=11, color="#555"),
     ))
     fig_et.update_layout(
-        height=max(400, len(et) * 30 + 60),
-        margin=dict(l=10, r=50, t=10, b=20),
+        height=max(320, len(et) * 22 + 60),
+        margin=dict(l=10, r=50, t=10, b=10),
         plot_bgcolor="#fff", paper_bgcolor="#f8f9fa",
-        yaxis=dict(autorange="reversed", tickfont=dict(size=11, color="#425466")),
+        yaxis=dict(autorange="reversed", tickfont=dict(size=10, color="#425466")),
         xaxis=dict(visible=False),
     )
     st.plotly_chart(fig_et, use_container_width=True)
@@ -2527,10 +2543,10 @@ def _render_ai_tab():
         textposition="outside", textfont=dict(size=11, color="#555"),
     ))
     fig_ns.update_layout(
-        height=max(380, len(ns) * 30 + 60),
-        margin=dict(l=10, r=50, t=10, b=20),
+        height=max(280, len(ns) * 22 + 60),
+        margin=dict(l=10, r=50, t=10, b=10),
         plot_bgcolor="#fff", paper_bgcolor="#f8f9fa",
-        yaxis=dict(autorange="reversed", tickfont=dict(size=11, color="#425466")),
+        yaxis=dict(autorange="reversed", tickfont=dict(size=10, color="#425466")),
         xaxis=dict(visible=False),
     )
     st.plotly_chart(fig_ns, use_container_width=True)
