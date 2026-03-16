@@ -73,15 +73,15 @@ st.markdown("""
 .item-skill { font-size: 0.82rem; color: #666; margin-top: 0.15rem; }
 .item-skill-name { color: #444; }
 
-/* Small export buttons — targets secondary download + disabled buttons globally */
-div[data-testid="stDownloadButton"] button[kind="secondary"],
-button[kind="secondary"][disabled] {
-    padding: 0.25rem 0.75rem !important;
-    font-size: 0.75rem !important;
+/* Small export buttons */
+div[data-testid="stDownloadButton"] button,
+button[data-testid="stBaseButton-secondary"] {
+    padding: 0.22rem 0.7rem !important;
+    font-size: 0.73rem !important;
     min-height: 0 !important;
     height: auto !important;
     white-space: nowrap !important;
-    line-height: 1.5 !important;
+    line-height: 1.4 !important;
 }
 
 /* Tabs */
@@ -1991,24 +1991,25 @@ def _ai_grouped_bar(
 ):
     fig = pgo.Figure()
     _max_val = max([0.0] + [float(v) for v in pct_ai] + [float(v) for v in pct_all])
-    _x_max = (_max_val * 1.18) if _max_val > 0 else 1.0
+    _x_max = (_max_val + max(8, _max_val * 0.22)) if _max_val > 0 else 1.0
     fig.add_trace(pgo.Bar(
         y=labels, x=pct_ai, name=name_a, orientation="h",
         marker=dict(color=color_a, cornerradius=4),
         text=[f"{v:.1f}%" for v in pct_ai],
         textposition="outside", textfont=dict(size=13, color=color_a),
+        cliponaxis=False,
     ))
     fig.add_trace(pgo.Bar(
         y=labels, x=pct_all, name=name_b, orientation="h",
         marker=dict(color=color_b, cornerradius=4),
         text=[f"{v:.1f}%" for v in pct_all],
         textposition="outside", textfont=dict(size=13, color=color_b),
+        cliponaxis=False,
     ))
-    fig.update_traces(cliponaxis=False)
     fig_h = height if height is not None else max(240, len(labels) * 30 + 70)
     fig.update_layout(
         barmode="group", height=fig_h,
-        margin=dict(l=10, r=85, t=8, b=6),
+        margin=dict(l=10, r=10, t=8, b=6),
         plot_bgcolor="rgba(0,0,0,0)", paper_bgcolor="rgba(0,0,0,0)",
         yaxis=dict(autorange="reversed", tickfont=dict(size=11, color="#425466")),
         xaxis=dict(visible=False, range=[0, _x_max]),
@@ -2219,7 +2220,8 @@ def _render_ai_tab():
 
     sf = data["skills_freq"]
     sf_top = sf[:15]
-    sf_x_max = (max([float(s["pct_ai"]) for s in sf_top]) * 1.18) if sf_top else 1.0
+    _sf_max = max([float(s["pct_ai"]) for s in sf_top]) if sf_top else 0
+    sf_x_max = (_sf_max + max(6, _sf_max * 0.22)) if _sf_max > 0 else 1.0
 
     _SCOPE_COLORS = {"Strict AI": _AI_COLOR, "Extended AI": "#F3A7A2"}
     scope_order = ["Strict AI", "Extended AI"]
@@ -2241,7 +2243,7 @@ def _render_ai_tab():
     fig_skills.update_traces(cliponaxis=False)
     fig_skills.update_layout(
         height=max(360, len(sf_top) * 22 + 100),
-        margin=dict(l=10, r=95, t=10, b=10),
+        margin=dict(l=10, r=10, t=10, b=10),
         plot_bgcolor="rgba(0,0,0,0)", paper_bgcolor="rgba(0,0,0,0)",
         yaxis=dict(autorange="reversed", tickfont=dict(size=10, color="#425466"), categoryorder="array",
                    categoryarray=[s["name_en"] for s in sf_top]),
@@ -2282,7 +2284,8 @@ def _render_ai_tab():
     )
 
     kf = data["kw_freq"][:15]
-    kw_x_max = (max([float(k["pct_ai"]) for k in kf]) * 1.18) if kf else 1.0
+    _kw_max = max([float(k["pct_ai"]) for k in kf]) if kf else 0
+    kw_x_max = (_kw_max + max(6, _kw_max * 0.22)) if _kw_max > 0 else 1.0
     fig_kw = pgo.Figure(pgo.Bar(
         y=[k["keyword"] for k in kf],
         x=[k["pct_ai"] for k in kf],
@@ -2296,7 +2299,7 @@ def _render_ai_tab():
     ))
     fig_kw.update_layout(
         height=max(300, len(kf) * 22 + 60),
-        margin=dict(l=10, r=95, t=10, b=10),
+        margin=dict(l=10, r=10, t=10, b=10),
         plot_bgcolor="rgba(0,0,0,0)", paper_bgcolor="rgba(0,0,0,0)",
         yaxis=dict(autorange="reversed", tickfont=dict(size=11, color="#425466")),
         xaxis=dict(visible=False, range=[0, kw_x_max]),
@@ -2462,7 +2465,8 @@ def _render_ai_tab():
         if "youth programme director" not in str(t.get("title_en", "")).strip().lower()
     ]
     et = esco_titles_filtered[:15]
-    et_x_max = (max([float(t["pct_ai"]) for t in et]) * 1.18) if et else 1.0
+    _et_max = max([float(t["pct_ai"]) for t in et]) if et else 0
+    et_x_max = (_et_max + max(6, _et_max * 0.22)) if _et_max > 0 else 1.0
     fig_et = pgo.Figure(pgo.Bar(
         y=[t["title_en"] or t["title_pl"] for t in et],
         x=[t["pct_ai"] for t in et],
@@ -2476,7 +2480,7 @@ def _render_ai_tab():
     ))
     fig_et.update_layout(
         height=max(320, len(et) * 22 + 60),
-        margin=dict(l=10, r=95, t=10, b=10),
+        margin=dict(l=10, r=10, t=10, b=10),
         plot_bgcolor="rgba(0,0,0,0)", paper_bgcolor="rgba(0,0,0,0)",
         yaxis=dict(autorange="reversed", tickfont=dict(size=10, color="#425466")),
         xaxis=dict(visible=False, range=[0, et_x_max]),
@@ -2505,7 +2509,8 @@ def _render_ai_tab():
     )
 
     ns = data["nace_sections"]
-    ns_x_max = (max([float(s["pct_ai"]) for s in ns]) * 1.18) if ns else 1.0
+    _ns_max = max([float(s["pct_ai"]) for s in ns]) if ns else 0
+    ns_x_max = (_ns_max + max(6, _ns_max * 0.22)) if _ns_max > 0 else 1.0
     nace_name_overrides = {
         "T": "Activities of households as employers",
     }
@@ -2526,7 +2531,7 @@ def _render_ai_tab():
     ))
     fig_ns.update_layout(
         height=max(280, len(ns) * 22 + 60),
-        margin=dict(l=10, r=95, t=10, b=10),
+        margin=dict(l=10, r=10, t=10, b=10),
         plot_bgcolor="rgba(0,0,0,0)", paper_bgcolor="rgba(0,0,0,0)",
         yaxis=dict(autorange="reversed", tickfont=dict(size=10, color="#425466")),
         xaxis=dict(visible=False, range=[0, ns_x_max]),
