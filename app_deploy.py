@@ -2090,8 +2090,7 @@ def _render_ai_tab():
     )
     st.markdown(
         '<div style="font-size:0.85rem;color:#778596;margin-bottom:0.8rem">'
-        'Frequency of ESCO-classified AI skills found in job offers. '
-        'Skills are matched via contextual embeddings against the full ESCO taxonomy. '
+        'How often each AI-related skill appears in AI job offers. '
         'Colors indicate skill category (e.g. Core ML, NLP, Data Science).'
         '</div>',
         unsafe_allow_html=True,
@@ -2130,8 +2129,7 @@ def _render_ai_tab():
     )
     st.markdown(
         '<div style="font-size:0.85rem;color:#778596;margin-bottom:0.8rem">'
-        'Keywords detected via regex pattern matching in job titles, requirements and responsibilities. '
-        'Counts show how many AI offers contain each keyword.'
+        'How often each AI-related keyword appears across job titles, requirements and responsibilities in AI offers.'
         '</div>',
         unsafe_allow_html=True,
     )
@@ -2157,8 +2155,7 @@ def _render_ai_tab():
     # ── 3. Seniority & Contract ──
     st.markdown(
         '<div style="font-size:0.85rem;color:#778596;margin-bottom:0.8rem">'
-        'Distribution of seniority levels and contract types in AI offers compared to all offers. '
-        'Original values are aggregated into broader categories (e.g. junior specialist + trainee + assistant → Junior).'
+        'Distribution of seniority levels and contract types in AI offers compared to all offers.'
         '</div>',
         unsafe_allow_html=True,
     )
@@ -2198,8 +2195,7 @@ def _render_ai_tab():
     )
     st.markdown(
         '<div style="font-size:0.85rem;color:#778596;margin-bottom:0.4rem">'
-        'Technologies from the job ad "technologies" field that appear disproportionately more '
-        'in AI job offers compared to non-AI offers. Sorted by overrepresentation ratio.'
+        'Technologies that appear more often in AI offers than in the rest of the market. Sorted by how much more frequent they are in AI offers.'
         '</div>',
         unsafe_allow_html=True,
     )
@@ -2244,8 +2240,8 @@ def _render_ai_tab():
     )
     st.markdown(
         '<div style="font-size:0.85rem;color:#778596;margin-bottom:0.4rem">'
-        'Non-AI ESCO skills that appear significantly more often in AI offers than in other offers. '
-        'The ratio label (e.g. 5.2x) shows how many times more likely a skill is to appear in an AI offer.'
+        'Skills that appear more often in AI offers than in the rest of the market. '
+        'The ratio (e.g. 5.2x) shows how much more frequently a skill appears in AI offers.'
         '</div>',
         unsafe_allow_html=True,
     )
@@ -2280,8 +2276,7 @@ def _render_ai_tab():
         )
         st.markdown(
             '<div style="font-size:0.85rem;color:#778596;margin-bottom:0.6rem">'
-            'ESCO transversal skills (cross-sector soft skills like communication, teamwork, '
-            'analytical thinking) overrepresented in AI job offers compared to the rest of the market.'
+            'Soft skills (communication, teamwork, analytical thinking, etc.) that appear more often in AI offers than in the rest of the market.'
             '</div>',
             unsafe_allow_html=True,
         )
@@ -2312,9 +2307,8 @@ def _render_ai_tab():
     )
     st.markdown(
         '<div style="font-size:0.85rem;color:#778596;margin-bottom:0.8rem">'
-        'Cities extracted from the job ad location field using pattern matching. '
-        'A single offer may appear in multiple cities if it lists several locations. '
-        '"Remote" includes ads mentioning remote work, home office, or hybrid arrangements.'
+        'Where AI job offers are located. A single offer can list multiple cities. '
+        '"Remote" covers ads mentioning remote, home office or hybrid work.'
         '</div>',
         unsafe_allow_html=True,
     )
@@ -2336,8 +2330,7 @@ def _render_ai_tab():
     )
     st.markdown(
         '<div style="font-size:0.85rem;color:#778596;margin-bottom:0.8rem">'
-        'Each job ad title is matched to the closest ESCO occupation using contextual embeddings. '
-        'Shows which standardised occupations are most common among AI-related job offers.'
+        'Which standardised occupations are most common among AI-related job offers.'
         '</div>',
         unsafe_allow_html=True,
     )
@@ -2369,9 +2362,7 @@ def _render_ai_tab():
     )
     st.markdown(
         '<div style="font-size:0.85rem;color:#778596;margin-bottom:0.8rem">'
-        'Distribution of AI offers across NACE Rev. 2 economic sectors. '
-        'Sector assignment is inferred from the matched ESCO occupation via the official EU crosswalk '
-        '(see NACE tab for full methodology).'
+        'Which economic sectors post the most AI-related job offers.'
         '</div>',
         unsafe_allow_html=True,
     )
