@@ -2548,23 +2548,33 @@ def _export_chart_and_dta(
     png_key: str,
 ) -> None:
     """Render side-by-side exports: Stata data + hi-res PNG chart."""
-    c1, c2 = st.columns([1, 1])
-    with c1:
-        _dta_btn(df, dta_filename, dta_key)
+    buf = io.BytesIO()
+    df.to_stata(buf, write_index=False, version=118)
+    buf.seek(0)
 
-    with c2:
+    png_bytes = None
+    try:
+        fig_h = int(fig.layout.height) if fig.layout.height else 700
+        png_bytes = fig.to_image(
+            format="png",
+            width=2200,
+            height=max(1200, fig_h * 3),
+            scale=2,
+        )
+    except Exception:
         png_bytes = None
-        try:
-            fig_h = int(fig.layout.height) if fig.layout.height else 700
-            png_bytes = fig.to_image(
-                format="png",
-                width=2200,
-                height=max(1200, fig_h * 3),
-                scale=2,
-            )
-        except Exception:
-            png_bytes = None
 
+    c1, c2, _ = st.columns([1.2, 1.2, 5.6])
+    with c1:
+        st.download_button(
+            label="Export .dta",
+            data=buf,
+            file_name=dta_filename,
+            mime="application/x-stata",
+            key=dta_key,
+            type="secondary",
+        )
+    with c2:
         if png_bytes:
             st.download_button(
                 label="Export chart",
@@ -2573,10 +2583,9 @@ def _export_chart_and_dta(
                 mime="image/png",
                 key=png_key,
                 type="secondary",
-                use_container_width=True,
             )
         else:
-            st.button("Export chart", key=f"{png_key}_disabled", disabled=True, use_container_width=True)
+            st.button("Export chart", key=f"{png_key}_disabled", disabled=True)
             st.caption("PNG unavailable")
 
 
