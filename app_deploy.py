@@ -82,6 +82,13 @@ button[data-testid="stBaseButton-secondary"] {
     height: auto !important;
     white-space: nowrap !important;
     line-height: 1.4 !important;
+    width: fit-content !important;
+    min-width: max-content !important;
+    max-width: none !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    overflow: visible !important;
 }
 
 /* Tabs */
@@ -2488,7 +2495,7 @@ def _export_chart_and_dta(
     except Exception:
         png_bytes = None
 
-    c1, c2, _ = st.columns([0.9, 0.9, 6.2])
+    c1, c2, _ = st.columns([1.3, 1.45, 5.25])
     with c1:
         st.download_button(
             label="Export .dta",

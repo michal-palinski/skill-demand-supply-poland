@@ -82,6 +82,13 @@ button[data-testid="stBaseButton-secondary"] {
     height: auto !important;
     white-space: nowrap !important;
     line-height: 1.4 !important;
+    width: fit-content !important;
+    min-width: max-content !important;
+    max-width: none !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    overflow: visible !important;
 }
 
 /* Tabs */
@@ -2378,13 +2385,7 @@ def _render_ai_tab():
         'Location of AI Job Offers</div>',
         unsafe_allow_html=True,
     )
-    st.markdown(
-        '<div style="font-size:0.85rem;color:#778596;margin-bottom:0.8rem">'
-        'Where AI job offers are located. A single offer can list multiple cities. '
-        '"Remote" covers ads mentioning remote, home office or hybrid work.'
-        '</div>',
-        unsafe_allow_html=True,
-    )
+
 
     loc_all = data["locations"]
     loc_filtered = [l for l in loc_all if str(l.get("city", "")).strip().lower() != "other"]
@@ -2603,7 +2604,7 @@ def _export_chart_and_dta(
     except Exception:
         png_bytes = None
 
-    c1, c2, _ = st.columns([0.9, 0.9, 6.2])
+    c1, c2, _ = st.columns([1.3, 1.45, 5.25])
     with c1:
         st.download_button(
             label="Export .dta",
