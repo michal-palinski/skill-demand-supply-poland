@@ -2060,7 +2060,6 @@ for ~40 AI-specific terms and phrases, including both English and Polish variant
 `TensorFlow`, `PyTorch`, `scikit-learn`, `MLOps`, `data scientist`, `big data`,
 `reinforcement learning`, `predictive model`, etc.
 
-Word boundaries (`\\b`) are used to avoid false positives.
 
 ---
 
@@ -2584,10 +2583,12 @@ def _export_chart_and_dta(
         fig_export = copy.deepcopy(fig)
         fig_h = int(fig.layout.height) if fig.layout.height else 500
         cur_margin = fig.layout.margin or {}
+        export_font = 22
+        export_tick = 20
         fig_export.update_layout(
             paper_bgcolor="white",
             plot_bgcolor="white",
-            font=dict(color="#111111"),
+            font=dict(color="#111111", size=export_font),
             margin=dict(
                 l=max((cur_margin.l or 0), 180),
                 r=max((cur_margin.r or 0), 160),
@@ -2595,6 +2596,9 @@ def _export_chart_and_dta(
                 b=max((cur_margin.b or 0), 60),
             ),
         )
+        fig_export.update_xaxes(tickfont=dict(size=export_tick, color="#111111"))
+        fig_export.update_yaxes(tickfont=dict(size=export_tick, color="#111111"))
+        fig_export.update_traces(textfont=dict(size=export_font), selector=dict(type="bar"))
         png_bytes = fig_export.to_image(
             format="png",
             width=2000,
