@@ -2300,56 +2300,61 @@ def _render_ai_tab():
 
     st.markdown('<hr class="divider">', unsafe_allow_html=True)
 
-    # ── 3. Seniority & Contract ──
+    # ── 3a. Seniority ──
+    st.markdown(
+        '<div style="font-size:1.02rem;font-weight:600;color:#1a1a2e;margin:0.5rem 0 0.45rem 0;">'
+        'Seniority Level in AI Offers</div>',
+        unsafe_allow_html=True,
+    )
     st.markdown(
         '<div style="font-size:0.85rem;color:#778596;margin-bottom:0.8rem">'
-        'Distribution of seniority levels and contract types in AI offers compared to all offers.'
+        'Distribution of seniority levels in AI offers compared to all offers.'
         '</div>',
         unsafe_allow_html=True,
     )
-    col_s, col_c = st.columns(2)
+    sen = data["seniority"]
+    fig_sen = _ai_grouped_bar(
+        "Seniority",
+        [s["level"] for s in sen],
+        [s["pct_ai"] for s in sen],
+        [s["pct_all"] for s in sen],
+        height=250,
+    )
+    st.plotly_chart(fig_sen, use_container_width=True, config={"displayModeBar": False})
+    _export_chart_and_dta(
+        fig_sen, pd.DataFrame(sen),
+        "ai_seniority.dta", "dta_ai_sen",
+        "ai_seniority.png", "png_ai_sen",
+    )
 
-    with col_s:
-        st.markdown(
-            '<div style="font-size:1.02rem;font-weight:600;color:#1a1a2e;margin:0.15rem 0 0.45rem 0;">'
-            'Seniority Level</div>',
-            unsafe_allow_html=True,
-        )
-        sen = data["seniority"]
-        fig_sen = _ai_grouped_bar(
-            "Seniority",
-            [s["level"] for s in sen],
-            [s["pct_ai"] for s in sen],
-            [s["pct_all"] for s in sen],
-            height=250,
-        )
-        st.plotly_chart(fig_sen, use_container_width=True, config={"displayModeBar": False})
-        _export_chart_and_dta(
-            fig_sen, pd.DataFrame(sen),
-            "ai_seniority.dta", "dta_ai_sen",
-            "ai_seniority.png", "png_ai_sen",
-        )
+    st.markdown('<hr class="divider">', unsafe_allow_html=True)
 
-    with col_c:
-        st.markdown(
-            '<div style="font-size:1.02rem;font-weight:600;color:#1a1a2e;margin:0.15rem 0 0.45rem 0;">'
-            'Contract Type</div>',
-            unsafe_allow_html=True,
-        )
-        ct = data["contracts"]
-        fig_ct = _ai_grouped_bar(
-            "Contract",
-            [c["type"] for c in ct],
-            [c["pct_ai"] for c in ct],
-            [c["pct_all"] for c in ct],
-            height=250,
-        )
-        st.plotly_chart(fig_ct, use_container_width=True, config={"displayModeBar": False})
-        _export_chart_and_dta(
-            fig_ct, pd.DataFrame(ct),
-            "ai_contracts.dta", "dta_ai_ct",
-            "ai_contracts.png", "png_ai_ct",
-        )
+    # ── 3b. Contract Type ──
+    st.markdown(
+        '<div style="font-size:1.02rem;font-weight:600;color:#1a1a2e;margin:0.5rem 0 0.45rem 0;">'
+        'Contract Type in AI Offers</div>',
+        unsafe_allow_html=True,
+    )
+    st.markdown(
+        '<div style="font-size:0.85rem;color:#778596;margin-bottom:0.8rem">'
+        'Distribution of contract types in AI offers compared to all offers.'
+        '</div>',
+        unsafe_allow_html=True,
+    )
+    ct = data["contracts"]
+    fig_ct = _ai_grouped_bar(
+        "Contract",
+        [c["type"] for c in ct],
+        [c["pct_ai"] for c in ct],
+        [c["pct_all"] for c in ct],
+        height=250,
+    )
+    st.plotly_chart(fig_ct, use_container_width=True, config={"displayModeBar": False})
+    _export_chart_and_dta(
+        fig_ct, pd.DataFrame(ct),
+        "ai_contracts.dta", "dta_ai_ct",
+        "ai_contracts.png", "png_ai_ct",
+    )
 
     st.markdown('<hr class="divider">', unsafe_allow_html=True)
 
