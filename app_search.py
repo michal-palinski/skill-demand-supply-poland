@@ -1967,28 +1967,39 @@ def _load_ai_cache():
         return json.loads(f.read())
 
 
-def _ai_grouped_bar(title, labels, pct_ai, pct_all, color_a=_AI_COLOR, color_b=_ALL_COLOR_AI, name_a="AI offers", name_b="All offers"):
+def _ai_grouped_bar(
+    title,
+    labels,
+    pct_ai,
+    pct_all,
+    color_a=_AI_COLOR,
+    color_b=_ALL_COLOR_AI,
+    name_a="AI offers",
+    name_b="All offers",
+    height=None,
+):
     fig = pgo.Figure()
     fig.add_trace(pgo.Bar(
         y=labels, x=pct_ai, name=name_a, orientation="h",
         marker=dict(color=color_a, cornerradius=4),
         text=[f"{v:.1f}%" for v in pct_ai],
-        textposition="outside", textfont=dict(size=11, color=color_a),
+        textposition="outside", textfont=dict(size=9, color=color_a),
     ))
     fig.add_trace(pgo.Bar(
         y=labels, x=pct_all, name=name_b, orientation="h",
         marker=dict(color=color_b, cornerradius=4),
         text=[f"{v:.1f}%" for v in pct_all],
-        textposition="outside", textfont=dict(size=11, color=color_b),
+        textposition="outside", textfont=dict(size=9, color=color_b),
     ))
+    fig_h = height if height is not None else max(190, len(labels) * 24 + 55)
     fig.update_layout(
-        barmode="group", height=max(220, len(labels) * 32 + 70),
-        margin=dict(l=10, r=40, t=10, b=10),
-        plot_bgcolor="#fff", paper_bgcolor="#f8f9fa",
-        yaxis=dict(autorange="reversed", tickfont=dict(size=10, color="#425466")),
+        barmode="group", height=fig_h,
+        margin=dict(l=10, r=30, t=8, b=6),
+        plot_bgcolor="rgba(0,0,0,0)", paper_bgcolor="rgba(0,0,0,0)",
+        yaxis=dict(autorange="reversed", tickfont=dict(size=9, color="#425466")),
         xaxis=dict(visible=False),
         legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="center", x=0.5,
-                    font=dict(size=10, color="#425466")),
+                    font=dict(size=9, color="#425466")),
         bargap=0.3, bargroupgap=0.06,
     )
     return fig
@@ -2129,50 +2140,51 @@ def _render_ai_tab():
     data = _load_ai_cache()
     ov = data["overview"]
 
-    # ── Header row: title + KPIs + methodology button ──
+    # ── Header block: description on left, controls/stats on right ──
     _kpi_style = (
         'background:#fff;border:1px solid #e4e4ea;border-radius:12px;'
-        'padding:0.7rem 0.6rem;text-align:center;white-space:nowrap;'
+        'padding:0.8rem 0.7rem;text-align:center;white-space:nowrap;'
     )
-    _kpi_val = 'font-size:1.5rem;font-weight:700;color:#1a1a2e;margin:0;line-height:1.2;'
-    _kpi_lbl = 'font-size:0.7rem;color:#888;margin:0.15rem 0 0;'
+    _kpi_val = 'font-size:1.55rem;font-weight:700;color:#1a1a2e;margin:0;line-height:1.15;'
+    _kpi_lbl = 'font-size:0.72rem;color:#888;margin:0.2rem 0 0;'
 
-    col_txt, col_k1, col_k2, col_btn = st.columns([3.5, 1, 1, 1.5])
+    col_left, col_right = st.columns([2.25, 1.75])
 
-    with col_txt:
+    with col_left:
         st.markdown(
-            '<div style="font-size:0.78rem;font-weight:700;letter-spacing:.06em;'
-            'text-transform:uppercase;color:#8896a7;margin-bottom:0.25rem">'
+            '<div style="font-size:0.8rem;font-weight:700;letter-spacing:.06em;'
+            'text-transform:uppercase;color:#8896a7;margin-bottom:0.3rem">'
             'AI Skills Demand in Polish Job Market — 2025</div>'
-            '<div style="font-size:0.84rem;color:#778596;line-height:1.5">'
+            '<div style="font-size:0.95rem;color:#4d5d6d;line-height:1.45">'
             'AI offers identified by ESCO skill matching and keyword detection '
-            'in job titles, requirements and responsibilities. '
+            'in job titles, requirements and responsibilities.<br>'
             f'Based on <b>{ov["total_offers"]:,}</b> job ads collected in 2025.'
             '</div>',
             unsafe_allow_html=True,
         )
 
-    with col_k1:
-        st.markdown(
-            f'<div style="{_kpi_style}">'
-            f'<p style="{_kpi_val}">{ov["pct_ai_all"]}%</p>'
-            f'<p style="{_kpi_lbl}">of all 2025 offers</p></div>',
-            unsafe_allow_html=True,
-        )
+    with col_right:
+        btn_col, _ = st.columns([1.45, 1.0])
+        with btn_col:
+            if st.button("How are AI offers identified?", key="btn_ai_method", type="secondary",
+                         use_container_width=True):
+                _show_ai_methodology()
 
-    with col_k2:
-        st.markdown(
-            f'<div style="{_kpi_style}">'
-            f'<p style="{_kpi_val}">{ov["pct_ai_ict"]}%</p>'
-            f'<p style="{_kpi_lbl}">of ICT offers</p></div>',
-            unsafe_allow_html=True,
-        )
-
-    with col_btn:
-        st.markdown('<div style="height:0.5rem"></div>', unsafe_allow_html=True)
-        if st.button("How are AI offers identified?", key="btn_ai_method", type="secondary",
-                     use_container_width=True):
-            _show_ai_methodology()
+        k1, k2 = st.columns(2)
+        with k1:
+            st.markdown(
+                f'<div style="{_kpi_style}">'
+                f'<p style="{_kpi_val}">{ov["pct_ai_all"]}%</p>'
+                f'<p style="{_kpi_lbl}">of all 2025 offers</p></div>',
+                unsafe_allow_html=True,
+            )
+        with k2:
+            st.markdown(
+                f'<div style="{_kpi_style}">'
+                f'<p style="{_kpi_val}">{ov["pct_ai_ict"]}%</p>'
+                f'<p style="{_kpi_lbl}">of ICT offers</p></div>',
+                unsafe_allow_html=True,
+            )
 
     st.markdown('<hr class="divider">', unsafe_allow_html=True)
 
@@ -2186,15 +2198,15 @@ def _render_ai_tab():
     st.markdown(
         '<div style="font-size:0.85rem;color:#778596;margin-bottom:0.8rem">'
         'How often each AI-related skill appears in AI job offers. '
-        'Red = Strict AI (core ML, deep learning), blue = Extended AI (data science, analytics).'
+        'Dark red = Strict AI (core ML, deep learning), light red = Extended AI (data science, analytics).'
         '</div>',
         unsafe_allow_html=True,
     )
 
     sf = data["skills_freq"]
-    sf_top = sf[:20]
+    sf_top = sf[:15]
 
-    _SCOPE_COLORS = {"Strict AI": "#E55B52", "Extended AI": "#3B82F6"}
+    _SCOPE_COLORS = {"Strict AI": _AI_COLOR, "Extended AI": "#F3A7A2"}
     scope_order = ["Strict AI", "Extended AI"]
     fig_skills = pgo.Figure()
     for scope in scope_order:
@@ -2214,7 +2226,7 @@ def _render_ai_tab():
     fig_skills.update_layout(
         height=max(360, len(sf_top) * 22 + 100),
         margin=dict(l=10, r=50, t=10, b=10),
-        plot_bgcolor="#fff", paper_bgcolor="#f8f9fa",
+        plot_bgcolor="rgba(0,0,0,0)", paper_bgcolor="rgba(0,0,0,0)",
         yaxis=dict(autorange="reversed", tickfont=dict(size=10, color="#425466"), categoryorder="array",
                    categoryarray=[s["name_en"] for s in sf_top]),
         xaxis=dict(visible=False),
@@ -2227,12 +2239,16 @@ def _render_ai_tab():
         ),
         bargap=0.25,
     )
-    st.plotly_chart(fig_skills, use_container_width=True)
+    st.plotly_chart(fig_skills, use_container_width=True, config={"displayModeBar": False})
 
     sf_df = pd.DataFrame(sf)
     sf_df.columns = ["Skill (EN)", "Skill (PL)", "Category", "Scope",
                      "N offers", "% AI offers", "% all offers", "% ICT offers"]
-    _dta_btn(sf_df, "ai_skills_esco_freq.dta", "dta_ai_skills")
+    _export_chart_and_dta(
+        fig_skills, sf_df,
+        "ai_skills_esco_freq.dta", "dta_ai_skills",
+        "ai_skills_esco_freq.png", "png_ai_skills",
+    )
 
     st.markdown('<hr class="divider">', unsafe_allow_html=True)
 
@@ -2249,7 +2265,7 @@ def _render_ai_tab():
         unsafe_allow_html=True,
     )
 
-    kf = data["kw_freq"][:20]
+    kf = data["kw_freq"][:15]
     fig_kw = pgo.Figure(pgo.Bar(
         y=[k["keyword"] for k in kf],
         x=[k["pct_ai"] for k in kf],
@@ -2263,15 +2279,16 @@ def _render_ai_tab():
     fig_kw.update_layout(
         height=max(300, len(kf) * 22 + 60),
         margin=dict(l=10, r=50, t=10, b=10),
-        plot_bgcolor="#fff", paper_bgcolor="#f8f9fa",
+        plot_bgcolor="rgba(0,0,0,0)", paper_bgcolor="rgba(0,0,0,0)",
         yaxis=dict(autorange="reversed", tickfont=dict(size=11, color="#425466")),
         xaxis=dict(visible=False),
     )
-    st.plotly_chart(fig_kw, use_container_width=True)
+    st.plotly_chart(fig_kw, use_container_width=True, config={"displayModeBar": False})
 
-    _dta_btn(
-        pd.DataFrame(kf),
+    _export_chart_and_dta(
+        fig_kw, pd.DataFrame(kf),
         "ai_keywords_freq.dta", "dta_ai_kw",
+        "ai_keywords_freq.png", "png_ai_kw",
     )
 
     st.markdown('<hr class="divider">', unsafe_allow_html=True)
@@ -2292,18 +2309,18 @@ def _render_ai_tab():
             unsafe_allow_html=True,
         )
         sen = data["seniority"]
-        st.plotly_chart(
-            _ai_grouped_bar(
-                "Seniority",
-                [s["level"] for s in sen],
-                [s["pct_ai"] for s in sen],
-                [s["pct_all"] for s in sen],
-            ),
-            use_container_width=True,
+        fig_sen = _ai_grouped_bar(
+            "Seniority",
+            [s["level"] for s in sen],
+            [s["pct_ai"] for s in sen],
+            [s["pct_all"] for s in sen],
+            height=250,
         )
-        _dta_btn(
-            pd.DataFrame(sen),
+        st.plotly_chart(fig_sen, use_container_width=True, config={"displayModeBar": False})
+        _export_chart_and_dta(
+            fig_sen, pd.DataFrame(sen),
             "ai_seniority.dta", "dta_ai_sen",
+            "ai_seniority.png", "png_ai_sen",
         )
 
     with col_c:
@@ -2313,18 +2330,18 @@ def _render_ai_tab():
             unsafe_allow_html=True,
         )
         ct = data["contracts"]
-        st.plotly_chart(
-            _ai_grouped_bar(
-                "Contract",
-                [c["type"] for c in ct],
-                [c["pct_ai"] for c in ct],
-                [c["pct_all"] for c in ct],
-            ),
-            use_container_width=True,
+        fig_ct = _ai_grouped_bar(
+            "Contract",
+            [c["type"] for c in ct],
+            [c["pct_ai"] for c in ct],
+            [c["pct_all"] for c in ct],
+            height=250,
         )
-        _dta_btn(
-            pd.DataFrame(ct),
+        st.plotly_chart(fig_ct, use_container_width=True, config={"displayModeBar": False})
+        _export_chart_and_dta(
+            fig_ct, pd.DataFrame(ct),
             "ai_contracts.dta", "dta_ai_ct",
+            "ai_contracts.png", "png_ai_ct",
         )
 
     st.markdown('<hr class="divider">', unsafe_allow_html=True)
@@ -2332,7 +2349,7 @@ def _render_ai_tab():
     # ── 4. Technologies ──
     st.markdown(
         '<div style="font-size:1.02rem;font-weight:600;color:#1a1a2e;margin:0.5rem 0 0.45rem 0;">'
-        'Technologies Overrepresented in AI Offers</div>',
+        'Technologies More Common in AI Offers</div>',
         unsafe_allow_html=True,
     )
     st.markdown(
@@ -2341,10 +2358,10 @@ def _render_ai_tab():
         '</div>',
         unsafe_allow_html=True,
     )
-    if st.button("How is the overrepresentation ratio calculated?", key="btn_ai_overrep", type="secondary"):
+    if st.button("How is this comparison calculated?", key="btn_ai_overrep", type="secondary"):
         _show_overrep_methodology()
 
-    tech = data["technologies"][:25]
+    tech = data["technologies"][:12]
     fig_tech = pgo.Figure()
     fig_tech.add_trace(pgo.Bar(
         y=[t["tech"] for t in tech],
@@ -2363,20 +2380,27 @@ def _render_ai_tab():
         textposition="outside", textfont=dict(size=10, color=_ALL_COLOR_AI),
     ))
     fig_tech.update_layout(
-        barmode="group", height=max(340, len(tech) * 26 + 60),
-        margin=dict(l=10, r=50, t=10, b=10),
-        plot_bgcolor="#fff", paper_bgcolor="#f8f9fa",
-        yaxis=dict(autorange="reversed", tickfont=dict(size=10, color="#425466")),
-        xaxis=dict(visible=False),
+        barmode="group", height=max(260, len(tech) * 20 + 40),
+        margin=dict(l=10, r=40, t=8, b=8),
+        plot_bgcolor="rgba(0,0,0,0)", paper_bgcolor="rgba(0,0,0,0)",
+        yaxis=dict(autorange="reversed", tickfont=dict(size=9, color="#425466")),
+        xaxis=dict(
+            showgrid=True,
+            gridcolor="#e9edf3",
+            zeroline=False,
+            ticksuffix="%",
+            tickfont=dict(size=9, color="#6b7785"),
+        ),
         legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="center", x=0.5,
-                    font=dict(size=10, color="#425466")),
-        bargap=0.3, bargroupgap=0.06,
+                    font=dict(size=9, color="#425466")),
+        bargap=0.26, bargroupgap=0.06,
     )
-    st.plotly_chart(fig_tech, use_container_width=True)
+    st.plotly_chart(fig_tech, use_container_width=True, config={"displayModeBar": False})
 
-    _dta_btn(
-        pd.DataFrame(data["technologies"]),
+    _export_chart_and_dta(
+        fig_tech, pd.DataFrame(data["technologies"]),
         "ai_technologies.dta", "dta_ai_tech",
+        "ai_technologies.png", "png_ai_tech",
     )
 
     st.markdown('<hr class="divider">', unsafe_allow_html=True)
@@ -2398,7 +2422,7 @@ def _render_ai_tab():
         _show_cooccur_methodology()
 
     co = data["cooccur"]
-    co_non_trans = [c for c in co if not c["transversal"]][:20]
+    co_non_trans = [c for c in co if not c["transversal"]][:15]
     co_trans = [c for c in co if c["transversal"]][:15]
 
     fig_co = pgo.Figure()
@@ -2406,23 +2430,24 @@ def _render_ai_tab():
         y=[c["name_en"] or c["name_pl"] for c in co_non_trans],
         x=[c["pct_ai"] for c in co_non_trans],
         name="% in AI offers", orientation="h",
-        marker=dict(color="#8B5CF6", cornerradius=4),
+        marker=dict(color=_AI_COLOR, cornerradius=4),
         text=[f'{c["ratio"]}x' for c in co_non_trans],
-        textposition="outside", textfont=dict(size=10, color="#8B5CF6"),
+        textposition="outside", textfont=dict(size=10, color=_AI_COLOR),
     ))
     fig_co.update_layout(
         height=max(300, len(co_non_trans) * 22 + 60),
         margin=dict(l=10, r=50, t=10, b=10),
-        plot_bgcolor="#fff", paper_bgcolor="#f8f9fa",
+        plot_bgcolor="rgba(0,0,0,0)", paper_bgcolor="rgba(0,0,0,0)",
         yaxis=dict(autorange="reversed", tickfont=dict(size=10, color="#425466")),
         xaxis=dict(visible=False),
         showlegend=False,
     )
-    st.plotly_chart(fig_co, use_container_width=True)
+    st.plotly_chart(fig_co, use_container_width=True, config={"displayModeBar": False})
 
-    _dta_btn(
-        pd.DataFrame(co),
+    _export_chart_and_dta(
+        fig_co, pd.DataFrame(co),
         "ai_cooccurring_skills.dta", "dta_ai_cooccur",
+        "ai_cooccurring_skills.png", "png_ai_cooccur",
     )
 
     if co_trans:
@@ -2442,19 +2467,19 @@ def _render_ai_tab():
             y=[c["name_en"] or c["name_pl"] for c in co_trans],
             x=[c["pct_ai"] for c in co_trans],
             name="% in AI offers", orientation="h",
-            marker=dict(color="#10B981", cornerradius=4),
+            marker=dict(color=_AI_COLOR, cornerradius=4),
             text=[f'{c["ratio"]}x' for c in co_trans],
-            textposition="outside", textfont=dict(size=10, color="#10B981"),
+            textposition="outside", textfont=dict(size=10, color=_AI_COLOR),
         ))
         fig_trans.update_layout(
             height=max(220, len(co_trans) * 22 + 60),
             margin=dict(l=10, r=50, t=10, b=10),
-            plot_bgcolor="#fff", paper_bgcolor="#f8f9fa",
+            plot_bgcolor="rgba(0,0,0,0)", paper_bgcolor="rgba(0,0,0,0)",
             yaxis=dict(autorange="reversed", tickfont=dict(size=10, color="#425466")),
             xaxis=dict(visible=False),
             showlegend=False,
         )
-        st.plotly_chart(fig_trans, use_container_width=True)
+        st.plotly_chart(fig_trans, use_container_width=True, config={"displayModeBar": False})
 
     st.markdown('<hr class="divider">', unsafe_allow_html=True)
 
@@ -2472,19 +2497,18 @@ def _render_ai_tab():
         unsafe_allow_html=True,
     )
 
-    loc = data["locations"][:20]
-    st.plotly_chart(
-        _ai_grouped_bar(
-            "Location",
-            [l["city"] for l in loc],
-            [l["pct_ai"] for l in loc],
-            [l["pct_all"] for l in loc],
-        ),
-        use_container_width=True,
+    loc = data["locations"][:15]
+    fig_loc = _ai_grouped_bar(
+        "Location",
+        [l["city"] for l in loc],
+        [l["pct_ai"] for l in loc],
+        [l["pct_all"] for l in loc],
     )
-    _dta_btn(
-        pd.DataFrame(data["locations"]),
+    st.plotly_chart(fig_loc, use_container_width=True, config={"displayModeBar": False})
+    _export_chart_and_dta(
+        fig_loc, pd.DataFrame(data["locations"]),
         "ai_locations.dta", "dta_ai_loc",
+        "ai_locations.png", "png_ai_loc",
     )
 
     st.markdown('<hr class="divider">', unsafe_allow_html=True)
@@ -2502,29 +2526,30 @@ def _render_ai_tab():
         unsafe_allow_html=True,
     )
 
-    et = data["esco_titles"][:20]
+    et = data["esco_titles"][:15]
     fig_et = pgo.Figure(pgo.Bar(
         y=[t["title_en"] or t["title_pl"] for t in et],
         x=[t["pct_ai"] for t in et],
         orientation="h",
-        marker=dict(color="#3B82F6", cornerradius=4),
+        marker=dict(color=_AI_COLOR, cornerradius=4),
         text=[f'{t["pct_ai"]:.1f}%' for t in et],
-        textposition="outside", textfont=dict(size=11, color="#555"),
+        textposition="outside", textfont=dict(size=11, color=_AI_COLOR),
         hovertemplate="<b>%{y}</b><br>%{x:.2f}% of AI offers<br>n = %{customdata:,}<extra></extra>",
         customdata=[t["n"] for t in et],
     ))
     fig_et.update_layout(
         height=max(320, len(et) * 22 + 60),
         margin=dict(l=10, r=50, t=10, b=10),
-        plot_bgcolor="#fff", paper_bgcolor="#f8f9fa",
+        plot_bgcolor="rgba(0,0,0,0)", paper_bgcolor="rgba(0,0,0,0)",
         yaxis=dict(autorange="reversed", tickfont=dict(size=10, color="#425466")),
         xaxis=dict(visible=False),
     )
-    st.plotly_chart(fig_et, use_container_width=True)
+    st.plotly_chart(fig_et, use_container_width=True, config={"displayModeBar": False})
 
-    _dta_btn(
-        pd.DataFrame(data["esco_titles"]),
+    _export_chart_and_dta(
+        fig_et, pd.DataFrame(data["esco_titles"]),
         "ai_esco_titles.dta", "dta_ai_titles",
+        "ai_esco_titles.png", "png_ai_titles",
     )
 
     st.markdown('<hr class="divider">', unsafe_allow_html=True)
@@ -2548,24 +2573,25 @@ def _render_ai_tab():
         y=ns_labels,
         x=[s["pct_ai"] for s in ns],
         orientation="h",
-        marker=dict(color="#F59E0B", cornerradius=4),
+        marker=dict(color=_AI_COLOR, cornerradius=4),
         text=[f'{s["pct_ai"]:.1f}%' for s in ns],
-        textposition="outside", textfont=dict(size=11, color="#555"),
+        textposition="outside", textfont=dict(size=11, color=_AI_COLOR),
         hovertemplate="<b>%{y}</b><br>%{x:.2f}% of AI offers<br>n = %{customdata:,}<extra></extra>",
         customdata=[s["n"] for s in ns],
     ))
     fig_ns.update_layout(
         height=max(280, len(ns) * 22 + 60),
         margin=dict(l=10, r=50, t=10, b=10),
-        plot_bgcolor="#fff", paper_bgcolor="#f8f9fa",
+        plot_bgcolor="rgba(0,0,0,0)", paper_bgcolor="rgba(0,0,0,0)",
         yaxis=dict(autorange="reversed", tickfont=dict(size=10, color="#425466")),
         xaxis=dict(visible=False),
     )
-    st.plotly_chart(fig_ns, use_container_width=True)
+    st.plotly_chart(fig_ns, use_container_width=True, config={"displayModeBar": False})
 
-    _dta_btn(
-        pd.DataFrame(ns),
+    _export_chart_and_dta(
+        fig_ns, pd.DataFrame(ns),
         "ai_nace_sections.dta", "dta_ai_nace",
+        "ai_nace_sections.png", "png_ai_nace",
     )
 
 
@@ -2585,6 +2611,45 @@ def _dta_btn(df: pd.DataFrame, filename: str, key: str) -> None:
         key=key,
         type="secondary",
     )
+
+
+def _export_chart_and_dta(
+    fig: pgo.Figure,
+    df: pd.DataFrame,
+    dta_filename: str,
+    dta_key: str,
+    png_filename: str,
+    png_key: str,
+) -> None:
+    """Render side-by-side exports: Stata data + hi-res PNG chart."""
+    c1, c2 = st.columns(2)
+    with c1:
+        _dta_btn(df, dta_filename, dta_key)
+
+    with c2:
+        png_bytes = None
+        try:
+            fig_h = int(fig.layout.height) if fig.layout.height else 700
+            png_bytes = fig.to_image(
+                format="png",
+                width=2200,
+                height=max(1200, fig_h * 3),
+                scale=2,
+            )
+        except Exception:
+            png_bytes = None
+
+        if png_bytes:
+            st.download_button(
+                label="Export chart PNG (hi-res)",
+                data=png_bytes,
+                file_name=png_filename,
+                mime="image/png",
+                key=png_key,
+                type="secondary",
+            )
+        else:
+            st.button("Export chart PNG (hi-res)", key=f"{png_key}_disabled", disabled=True)
 
 
 _UA_COLOR  = "#FBBF24"   # amber  – Ukrainian-targeted ads
