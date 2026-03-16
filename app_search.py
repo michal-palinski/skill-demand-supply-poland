@@ -2171,16 +2171,6 @@ def _render_ai_tab():
 
     st.markdown('<hr class="divider">', unsafe_allow_html=True)
 
-    # ── Detection method breakdown ──
-    st.markdown(
-        '<div style="font-size:0.82rem;color:#778596;margin:0.5rem 0 1rem">'
-        f'ESCO skill match: <b>{ov["ai_esco"]:,}</b> · '
-        f'Keyword match: <b>{ov["ai_keyword"]:,}</b> · '
-        f'Both: <b>{ov["ai_both"]:,}</b> · '
-        f'Extended AI only: <b>{ov["ai_extended_only"]:,}</b>'
-        '</div>',
-        unsafe_allow_html=True,
-    )
 
     # ── 1. AI ESCO Skills frequency ──
     st.markdown(
