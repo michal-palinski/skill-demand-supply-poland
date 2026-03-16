@@ -82,13 +82,6 @@ button[data-testid="stBaseButton-secondary"] {
     height: auto !important;
     white-space: nowrap !important;
     line-height: 1.4 !important;
-    width: fit-content !important;
-    min-width: max-content !important;
-    max-width: none !important;
-    display: inline-flex !important;
-    align-items: center !important;
-    justify-content: center !important;
-    overflow: visible !important;
 }
 
 /* Tabs */
