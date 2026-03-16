@@ -73,17 +73,6 @@ st.markdown("""
 .item-skill { font-size: 0.82rem; color: #666; margin-top: 0.15rem; }
 .item-skill-name { color: #444; }
 
-/* Small export buttons */
-div[data-testid="stDownloadButton"] button,
-button[data-testid="stBaseButton-secondary"] {
-    padding: 0.22rem 0.7rem !important;
-    font-size: 0.73rem !important;
-    min-height: 0 !important;
-    height: auto !important;
-    white-space: nowrap !important;
-    line-height: 1.4 !important;
-}
-
 /* Tabs */
 .stTabs [data-baseweb="tab-list"] {
     gap: 0;
@@ -2245,9 +2234,9 @@ def _render_ai_tab():
                 unsafe_allow_html=True,
             )
         st.markdown('<div style="height:0.45rem"></div>', unsafe_allow_html=True)
-        btn_col, dl_col = st.columns([1.05, 0.95])
+        btn_col, dl_col = st.columns(2)
         with btn_col:
-            if st.button("How are AI offers identified?", key="btn_ai_method", type="secondary",
+            if st.button("Methodology", key="btn_ai_method", type="secondary",
                          use_container_width=True):
                 _show_ai_methodology()
         with dl_col:
