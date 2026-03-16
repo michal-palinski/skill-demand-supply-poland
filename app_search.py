@@ -73,13 +73,14 @@ st.markdown("""
 .item-skill { font-size: 0.82rem; color: #666; margin-top: 0.15rem; }
 .item-skill-name { color: #444; }
 
-/* Compact export download buttons (download_button only, not st.button) */
-div[data-testid="stDownloadButton"] button {
-    padding: 0.22rem 0.75rem !important;
-    font-size: 0.74rem !important;
+/* Compact download + secondary buttons (export rows + AI header buttons) */
+div[data-testid="stDownloadButton"] button,
+div[data-testid="stButton"] button[data-testid="stBaseButton-secondary"] {
+    padding: 0.35rem 0.9rem !important;
+    font-size: 0.82rem !important;
     min-height: 0 !important;
     height: auto !important;
-    line-height: 1.4 !important;
+    line-height: 1.5 !important;
 }
 
 /* Tabs */
