@@ -2059,7 +2059,7 @@ def _render_ai_tab():
     if st.button("How are AI offers identified?", key="btn_ai_method", type="secondary"):
         _show_ai_methodology()
 
-    c1, c2, c3 = st.columns(3)
+    c1, c2, _gap = st.columns([1, 1, 2])
     _kpi_style = (
         'background:#fff;border:1px solid #e4e4ea;border-radius:12px;'
         'padding:1rem 1.2rem;text-align:center;'
@@ -2077,12 +2077,6 @@ def _render_ai_tab():
         st.markdown(
             f'<div style="{_kpi_style}"><p style="{_kpi_val}">{ov["pct_ai_ict"]}%</p>'
             f'<p style="{_kpi_lbl}">of ICT offers</p></div>',
-            unsafe_allow_html=True,
-        )
-    with c3:
-        st.markdown(
-            f'<div style="{_kpi_style}"><p style="{_kpi_val}">{ov["ai_strict"]:,}</p>'
-            f'<p style="{_kpi_lbl}">Core AI offers</p></div>',
             unsafe_allow_html=True,
         )
 
