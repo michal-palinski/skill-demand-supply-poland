@@ -4,4 +4,4 @@ numpy
 plotly
 statsmodels
 pyarrow
-kaleido
+kaleido==0.2.1
