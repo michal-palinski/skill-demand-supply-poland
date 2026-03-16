@@ -963,9 +963,9 @@ def main():
         unsafe_allow_html=True,
     )
 
-    tab1, tab2, tab3, tab4, tab5, tab6 = st.tabs([
+    tab1, tab2, tab3, tab4, tab5, tab6, tab7 = st.tabs([
         "Job titles", "Skills Search", "Skills Stats", "Skill Trends", "NACE",
-        "Ukrainian-Targeted Job Ads",
+        "Ukrainian-Targeted Job Ads", "AI Skills",
     ])
 
     # ── Tab 1: Job Titles ──────────────────────────────────────
@@ -1850,6 +1850,569 @@ def main():
     # ── Tab 6: Ukrainian-Targeted Job Ads ──────────────────────
     with tab6:
         _render_ua_tab()
+
+    # ── Tab 7: AI Skills ───────────────────────────────────────
+    with tab7:
+        _render_ai_tab()
+
+
+# ── AI Skills tab helpers ──────────────────────────────────────────────────
+
+
+AI_TAB_CACHE = os.path.join(DATA_DIR, "ai_tab_cache.json")
+
+_AI_COLOR = "#E55B52"
+_ALL_COLOR_AI = "#94A3B8"
+
+_CAT_COLORS = {
+    "Core AI & Machine Learning": "#E55B52",
+    "Natural Language Processing": "#10B981",
+    "Computer Vision & Image Recognition": "#8B5CF6",
+    "Data Science & Analytics": "#3B82F6",
+    "AI Applications & Domain-Specific": "#F59E0B",
+    "AI Applications & Predictive Modeling": "#EC4899",
+    "AI Governance / Responsible AI": "#6366F1",
+}
+
+
+@st.cache_data
+def _load_ai_cache():
+    with open(AI_TAB_CACHE, "r", encoding="utf-8") as f:
+        return json.loads(f.read())
+
+
+def _ai_grouped_bar(title, labels, pct_ai, pct_all, color_a=_AI_COLOR, color_b=_ALL_COLOR_AI, name_a="AI offers", name_b="All offers"):
+    fig = pgo.Figure()
+    fig.add_trace(pgo.Bar(
+        y=labels, x=pct_ai, name=name_a, orientation="h",
+        marker=dict(color=color_a, cornerradius=4),
+        text=[f"{v:.1f}%" for v in pct_ai],
+        textposition="outside", textfont=dict(size=11, color=color_a),
+    ))
+    fig.add_trace(pgo.Bar(
+        y=labels, x=pct_all, name=name_b, orientation="h",
+        marker=dict(color=color_b, cornerradius=4),
+        text=[f"{v:.1f}%" for v in pct_all],
+        textposition="outside", textfont=dict(size=11, color=color_b),
+    ))
+    fig.update_layout(
+        barmode="group", height=max(260, len(labels) * 42 + 80),
+        margin=dict(l=10, r=40, t=10, b=30),
+        plot_bgcolor="#fff", paper_bgcolor="#f8f9fa",
+        yaxis=dict(autorange="reversed", tickfont=dict(size=12, color="#425466")),
+        xaxis=dict(visible=False),
+        legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="center", x=0.5,
+                    font=dict(size=12, color="#425466")),
+        bargap=0.25, bargroupgap=0.08,
+    )
+    return fig
+
+
+@st.dialog("AI Offer Identification — Methodology", width="large")
+def _show_ai_methodology():
+    st.markdown("""
+### How are AI offers identified?
+
+A job offer is classified as **AI-related** if it meets **either** of two independent criteria:
+
+---
+
+#### Method 1: ESCO Skill Matching
+
+Each job ad's requirements are matched to the ESCO skills taxonomy using **contextual embeddings**
+(Voyage AI). If any of the matched ESCO skills belongs to a curated list of **35 AI-related skills**
+(e.g. *machine learning*, *deep learning*, *natural language processing*, *computer vision*),
+the offer is flagged.
+
+The 35 skills are divided into two tiers:
+
+| Tier | Description | Example skills |
+|---|---|---|
+| **Strict / Core AI** | Skills that are unambiguously about AI | machine learning, deep learning, neural networks, NLP, computer vision |
+| **Extended AI** | Skills closely related to AI but also used outside it | data mining, data science, statistical modelling, robotics, predictive models |
+
+#### Method 2: Keyword Detection
+
+A regex-based search scans the **job title**, **requirements** and **responsibilities** fields
+for ~40 AI-specific terms and phrases, including both English and Polish variants:
+
+`machine learning`, `deep learning`, `artificial intelligence`, `sztuczna inteligencja`,
+`NLP`, `LLM`, `GPT`, `ChatGPT`, `generative AI`, `computer vision`,
+`TensorFlow`, `PyTorch`, `scikit-learn`, `MLOps`, `data scientist`, `big data`,
+`reinforcement learning`, `predictive model`, etc.
+
+Word boundaries (`\\b`) are used to avoid false positives.
+
+---
+
+#### Combined result
+
+An offer is marked as **AI** if **either** method matches. This dual approach catches both
+offers where AI skills were formally identified in the ESCO matching and those where AI terms
+appear in free text but were not captured as a specific ESCO skill.
+
+#### ICT offers
+
+A separate **ICT** flag is defined as any offer that has a non-empty *technologies* field
+(i.e., the employer explicitly listed technology requirements such as Python, AWS, Docker, etc.).
+This serves as a proxy for ICT/tech job offers.
+""")
+
+
+@st.dialog("Overrepresentation Ratio — Methodology", width="large")
+def _show_overrep_methodology():
+    st.markdown("""
+### How is the overrepresentation ratio calculated?
+
+The ratio measures how much more likely a technology (or skill) is to appear in AI job offers
+compared to non-AI job offers.
+
+---
+
+#### Formula
+
+""")
+    st.latex(r"\text{Ratio} = \frac{\text{Frequency in AI offers}}{\text{Frequency in non-AI offers}}")
+    st.markdown("""
+
+Where **frequency** = percentage of offers in that group that mention the item.
+
+#### Example
+
+If **Python** appears in 45% of AI offers but only 5% of non-AI offers,
+the ratio is 45 / 5 = **9.0x** — meaning Python is 9 times more likely to be
+listed in an AI job offer.
+
+#### Sampling
+
+To keep computation tractable, non-AI frequencies are estimated from a random sample
+of 100,000 non-AI offers (out of ~733k). The sample is drawn with a fixed random seed
+for reproducibility.
+
+#### Minimum threshold
+
+Only items appearing in at least **20 AI offers** are shown, to avoid noise from
+very rare technologies.
+
+#### Interpretation
+
+- **Ratio > 3x**: strongly associated with AI offers
+- **Ratio ~ 1x**: appears equally in AI and non-AI offers
+- **Ratio < 1x**: more common in non-AI offers (rare in this view since we sort descending)
+""")
+
+
+@st.dialog("Co-occurring Skills — Methodology", width="large")
+def _show_cooccur_methodology():
+    st.markdown("""
+### How are co-occurring skills identified?
+
+This analysis finds **non-AI ESCO skills** that are disproportionately present in AI offers
+compared to the rest of the job market. It reveals the complementary competencies that
+employers seek alongside AI expertise.
+
+---
+
+#### Process
+
+1. **Parse all ESCO skills** from the `skills_esco_contextual` field of each job ad
+   (matched via contextual embeddings against ESCO v1.2.1)
+2. **Exclude the 35 AI skills** themselves — we only want to see what *else* accompanies AI
+3. **Calculate frequencies** in AI offers vs. a random sample of 100k non-AI offers
+4. **Compute the overrepresentation ratio**: frequency-in-AI / frequency-in-non-AI
+5. **Filter**: only skills appearing in ≥ 50 AI offers are shown
+
+#### Transversal vs. domain-specific skills
+
+The results are split into two groups:
+
+- **Domain-specific skills** — technical or sector-specific competencies
+  (e.g. *Python programming*, *cloud computing*, *database administration*)
+- **Transversal skills** — cross-cutting soft skills from the ESCO transversal skills collection
+  (e.g. *think analytically*, *work in teams*, *solve problems*)
+
+#### What the ratio means
+
+A ratio of **5.2x** means the skill appears 5.2 times more often in AI offers than in
+the average non-AI offer. High-ratio skills represent the distinctive skill profile
+of AI-related roles.
+""")
+
+
+def _render_ai_tab():
+    data = _load_ai_cache()
+    ov = data["overview"]
+
+    st.markdown(
+        '<div class="sec-label">AI Skills Demand in Polish Job Market</div>',
+        unsafe_allow_html=True,
+    )
+    st.markdown(
+        '<div style="font-size:0.88rem;color:#778596;margin-bottom:0.6rem">'
+        'Analysis of AI-related skills demand based on ESCO skill matching and keyword detection '
+        'in job titles, requirements and responsibilities. '
+        f'Based on <b>{ov["total_offers"]:,}</b> job offers.'
+        '</div>',
+        unsafe_allow_html=True,
+    )
+
+    if st.button("How are AI offers identified?", key="btn_ai_method", type="secondary"):
+        _show_ai_methodology()
+
+    c1, c2, c3, c4 = st.columns(4)
+    _kpi_style = (
+        'background:#fff;border:1px solid #e4e4ea;border-radius:12px;'
+        'padding:1rem 1.2rem;text-align:center;'
+    )
+    _kpi_val = 'font-size:1.6rem;font-weight:700;color:#1a1a2e;margin:0;line-height:1.3;'
+    _kpi_lbl = 'font-size:0.75rem;color:#888;margin:0;'
+
+    with c1:
+        st.markdown(
+            f'<div style="{_kpi_style}"><p style="{_kpi_val}">{ov["ai_combined"]:,}</p>'
+            f'<p style="{_kpi_lbl}">AI job offers</p></div>',
+            unsafe_allow_html=True,
+        )
+    with c2:
+        st.markdown(
+            f'<div style="{_kpi_style}"><p style="{_kpi_val}">{ov["pct_ai_all"]}%</p>'
+            f'<p style="{_kpi_lbl}">of all offers</p></div>',
+            unsafe_allow_html=True,
+        )
+    with c3:
+        st.markdown(
+            f'<div style="{_kpi_style}"><p style="{_kpi_val}">{ov["pct_ai_ict"]}%</p>'
+            f'<p style="{_kpi_lbl}">of ICT offers</p></div>',
+            unsafe_allow_html=True,
+        )
+    with c4:
+        st.markdown(
+            f'<div style="{_kpi_style}"><p style="{_kpi_val}">{ov["ai_strict"]:,}</p>'
+            f'<p style="{_kpi_lbl}">Core AI offers</p></div>',
+            unsafe_allow_html=True,
+        )
+
+    st.markdown('<hr class="divider">', unsafe_allow_html=True)
+    st.markdown(
+        '<div style="font-size:0.82rem;color:#778596;margin:0.5rem 0 1rem">'
+        f'ESCO skill match: <b>{ov["ai_esco"]:,}</b> · '
+        f'Keyword match: <b>{ov["ai_keyword"]:,}</b> · '
+        f'Both: <b>{ov["ai_both"]:,}</b> · '
+        f'Extended AI only: <b>{ov["ai_extended_only"]:,}</b>'
+        '</div>',
+        unsafe_allow_html=True,
+    )
+
+    # ── 1. AI ESCO Skills frequency ──
+    st.markdown(
+        '<div style="font-size:1.02rem;font-weight:600;color:#1a1a2e;margin:0.5rem 0 0.45rem 0;">'
+        'Most Demanded AI Skills (ESCO)</div>',
+        unsafe_allow_html=True,
+    )
+    st.markdown(
+        '<div style="font-size:0.85rem;color:#778596;margin-bottom:0.8rem">'
+        'Frequency of ESCO-classified AI skills found in job offers. '
+        'Skills are matched via contextual embeddings against the full ESCO taxonomy. '
+        'Colors indicate skill category (e.g. Core ML, NLP, Data Science).'
+        '</div>',
+        unsafe_allow_html=True,
+    )
+    sf = data["skills_freq"]
+    sf_labels = [s["name_en"] for s in sf[:20]]
+    sf_pct = [s["pct_ai"] for s in sf[:20]]
+    sf_colors = [_CAT_COLORS.get(s["category"], "#94A3B8") for s in sf[:20]]
+    fig_skills = pgo.Figure(pgo.Bar(
+        y=sf_labels, x=sf_pct, orientation="h",
+        marker=dict(color=sf_colors, cornerradius=4),
+        text=[f"{v:.1f}%" for v in sf_pct],
+        textposition="outside", textfont=dict(size=11),
+        hovertemplate="<b>%{y}</b><br>%{x:.2f}% of AI offers<extra></extra>",
+    ))
+    fig_skills.update_layout(
+        height=max(400, len(sf_labels) * 28 + 60),
+        margin=dict(l=10, r=50, t=10, b=20),
+        plot_bgcolor="#fff", paper_bgcolor="#f8f9fa",
+        yaxis=dict(autorange="reversed", tickfont=dict(size=11, color="#425466")),
+        xaxis=dict(visible=False),
+    )
+    st.plotly_chart(fig_skills, use_container_width=True)
+    sf_df = pd.DataFrame(sf)
+    sf_df.columns = ["Skill (EN)", "Skill (PL)", "Category", "Scope",
+                     "N offers", "% AI offers", "% all offers", "% ICT offers"]
+    _dta_btn(sf_df, "ai_skills_esco_freq.dta", "dta_ai_skills")
+
+    st.markdown('<hr class="divider">', unsafe_allow_html=True)
+
+    # ── 2. Keywords frequency ──
+    st.markdown(
+        '<div style="font-size:1.02rem;font-weight:600;color:#1a1a2e;margin:0.5rem 0 0.45rem 0;">'
+        'Top AI Keywords Found in Offers</div>',
+        unsafe_allow_html=True,
+    )
+    st.markdown(
+        '<div style="font-size:0.85rem;color:#778596;margin-bottom:0.8rem">'
+        'Keywords detected via regex pattern matching in job titles, requirements and responsibilities. '
+        'Counts show how many AI offers contain each keyword.'
+        '</div>',
+        unsafe_allow_html=True,
+    )
+    kf = data["kw_freq"][:20]
+    fig_kw = pgo.Figure(pgo.Bar(
+        y=[k["keyword"] for k in kf], x=[k["pct_ai"] for k in kf], orientation="h",
+        marker=dict(color=_AI_COLOR, cornerradius=4),
+        text=[f'{k["n"]:,}' for k in kf],
+        textposition="outside", textfont=dict(size=11, color="#555"),
+    ))
+    fig_kw.update_layout(
+        height=max(360, len(kf) * 28 + 60),
+        margin=dict(l=10, r=50, t=10, b=20),
+        plot_bgcolor="#fff", paper_bgcolor="#f8f9fa",
+        yaxis=dict(autorange="reversed", tickfont=dict(size=11, color="#425466")),
+        xaxis=dict(visible=False),
+    )
+    st.plotly_chart(fig_kw, use_container_width=True)
+    _dta_btn(pd.DataFrame(kf), "ai_keywords_freq.dta", "dta_ai_kw")
+
+    st.markdown('<hr class="divider">', unsafe_allow_html=True)
+
+    # ── 3. Seniority & Contract ──
+    st.markdown(
+        '<div style="font-size:0.85rem;color:#778596;margin-bottom:0.8rem">'
+        'Distribution of seniority levels and contract types in AI offers compared to all offers. '
+        'Original values are aggregated into broader categories (e.g. junior specialist + trainee + assistant → Junior).'
+        '</div>',
+        unsafe_allow_html=True,
+    )
+    col_s, col_c = st.columns(2)
+    with col_s:
+        st.markdown(
+            '<div style="font-size:1.02rem;font-weight:600;color:#1a1a2e;margin:0.15rem 0 0.45rem 0;">'
+            'Seniority Level</div>', unsafe_allow_html=True,
+        )
+        sen = data["seniority"]
+        st.plotly_chart(
+            _ai_grouped_bar("Seniority", [s["level"] for s in sen],
+                            [s["pct_ai"] for s in sen], [s["pct_all"] for s in sen]),
+            use_container_width=True,
+        )
+        _dta_btn(pd.DataFrame(sen), "ai_seniority.dta", "dta_ai_sen")
+    with col_c:
+        st.markdown(
+            '<div style="font-size:1.02rem;font-weight:600;color:#1a1a2e;margin:0.15rem 0 0.45rem 0;">'
+            'Contract Type</div>', unsafe_allow_html=True,
+        )
+        ct = data["contracts"]
+        st.plotly_chart(
+            _ai_grouped_bar("Contract", [c["type"] for c in ct],
+                            [c["pct_ai"] for c in ct], [c["pct_all"] for c in ct]),
+            use_container_width=True,
+        )
+        _dta_btn(pd.DataFrame(ct), "ai_contracts.dta", "dta_ai_ct")
+
+    st.markdown('<hr class="divider">', unsafe_allow_html=True)
+
+    # ── 4. Technologies ──
+    st.markdown(
+        '<div style="font-size:1.02rem;font-weight:600;color:#1a1a2e;margin:0.5rem 0 0.45rem 0;">'
+        'Technologies Overrepresented in AI Offers</div>',
+        unsafe_allow_html=True,
+    )
+    st.markdown(
+        '<div style="font-size:0.85rem;color:#778596;margin-bottom:0.4rem">'
+        'Technologies from the job ad "technologies" field that appear disproportionately more '
+        'in AI job offers compared to non-AI offers. Sorted by overrepresentation ratio.'
+        '</div>',
+        unsafe_allow_html=True,
+    )
+    if st.button("How is the overrepresentation ratio calculated?", key="btn_ai_overrep", type="secondary"):
+        _show_overrep_methodology()
+    tech = data["technologies"][:25]
+    fig_tech = pgo.Figure()
+    fig_tech.add_trace(pgo.Bar(
+        y=[t["tech"] for t in tech], x=[t["pct_ai"] for t in tech],
+        name="% in AI offers", orientation="h",
+        marker=dict(color=_AI_COLOR, cornerradius=4),
+        text=[f'{t["pct_ai"]:.1f}%' for t in tech],
+        textposition="outside", textfont=dict(size=10, color=_AI_COLOR),
+    ))
+    fig_tech.add_trace(pgo.Bar(
+        y=[t["tech"] for t in tech], x=[t["pct_non_ai"] for t in tech],
+        name="% in non-AI offers", orientation="h",
+        marker=dict(color=_ALL_COLOR_AI, cornerradius=4),
+        text=[f'{t["pct_non_ai"]:.1f}%' for t in tech],
+        textposition="outside", textfont=dict(size=10, color=_ALL_COLOR_AI),
+    ))
+    fig_tech.update_layout(
+        barmode="group", height=max(420, len(tech) * 34 + 60),
+        margin=dict(l=10, r=50, t=10, b=30),
+        plot_bgcolor="#fff", paper_bgcolor="#f8f9fa",
+        yaxis=dict(autorange="reversed", tickfont=dict(size=11, color="#425466")),
+        xaxis=dict(visible=False),
+        legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="center", x=0.5,
+                    font=dict(size=11, color="#425466")),
+        bargap=0.2, bargroupgap=0.06,
+    )
+    st.plotly_chart(fig_tech, use_container_width=True)
+    _dta_btn(pd.DataFrame(data["technologies"]), "ai_technologies.dta", "dta_ai_tech")
+
+    st.markdown('<hr class="divider">', unsafe_allow_html=True)
+
+    # ── 5. Co-occurring skills ──
+    st.markdown(
+        '<div style="font-size:1.02rem;font-weight:600;color:#1a1a2e;margin:0.5rem 0 0.45rem 0;">'
+        'Co-occurring Skills (Overrepresented in AI Offers)</div>',
+        unsafe_allow_html=True,
+    )
+    st.markdown(
+        '<div style="font-size:0.85rem;color:#778596;margin-bottom:0.4rem">'
+        'Non-AI ESCO skills that appear significantly more often in AI offers than in other offers. '
+        'The ratio label (e.g. 5.2x) shows how many times more likely a skill is to appear in an AI offer.'
+        '</div>',
+        unsafe_allow_html=True,
+    )
+    if st.button("How are co-occurring skills identified?", key="btn_ai_cooccur", type="secondary"):
+        _show_cooccur_methodology()
+    co = data["cooccur"]
+    co_non_trans = [c for c in co if not c["transversal"]][:20]
+    co_trans = [c for c in co if c["transversal"]][:15]
+    fig_co = pgo.Figure()
+    fig_co.add_trace(pgo.Bar(
+        y=[c["name_en"] or c["name_pl"] for c in co_non_trans],
+        x=[c["pct_ai"] for c in co_non_trans],
+        orientation="h", marker=dict(color="#8B5CF6", cornerradius=4),
+        text=[f'{c["ratio"]}x' for c in co_non_trans],
+        textposition="outside", textfont=dict(size=10, color="#8B5CF6"),
+    ))
+    fig_co.update_layout(
+        height=max(380, len(co_non_trans) * 30 + 60),
+        margin=dict(l=10, r=50, t=10, b=20),
+        plot_bgcolor="#fff", paper_bgcolor="#f8f9fa",
+        yaxis=dict(autorange="reversed", tickfont=dict(size=11, color="#425466")),
+        xaxis=dict(visible=False), showlegend=False,
+    )
+    st.plotly_chart(fig_co, use_container_width=True)
+    _dta_btn(pd.DataFrame(co), "ai_cooccurring_skills.dta", "dta_ai_cooccur")
+
+    if co_trans:
+        st.markdown(
+            '<div style="font-size:0.95rem;font-weight:600;color:#1a1a2e;margin:1rem 0 0.45rem 0;">'
+            'Transversal Skills in AI Offers</div>',
+            unsafe_allow_html=True,
+        )
+        st.markdown(
+            '<div style="font-size:0.85rem;color:#778596;margin-bottom:0.6rem">'
+            'ESCO transversal skills (cross-sector soft skills like communication, teamwork, '
+            'analytical thinking) overrepresented in AI job offers compared to the rest of the market.'
+            '</div>',
+            unsafe_allow_html=True,
+        )
+        fig_trans = pgo.Figure()
+        fig_trans.add_trace(pgo.Bar(
+            y=[c["name_en"] or c["name_pl"] for c in co_trans],
+            x=[c["pct_ai"] for c in co_trans],
+            orientation="h", marker=dict(color="#10B981", cornerradius=4),
+            text=[f'{c["ratio"]}x' for c in co_trans],
+            textposition="outside", textfont=dict(size=10, color="#10B981"),
+        ))
+        fig_trans.update_layout(
+            height=max(300, len(co_trans) * 30 + 60),
+            margin=dict(l=10, r=50, t=10, b=20),
+            plot_bgcolor="#fff", paper_bgcolor="#f8f9fa",
+            yaxis=dict(autorange="reversed", tickfont=dict(size=11, color="#425466")),
+            xaxis=dict(visible=False), showlegend=False,
+        )
+        st.plotly_chart(fig_trans, use_container_width=True)
+
+    st.markdown('<hr class="divider">', unsafe_allow_html=True)
+
+    # ── 6. Location ──
+    st.markdown(
+        '<div style="font-size:1.02rem;font-weight:600;color:#1a1a2e;margin:0.5rem 0 0.45rem 0;">'
+        'Location of AI Job Offers</div>',
+        unsafe_allow_html=True,
+    )
+    st.markdown(
+        '<div style="font-size:0.85rem;color:#778596;margin-bottom:0.8rem">'
+        'Cities extracted from the job ad location field using pattern matching. '
+        'A single offer may appear in multiple cities if it lists several locations. '
+        '"Remote" includes ads mentioning remote work, home office, or hybrid arrangements.'
+        '</div>',
+        unsafe_allow_html=True,
+    )
+    loc = data["locations"][:20]
+    st.plotly_chart(
+        _ai_grouped_bar("Location", [l["city"] for l in loc],
+                        [l["pct_ai"] for l in loc], [l["pct_all"] for l in loc]),
+        use_container_width=True,
+    )
+    _dta_btn(pd.DataFrame(data["locations"]), "ai_locations.dta", "dta_ai_loc")
+
+    st.markdown('<hr class="divider">', unsafe_allow_html=True)
+
+    # ── 7. ESCO Job Titles ──
+    st.markdown(
+        '<div style="font-size:1.02rem;font-weight:600;color:#1a1a2e;margin:0.5rem 0 0.45rem 0;">'
+        'Top ESCO Occupations in AI Offers</div>',
+        unsafe_allow_html=True,
+    )
+    st.markdown(
+        '<div style="font-size:0.85rem;color:#778596;margin-bottom:0.8rem">'
+        'Each job ad title is matched to the closest ESCO occupation using contextual embeddings. '
+        'Shows which standardised occupations are most common among AI-related job offers.'
+        '</div>',
+        unsafe_allow_html=True,
+    )
+    et = data["esco_titles"][:20]
+    fig_et = pgo.Figure(pgo.Bar(
+        y=[t["title_en"] or t["title_pl"] for t in et],
+        x=[t["pct_ai"] for t in et], orientation="h",
+        marker=dict(color="#3B82F6", cornerradius=4),
+        text=[f'{t["n"]:,}' for t in et],
+        textposition="outside", textfont=dict(size=11, color="#555"),
+    ))
+    fig_et.update_layout(
+        height=max(400, len(et) * 30 + 60),
+        margin=dict(l=10, r=50, t=10, b=20),
+        plot_bgcolor="#fff", paper_bgcolor="#f8f9fa",
+        yaxis=dict(autorange="reversed", tickfont=dict(size=11, color="#425466")),
+        xaxis=dict(visible=False),
+    )
+    st.plotly_chart(fig_et, use_container_width=True)
+    _dta_btn(pd.DataFrame(data["esco_titles"]), "ai_esco_titles.dta", "dta_ai_titles")
+
+    st.markdown('<hr class="divider">', unsafe_allow_html=True)
+
+    # ── 8. NACE Sections ──
+    st.markdown(
+        '<div style="font-size:1.02rem;font-weight:600;color:#1a1a2e;margin:0.5rem 0 0.45rem 0;">'
+        'NACE Sectors of AI Job Offers</div>',
+        unsafe_allow_html=True,
+    )
+    st.markdown(
+        '<div style="font-size:0.85rem;color:#778596;margin-bottom:0.8rem">'
+        'Distribution of AI offers across NACE Rev. 2 economic sectors. '
+        'Sector assignment is inferred from the matched ESCO occupation via the official EU crosswalk '
+        '(see NACE tab for full methodology).'
+        '</div>',
+        unsafe_allow_html=True,
+    )
+    ns = data["nace_sections"]
+    ns_labels = [f'{s["section"]} — {s["name"]}' for s in ns]
+    fig_ns = pgo.Figure(pgo.Bar(
+        y=ns_labels, x=[s["pct_ai"] for s in ns], orientation="h",
+        marker=dict(color="#F59E0B", cornerradius=4),
+        text=[f'{s["n"]:,}' for s in ns],
+        textposition="outside", textfont=dict(size=11, color="#555"),
+    ))
+    fig_ns.update_layout(
+        height=max(380, len(ns) * 30 + 60),
+        margin=dict(l=10, r=50, t=10, b=20),
+        plot_bgcolor="#fff", paper_bgcolor="#f8f9fa",
+        yaxis=dict(autorange="reversed", tickfont=dict(size=11, color="#425466")),
+        xaxis=dict(visible=False),
+    )
+    st.plotly_chart(fig_ns, use_container_width=True)
+    _dta_btn(pd.DataFrame(ns), "ai_nace_sections.dta", "dta_ai_nace")
 
 
 # ── Helpers ────────────────────────────────────────────────────
