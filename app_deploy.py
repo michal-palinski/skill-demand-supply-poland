@@ -2157,8 +2157,10 @@ def _render_ai_tab():
     fig_kw = pgo.Figure(pgo.Bar(
         y=[k["keyword"] for k in kf], x=[k["pct_ai"] for k in kf], orientation="h",
         marker=dict(color=_AI_COLOR, cornerradius=4),
-        text=[f'{k["n"]:,}' for k in kf],
+        text=[f'{k["pct_ai"]:.1f}%' for k in kf],
         textposition="outside", textfont=dict(size=11, color="#555"),
+        hovertemplate="<b>%{y}</b><br>%{x:.2f}% of AI offers<br>n = %{customdata:,}<extra></extra>",
+        customdata=[k["n"] for k in kf],
     ))
     fig_kw.update_layout(
         height=max(300, len(kf) * 22 + 60),
@@ -2359,8 +2361,10 @@ def _render_ai_tab():
         y=[t["title_en"] or t["title_pl"] for t in et],
         x=[t["pct_ai"] for t in et], orientation="h",
         marker=dict(color="#3B82F6", cornerradius=4),
-        text=[f'{t["n"]:,}' for t in et],
+        text=[f'{t["pct_ai"]:.1f}%' for t in et],
         textposition="outside", textfont=dict(size=11, color="#555"),
+        hovertemplate="<b>%{y}</b><br>%{x:.2f}% of AI offers<br>n = %{customdata:,}<extra></extra>",
+        customdata=[t["n"] for t in et],
     ))
     fig_et.update_layout(
         height=max(320, len(et) * 22 + 60),
@@ -2391,8 +2395,10 @@ def _render_ai_tab():
     fig_ns = pgo.Figure(pgo.Bar(
         y=ns_labels, x=[s["pct_ai"] for s in ns], orientation="h",
         marker=dict(color="#F59E0B", cornerradius=4),
-        text=[f'{s["n"]:,}' for s in ns],
+        text=[f'{s["pct_ai"]:.1f}%' for s in ns],
         textposition="outside", textfont=dict(size=11, color="#555"),
+        hovertemplate="<b>%{y}</b><br>%{x:.2f}% of AI offers<br>n = %{customdata:,}<extra></extra>",
+        customdata=[s["n"] for s in ns],
     ))
     fig_ns.update_layout(
         height=max(280, len(ns) * 22 + 60),
