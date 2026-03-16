@@ -5,3 +5,4 @@ plotly
 statsmodels
 pyarrow
 kaleido==0.2.1
+openpyxl

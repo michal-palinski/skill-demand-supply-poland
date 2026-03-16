@@ -1892,11 +1892,62 @@ _CAT_COLORS = {
     "AI Governance / Responsible AI": "#6366F1",
 }
 
+_AI_REGEX_PATTERNS = [
+    r"\bartificial intelligence\b", r"\bsztuczna inteligencja\b",
+    r"\bmachine learning\b", r"\buczenie maszynowe\b",
+    r"\bdeep learning\b", r"\buczenie głębokie\b",
+    r"\bneural network\b", r"\bsieć neuronow\w*\b",
+    r"\bcomputer vision\b", r"\bnatural language processing\b",
+    r"\bNLP\b", r"\bLLM\b", r"\blarge language model\b",
+    r"\bGPT\b", r"\bChatGPT\b", r"\bgenerative ai\b", r"\bgen ai\b",
+    r"\bMLOps\b", r"\bml engineer\b", r"\bai engineer\b",
+    r"\bdata scien\w+\b", r"\btensorflow\b", r"\bpytorch\b",
+    r"\bscikit-learn\b", r"\bkeras\b",
+    r"\breinforcement learning\b", r"\btransfer learning\b",
+    r"\bspeech recognition\b", r"\brozpoznawanie mowy\b",
+    r"\bimage recognition\b", r"\bpredictive model\w*\b",
+    r"\bmodel\w* predykcyjn\w*\b", r"\bbig data\b",
+    r"\bdata mining\b", r"\bexploracja danych\b",
+    r"\brecommender system\b", r"\brecommendation system\b",
+    r"\bcognitive computing\b", r"\bautonomous vehicle\b",
+    r"\bself-driving\b", r"\brobotic process automation\b",
+]
+
 
 @st.cache_data
 def _load_ai_cache():
     with open(AI_TAB_CACHE, "r", encoding="utf-8") as f:
         return json.loads(f.read())
+
+
+@st.cache_data
+def _build_ai_keyword_sources_xlsx(ai_data: dict) -> bytes:
+    esco_df = pd.DataFrame(ai_data.get("skills_freq", []))
+    if not esco_df.empty:
+        rename_map = {
+            "name_en": "esco_skill_en",
+            "name_pl": "esco_skill_pl",
+            "category": "category",
+            "scope": "scope",
+            "n": "mentions_in_ai_offers",
+            "pct_ai": "pct_ai_offers",
+        }
+        esco_df = esco_df.rename(columns=rename_map)
+        wanted = [
+            "esco_skill_en", "esco_skill_pl", "category",
+            "scope", "mentions_in_ai_offers", "pct_ai_offers",
+        ]
+        esco_df = esco_df[[c for c in wanted if c in esco_df.columns]]
+    regex_df = pd.DataFrame(
+        {"regex_pattern": _AI_REGEX_PATTERNS, "source": "AI keyword matching"}
+    )
+
+    out = io.BytesIO()
+    with pd.ExcelWriter(out, engine="openpyxl") as writer:
+        esco_df.to_excel(writer, sheet_name="ESCO_skills", index=False)
+        regex_df.to_excel(writer, sheet_name="Regex_keywords", index=False)
+    out.seek(0)
+    return out.getvalue()
 
 
 def _ai_grouped_bar(
@@ -2100,11 +2151,21 @@ def _render_ai_tab():
         )
 
     with col_right:
-        btn_col, _ = st.columns([1.45, 1.0])
+        btn_col, dl_col = st.columns([1.25, 1.15])
         with btn_col:
             if st.button("How are AI offers identified?", key="btn_ai_method", type="secondary",
                          use_container_width=True):
                 _show_ai_methodology()
+        with dl_col:
+            st.download_button(
+                "Download AI keyword sources (.xlsx)",
+                data=_build_ai_keyword_sources_xlsx(data),
+                file_name="ai_keyword_sources.xlsx",
+                mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                key="dl_ai_keyword_sources",
+                type="secondary",
+                use_container_width=True,
+            )
 
         k1, k2 = st.columns(2)
         with k1:
