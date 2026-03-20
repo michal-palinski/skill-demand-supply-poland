@@ -1162,6 +1162,266 @@ def _render_trainings_tab():
         )
 
 
+def _render_skills_search_tab():
+    st.markdown('<div class="sec-label">Top Skills in Job Offers</div>', unsafe_allow_html=True)
+    st.components.v1.iframe(
+        "https://datawrapper.dwcdn.net/FMGJD/5/",
+        height=320,
+        scrolling=False
+    )
+    st.markdown('<hr class="divider">', unsafe_allow_html=True)
+    st.markdown('<div class="sec-label">Explore job offers with mapped ESCO skills</div>', unsafe_allow_html=True)
+    all_titles = get_sample_titles_for_filter()[0]
+    chosen_title = st.selectbox(
+        "Select an offer",
+        [""] + all_titles,
+        index=0,
+        placeholder="Start typing to filter 4,000 sample offers...",
+        label_visibility="collapsed",
+        key="skills_pick"
+    )
+    if chosen_title:
+        offers = get_sample_offers()
+        matching = [(jid, t) for jid, t in offers if t == chosen_title]
+        if matching:
+            job_id, title = matching[0]
+            render_offer_with_skills(job_id, title)
+
+
+def _render_skills_stats_tab():
+    cache = load_skills_cache(_cache_mtime())
+    meta = cache["meta"]
+    matched_pct = meta["matched_mentions"] / meta["total_mentions"] * 100
+    st.markdown(
+        f'<div class="info-box">'
+        f'<b>{meta["total_mentions"]:,}</b> ESCO skill mentions across '
+        f'<b>{meta["total_offers"]:,}</b> job offers &mdash; '
+        f'<b>{meta["matched_mentions"]:,}</b> ({matched_pct:.0f}%) '
+        f'matched to ESCO hierarchy.<br>'
+        f'<span style="font-size:0.8em;color:#888">Click a tile to drill down. '
+        f'Click the header bar to go back up.</span>'
+        f'</div>',
+        unsafe_allow_html=True,
+    )
+    view = st.radio(
+        "View",
+        ["Skills & Competences", "Knowledge"],
+        horizontal=True,
+        label_visibility="collapsed",
+        key="stats_view",
+    )
+    view_key = "skills" if view == "Skills & Competences" else "knowledge"
+    ids, labels_tm, parents, values, custom = build_treemap_data(cache, view=view_key)
+    VIEW_COLORS = {
+        "skills": {"root": "#1a1a2e", "S": "#3a6b8c", "T": "#2d6a2d", "LANG": "#6a2d5a"},
+        "knowledge": {"root": "#1a1a2e", "default": "#7a5a1a"},
+    }
+    palette = VIEW_COLORS[view_key]
+    node_colors = []
+    for node_id in ids:
+        if node_id == "root":
+            node_colors.append(palette["root"])
+        else:
+            l1_part = node_id.split("/")[1] if "/" in node_id else ""
+            if l1_part == "other":
+                node_colors.append("#999")
+            elif view_key == "skills":
+                if l1_part.startswith("S"):
+                    node_colors.append(palette["S"])
+                elif l1_part.startswith("T"):
+                    node_colors.append(palette["T"])
+                else:
+                    node_colors.append(palette["LANG"])
+            else:
+                node_colors.append(palette["default"])
+    fig = pgo.Figure(pgo.Treemap(
+        ids=ids,
+        labels=labels_tm,
+        parents=parents,
+        values=values,
+        customdata=custom,
+        branchvalues="total",
+        marker=dict(colors=node_colors, line=dict(width=1.5, color="#fff")),
+        hovertemplate="<b>%{label}</b><br>%{customdata}<extra></extra>",
+        textinfo="label+percent parent",
+        textfont=dict(size=13),
+        maxdepth=3,
+        pathbar=dict(visible=True),
+    ))
+    fig.update_layout(
+        height=700,
+        margin=dict(l=0, r=0, t=30, b=0),
+        paper_bgcolor="#fff",
+        font=dict(size=12, color="#333"),
+    )
+    st.plotly_chart(fig, width="stretch")
+
+
+def _render_skill_trends_tab():
+    st.markdown('<div class="sec-label">Search for a skill or knowledge area to see weekly trends</div>', unsafe_allow_html=True)
+    top_skills = get_top_skills(500)
+    all_options = [f"{label}  ({total_m:,})" for sid, label, total_m, _ in top_skills]
+    all_map = {opt: (sid, label) for opt, (sid, label, _, _) in zip(all_options, top_skills)}
+    chosen = st.selectbox(
+        "Select skill",
+        [""] + all_options,
+        index=0,
+        placeholder="Type to search skills, e.g. Python, zarządzanie, Excel…",
+        label_visibility="collapsed",
+        key="trend_pick",
+    )
+    sid = None
+    label = None
+    if chosen and chosen in all_map:
+        sid, label = all_map[chosen]
+    if sid is not None:
+        trend = get_skill_trend(sid)
+        period_totals = get_period_totals()
+        if trend:
+            weeks = [r[0] for r in trend]
+            mentions = [r[1] for r in trend]
+            pct = [r[2] / period_totals.get(r[0], 1) * 100 for r in trend]
+            week_labels = [w.replace("2025-", "") for w in weeks]
+            WIN = 4
+            def rolling_avg(series, window=WIN):
+                out = []
+                for i in range(len(series)):
+                    start = max(0, i - window + 1)
+                    out.append(sum(series[start:i+1]) / (i - start + 1))
+                return out
+            smooth_mentions = rolling_avg(mentions)
+            smooth_pct = rolling_avg(pct)
+            FORECAST_N = 4
+            def arima_forecast(series, steps=FORECAST_N):
+                try:
+                    with warnings.catch_warnings():
+                        warnings.simplefilter("ignore")
+                        model = ARIMA(series, order=(1, 1, 1))
+                        fit = model.fit()
+                        fc = fit.forecast(steps=steps)
+                        ci = fit.get_forecast(steps=steps).conf_int(alpha=0.2)
+                        return list(fc), list(ci[:, 0]), list(ci[:, 1])
+                except Exception:
+                    return None, None, None
+            fc_labels = ["W01*", "W02*", "W03*", "W04*"]
+            fc_m_vals, fc_lo_m, fc_hi_m = arima_forecast(smooth_mentions)
+            fc_p_vals, fc_lo_p, fc_hi_p = arima_forecast(smooth_pct)
+            st.markdown(f'<div class="rcard-title" style="margin-top:1rem">{label}</div>', unsafe_allow_html=True)
+            TICK = dict(size=14, color="#000")
+            AXIS_TITLE = dict(size=14, color="#000")
+            CHART_FONT = dict(size=14, color="#000")
+            fig = pgo.Figure()
+            fig.add_trace(pgo.Scatter(
+                x=week_labels, y=mentions,
+                name="Weekly", mode="lines+markers",
+                line=dict(color="rgba(58,107,140,0.25)", width=1),
+                marker=dict(size=3, color="rgba(58,107,140,0.35)"),
+                hovertemplate="%{x}<br><b>%{y:,}</b> mentions<extra></extra>",
+            ))
+            fig.add_trace(pgo.Scatter(
+                x=week_labels, y=smooth_mentions,
+                name="Smoothed (4w avg)", mode="lines",
+                line=dict(color="#3a6b8c", width=3.5),
+                hovertemplate="%{x}<br><b>%{y:,.0f}</b> (4w avg)<extra></extra>",
+            ))
+            if fc_m_vals is not None:
+                ci_x = [week_labels[-1]] + fc_labels + fc_labels[::-1] + [week_labels[-1]]
+                ci_y = [smooth_mentions[-1]] + fc_hi_m + fc_lo_m[::-1] + [smooth_mentions[-1]]
+                fig.add_trace(pgo.Scatter(
+                    x=ci_x, y=ci_y,
+                    fill="toself", fillcolor="rgba(58,107,140,0.18)",
+                    line=dict(width=0), mode="none", name="Forecast range",
+                    hoverinfo="skip",
+                ))
+            all_m = mentions + (fc_hi_m if fc_hi_m else [])
+            y_lo_m = min(mentions + (fc_lo_m if fc_lo_m else [])) * 0.85
+            y_hi_m = max(all_m) * 1.08
+            fig.update_layout(
+                title=dict(text="Mentions", font=dict(size=16, color="#111")),
+                height=370,
+                margin=dict(l=60, r=20, t=45, b=70),
+                plot_bgcolor="#fff", paper_bgcolor="#fff",
+                font=CHART_FONT,
+                xaxis=dict(showgrid=False, tickfont=TICK, tickangle=-45),
+                yaxis=dict(showgrid=True, gridcolor="#e0e0e0",
+                           title=dict(text="Mentions", font=AXIS_TITLE),
+                           tickfont=TICK, range=[y_lo_m, y_hi_m]),
+                hovermode="x unified",
+                legend=dict(orientation="h", y=1.12, x=0, font=dict(size=13, color="#000")),
+            )
+            st.plotly_chart(fig, width="stretch")
+            fig2 = pgo.Figure()
+            fig2.add_trace(pgo.Scatter(
+                x=week_labels, y=pct,
+                name="Weekly", mode="lines+markers",
+                line=dict(color="rgba(45,106,45,0.25)", width=1),
+                marker=dict(size=3, color="rgba(45,106,45,0.35)"),
+                hovertemplate="%{x}<br><b>%{y:.2f}%</b> of offers<extra></extra>",
+            ))
+            fig2.add_trace(pgo.Scatter(
+                x=week_labels, y=smooth_pct,
+                name="Smoothed (4w avg)", mode="lines",
+                line=dict(color="#2d6a2d", width=3.5),
+                hovertemplate="%{x}<br><b>%{y:.2f}%</b> (4w avg)<extra></extra>",
+            ))
+            if fc_p_vals is not None:
+                ci_x = [week_labels[-1]] + fc_labels + fc_labels[::-1] + [week_labels[-1]]
+                ci_y = [smooth_pct[-1]] + fc_hi_p + fc_lo_p[::-1] + [smooth_pct[-1]]
+                fig2.add_trace(pgo.Scatter(
+                    x=ci_x, y=ci_y,
+                    fill="toself", fillcolor="rgba(45,106,45,0.18)",
+                    line=dict(width=0), mode="none", name="Forecast range",
+                    hoverinfo="skip",
+                ))
+            all_p = pct + (fc_hi_p if fc_hi_p else [])
+            y_lo_p = min(pct + (fc_lo_p if fc_lo_p else [])) * 0.85
+            y_hi_p = max(all_p) * 1.08
+            fig2.update_layout(
+                title=dict(text="% of job offers", font=dict(size=16, color="#111")),
+                height=370,
+                margin=dict(l=60, r=20, t=45, b=70),
+                plot_bgcolor="#fff", paper_bgcolor="#fff",
+                font=CHART_FONT,
+                xaxis=dict(showgrid=False, tickfont=TICK, tickangle=-45),
+                yaxis=dict(showgrid=True, gridcolor="#e0e0e0",
+                           title=dict(text="% of offers", font=AXIS_TITLE),
+                           tickfont=TICK, range=[y_lo_p, y_hi_p]),
+                hovermode="x unified",
+                legend=dict(orientation="h", y=1.12, x=0, font=dict(size=13, color="#000")),
+            )
+            st.plotly_chart(fig2, width="stretch")
+            df_export = pd.DataFrame({
+                "week": weeks,
+                "mentions": mentions,
+                "mentions_smooth_4w": smooth_mentions,
+                "offer_count": [r[2] for r in trend],
+                "total_offers": [period_totals.get(r[0], 0) for r in trend],
+                "pct_offers": pct,
+                "pct_offers_smooth_4w": smooth_pct,
+            })
+            if fc_m_vals is not None:
+                df_fc = pd.DataFrame({
+                    "week": fc_labels,
+                    "fc_mentions_smooth": fc_m_vals,
+                    "fc_mentions_lo": fc_lo_m,
+                    "fc_mentions_hi": fc_hi_m,
+                    "fc_pct_smooth": fc_p_vals if fc_p_vals else [None]*FORECAST_N,
+                    "fc_pct_lo": fc_lo_p if fc_lo_p else [None]*FORECAST_N,
+                    "fc_pct_hi": fc_hi_p if fc_hi_p else [None]*FORECAST_N,
+                })
+                df_export = pd.concat([df_export, df_fc], ignore_index=True)
+            buf = io.BytesIO()
+            df_export.to_stata(buf, write_index=False, version=118)
+            buf.seek(0)
+            safe_label = label.replace(" ", "_").replace("/", "_")[:40]
+            st.download_button(
+                label="Export to .dta",
+                data=buf,
+                file_name=f"skill_trend_{safe_label}.dta",
+                mime="application/x-stata",
+            )
+
+
 # ── Main ──────────────────────────────────────────────────────
 
 def main():
@@ -1173,9 +1433,8 @@ def main():
         unsafe_allow_html=True
     )
 
-    tab1, tab2, tab3, tab4, tab5, tab6, tab7, tab8 = st.tabs([
-        "Job titles", "Skills Search", "Skills Stats", "Skill Trends", "NACE",
-        "UA-Targeted", "AI Skills", "Trainings",
+    tab1, tab2, tab3, tab4 = st.tabs([
+        "Job titles", "Skills", "NACE", "UA-Targeted",
     ])
 
     # ── Tab 1: Job Titles ──
@@ -1234,314 +1493,36 @@ def main():
             else:
                 st.markdown('<div class="info-box">No results found.</div>', unsafe_allow_html=True)
 
-    # ── Tab 2: Skills ──
+    # ── Tab 2: Skills (merged) ──
     with tab2:
-        # Top Skills Chart
-        st.markdown('<div class="sec-label">Top Skills in Job Offers</div>', unsafe_allow_html=True)
-        st.components.v1.iframe(
-            "https://datawrapper.dwcdn.net/FMGJD/5/",
-            height=320,
-            scrolling=False
+        _SKILLS_VIEWS = [
+            "Skills Search",
+            "Skills Stats",
+            "Skill Trends",
+            "AI Skills",
+            "Trainings",
+        ]
+        skills_view = st.selectbox(
+            "View",
+            _SKILLS_VIEWS,
+            label_visibility="collapsed",
+            key="skills_merged_view",
         )
         st.markdown('<hr class="divider">', unsafe_allow_html=True)
-        
-        st.markdown('<div class="sec-label">Explore job offers with mapped ESCO skills</div>', unsafe_allow_html=True)
 
-        all_titles = get_sample_titles_for_filter()[0]
-        
-        chosen_title = st.selectbox(
-            "Select an offer",
-            [""] + all_titles,
-            index=0,
-            placeholder="Start typing to filter 4,000 sample offers...",
-            label_visibility="collapsed",
-            key="skills_pick"
-        )
+        if skills_view == "Skills Search":
+            _render_skills_search_tab()
+        elif skills_view == "Skills Stats":
+            _render_skills_stats_tab()
+        elif skills_view == "Skill Trends":
+            _render_skill_trends_tab()
+        elif skills_view == "AI Skills":
+            _render_ai_tab()
+        elif skills_view == "Trainings":
+            _render_trainings_tab()
 
-        if chosen_title:
-            offers = get_sample_offers()
-            matching = [(jid, t) for jid, t in offers if t == chosen_title]
-            if matching:
-                job_id, title = matching[0]
-                render_offer_with_skills(job_id, title)
-
-    # ── Tab 3: Skills Stats ──
+    # ── Tab 3: NACE ──
     with tab3:
-        cache = load_skills_cache(_cache_mtime())
-        meta = cache["meta"]
-
-        matched_pct = meta["matched_mentions"] / meta["total_mentions"] * 100
-
-        st.markdown(
-            f'<div class="info-box">'
-            f'<b>{meta["total_mentions"]:,}</b> ESCO skill mentions across '
-            f'<b>{meta["total_offers"]:,}</b> job offers &mdash; '
-            f'<b>{meta["matched_mentions"]:,}</b> ({matched_pct:.0f}%) '
-            f'matched to ESCO hierarchy.<br>'
-            f'<span style="font-size:0.8em;color:#888">Click a tile to drill down. '
-            f'Click the header bar to go back up.</span>'
-            f'</div>',
-            unsafe_allow_html=True,
-        )
-
-        view = st.radio(
-            "View",
-            ["Skills & Competences", "Knowledge"],
-            horizontal=True,
-            label_visibility="collapsed",
-            key="stats_view",
-        )
-        view_key = "skills" if view == "Skills & Competences" else "knowledge"
-
-        ids, labels_tm, parents, values, custom = build_treemap_data(cache, view=view_key)
-
-        VIEW_COLORS = {
-            "skills": {
-                "root": "#1a1a2e",
-                "S": "#3a6b8c",
-                "T": "#2d6a2d",
-                "LANG": "#6a2d5a",
-            },
-            "knowledge": {
-                "root": "#1a1a2e",
-                "default": "#7a5a1a",
-            },
-        }
-        palette = VIEW_COLORS[view_key]
-
-        node_colors = []
-        for node_id in ids:
-            if node_id == "root":
-                node_colors.append(palette["root"])
-            else:
-                l1_part = node_id.split("/")[1] if "/" in node_id else ""
-                if l1_part == "other":
-                    node_colors.append("#999")
-                elif view_key == "skills":
-                    if l1_part.startswith("S"):
-                        node_colors.append(palette["S"])
-                    elif l1_part.startswith("T"):
-                        node_colors.append(palette["T"])
-                    else:
-                        node_colors.append(palette["LANG"])
-                else:
-                    node_colors.append(palette["default"])
-
-        fig = pgo.Figure(pgo.Treemap(
-            ids=ids,
-            labels=labels_tm,
-            parents=parents,
-            values=values,
-            customdata=custom,
-            branchvalues="total",
-            marker=dict(
-                colors=node_colors,
-                line=dict(width=1.5, color="#fff"),
-            ),
-            hovertemplate="<b>%{label}</b><br>%{customdata}<extra></extra>",
-            textinfo="label+percent parent",
-            textfont=dict(size=13),
-            maxdepth=3,
-            pathbar=dict(visible=True),
-        ))
-        fig.update_layout(
-            height=700,
-            margin=dict(l=0, r=0, t=30, b=0),
-            paper_bgcolor="#fff",
-            font=dict(size=12, color="#333"),
-        )
-        st.plotly_chart(fig, width="stretch")
-
-    # ── Tab 4: Skill Trends ──
-    with tab4:
-        st.markdown('<div class="sec-label">Search for a skill or knowledge area to see weekly trends</div>', unsafe_allow_html=True)
-
-        top_skills = get_top_skills(500)
-        all_options = [f"{label}  ({total_m:,})" for sid, label, total_m, _ in top_skills]
-        all_map = {opt: (sid, label) for opt, (sid, label, _, _) in zip(all_options, top_skills)}
-
-        chosen = st.selectbox(
-            "Select skill",
-            [""] + all_options,
-            index=0,
-            placeholder="Type to search skills, e.g. Python, zarządzanie, Excel…",
-            label_visibility="collapsed",
-            key="trend_pick",
-        )
-
-        sid = None
-        label = None
-        if chosen and chosen in all_map:
-            sid, label = all_map[chosen]
-
-        if sid is not None:
-            trend = get_skill_trend(sid)
-            period_totals = get_period_totals()
-
-            if trend:
-                weeks = [r[0] for r in trend]
-                mentions = [r[1] for r in trend]
-                pct = [r[2] / period_totals.get(r[0], 1) * 100 for r in trend]
-                week_labels = [w.replace("2025-", "") for w in weeks]
-
-                # 4-week rolling average (≈ monthly smoothing)
-                WIN = 4
-                def rolling_avg(series, window=WIN):
-                    out = []
-                    for i in range(len(series)):
-                        start = max(0, i - window + 1)
-                        out.append(sum(series[start:i+1]) / (i - start + 1))
-                    return out
-
-                smooth_mentions = rolling_avg(mentions)
-                smooth_pct = rolling_avg(pct)
-
-                FORECAST_N = 4
-                def arima_forecast(series, steps=FORECAST_N):
-                    try:
-                        with warnings.catch_warnings():
-                            warnings.simplefilter("ignore")
-                            model = ARIMA(series, order=(1, 1, 1))
-                            fit = model.fit()
-                            fc = fit.forecast(steps=steps)
-                            ci = fit.get_forecast(steps=steps).conf_int(alpha=0.2)
-                            return list(fc), list(ci[:, 0]), list(ci[:, 1])
-                    except Exception:
-                        return None, None, None
-
-                fc_labels = ["W01*", "W02*", "W03*", "W04*"]
-                fc_m_vals, fc_lo_m, fc_hi_m = arima_forecast(smooth_mentions)
-                fc_p_vals, fc_lo_p, fc_hi_p = arima_forecast(smooth_pct)
-
-                st.markdown(f'<div class="rcard-title" style="margin-top:1rem">{label}</div>', unsafe_allow_html=True)
-
-                TICK = dict(size=14, color="#000")
-                AXIS_TITLE = dict(size=14, color="#000")
-                CHART_FONT = dict(size=14, color="#000")
-
-                # ── Mentions chart ──
-                fig = pgo.Figure()
-                fig.add_trace(pgo.Scatter(
-                    x=week_labels, y=mentions,
-                    name="Weekly",
-                    mode="lines+markers",
-                    line=dict(color="rgba(58,107,140,0.25)", width=1),
-                    marker=dict(size=3, color="rgba(58,107,140,0.35)"),
-                    hovertemplate="%{x}<br><b>%{y:,}</b> mentions<extra></extra>",
-                ))
-                fig.add_trace(pgo.Scatter(
-                    x=week_labels, y=smooth_mentions,
-                    name="Smoothed (4w avg)",
-                    mode="lines",
-                    line=dict(color="#3a6b8c", width=3.5),
-                    hovertemplate="%{x}<br><b>%{y:,.0f}</b> (4w avg)<extra></extra>",
-                ))
-                if fc_m_vals is not None:
-                    ci_x = [week_labels[-1]] + fc_labels + fc_labels[::-1] + [week_labels[-1]]
-                    ci_y = [smooth_mentions[-1]] + fc_hi_m + fc_lo_m[::-1] + [smooth_mentions[-1]]
-                    fig.add_trace(pgo.Scatter(
-                        x=ci_x, y=ci_y,
-                        fill="toself", fillcolor="rgba(58,107,140,0.18)",
-                        line=dict(width=0), mode="none", name="Forecast range",
-                        hoverinfo="skip",
-                    ))
-                all_m = mentions + (fc_hi_m if fc_hi_m else [])
-                y_lo_m = min(mentions + (fc_lo_m if fc_lo_m else [])) * 0.85
-                y_hi_m = max(all_m) * 1.08
-                fig.update_layout(
-                    title=dict(text="Mentions", font=dict(size=16, color="#111")),
-                    height=370,
-                    margin=dict(l=60, r=20, t=45, b=70),
-                    plot_bgcolor="#fff", paper_bgcolor="#fff",
-                    font=CHART_FONT,
-                    xaxis=dict(showgrid=False, tickfont=TICK, tickangle=-45),
-                    yaxis=dict(showgrid=True, gridcolor="#e0e0e0",
-                               title=dict(text="Mentions", font=AXIS_TITLE),
-                               tickfont=TICK, range=[y_lo_m, y_hi_m]),
-                    hovermode="x unified",
-                    legend=dict(orientation="h", y=1.12, x=0, font=dict(size=13, color="#000")),
-                )
-                st.plotly_chart(fig, width="stretch")
-
-                # ── % chart ──
-                fig2 = pgo.Figure()
-                fig2.add_trace(pgo.Scatter(
-                    x=week_labels, y=pct,
-                    name="Weekly",
-                    mode="lines+markers",
-                    line=dict(color="rgba(45,106,45,0.25)", width=1),
-                    marker=dict(size=3, color="rgba(45,106,45,0.35)"),
-                    hovertemplate="%{x}<br><b>%{y:.2f}%</b> of offers<extra></extra>",
-                ))
-                fig2.add_trace(pgo.Scatter(
-                    x=week_labels, y=smooth_pct,
-                    name="Smoothed (4w avg)",
-                    mode="lines",
-                    line=dict(color="#2d6a2d", width=3.5),
-                    hovertemplate="%{x}<br><b>%{y:.2f}%</b> (4w avg)<extra></extra>",
-                ))
-                if fc_p_vals is not None:
-                    ci_x = [week_labels[-1]] + fc_labels + fc_labels[::-1] + [week_labels[-1]]
-                    ci_y = [smooth_pct[-1]] + fc_hi_p + fc_lo_p[::-1] + [smooth_pct[-1]]
-                    fig2.add_trace(pgo.Scatter(
-                        x=ci_x, y=ci_y,
-                        fill="toself", fillcolor="rgba(45,106,45,0.18)",
-                        line=dict(width=0), mode="none", name="Forecast range",
-                        hoverinfo="skip",
-                    ))
-                all_p = pct + (fc_hi_p if fc_hi_p else [])
-                y_lo_p = min(pct + (fc_lo_p if fc_lo_p else [])) * 0.85
-                y_hi_p = max(all_p) * 1.08
-                fig2.update_layout(
-                    title=dict(text="% of job offers", font=dict(size=16, color="#111")),
-                    height=370,
-                    margin=dict(l=60, r=20, t=45, b=70),
-                    plot_bgcolor="#fff", paper_bgcolor="#fff",
-                    font=CHART_FONT,
-                    xaxis=dict(showgrid=False, tickfont=TICK, tickangle=-45),
-                    yaxis=dict(showgrid=True, gridcolor="#e0e0e0",
-                               title=dict(text="% of offers", font=AXIS_TITLE),
-                               tickfont=TICK, range=[y_lo_p, y_hi_p]),
-                    hovermode="x unified",
-                    legend=dict(orientation="h", y=1.12, x=0, font=dict(size=13, color="#000")),
-                )
-                st.plotly_chart(fig2, width="stretch")
-
-                # ── Export to .dta ──
-                df_export = pd.DataFrame({
-                    "week": weeks,
-                    "mentions": mentions,
-                    "mentions_smooth_4w": smooth_mentions,
-                    "offer_count": [r[2] for r in trend],
-                    "total_offers": [period_totals.get(r[0], 0) for r in trend],
-                    "pct_offers": pct,
-                    "pct_offers_smooth_4w": smooth_pct,
-                })
-                if fc_m_vals is not None:
-                    df_fc = pd.DataFrame({
-                        "week": fc_labels,
-                        "fc_mentions_smooth": fc_m_vals,
-                        "fc_mentions_lo": fc_lo_m,
-                        "fc_mentions_hi": fc_hi_m,
-                        "fc_pct_smooth": fc_p_vals if fc_p_vals else [None]*FORECAST_N,
-                        "fc_pct_lo": fc_lo_p if fc_lo_p else [None]*FORECAST_N,
-                        "fc_pct_hi": fc_hi_p if fc_hi_p else [None]*FORECAST_N,
-                    })
-                    df_export = pd.concat([df_export, df_fc], ignore_index=True)
-
-                buf = io.BytesIO()
-                df_export.to_stata(buf, write_index=False, version=118)
-                buf.seek(0)
-                safe_label = label.replace(" ", "_").replace("/", "_")[:40]
-                st.download_button(
-                    label="Export to .dta",
-                    data=buf,
-                    file_name=f"skill_trend_{safe_label}.dta",
-                    mime="application/x-stata",
-                )
-
-    # ── Tab 5: NACE ──
-    with tab5:
         st.markdown('<div class="sec-label">NACE sector assignment</div>', unsafe_allow_html=True)
 
         st.markdown(
@@ -2136,15 +2117,9 @@ def main():
         else:
             st.info("Select at least one NACE section above to display the chart.")
 
-    # ── Tab 6: Ukrainian-Targeted Job Ads ──────────────────────────
-    with tab6:
+    # ── Tab 4: UA-Targeted ──
+    with tab4:
         _render_ua_tab()
-
-    with tab7:
-        _render_ai_tab()
-
-    with tab8:
-        _render_trainings_tab()
 
 
 # ── AI Skills tab helpers ──────────────────────────────────────────────────
