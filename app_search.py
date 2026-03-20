@@ -1111,13 +1111,61 @@ def _render_trainings_tab():
         st.info("No regional data for this group.")
         return
 
+    # ── Metric toggle (% all trainings OR % within skill category for L2) ──
+    use_within = False
+    if group_level == "L2":
+        metric_mode = st.radio(
+            "Metric",
+            ["% of all trainings", "% within skill category"],
+            horizontal=True,
+            key="trainings_metric",
+        )
+        use_within = metric_mode == "% within skill category"
+
+    # ── Build DataFrame ──
+    df = pd.DataFrame(stats["rows"])
+
+    if use_within:
+        # Find L1 parent of the selected L2 code
+        tree = cache.get("tree") or {}
+        parent_l1_code = None
+        for l1c, l1n in tree.items():
+            if group_code in (l1n.get("children") or {}):
+                parent_l1_code = l1c
+                break
+        stats_l1 = _trainings_stats_from_cache(treg, "L1", parent_l1_code) if parent_l1_code else None
+        if stats_l1 and stats_l1["rows"]:
+            l1_hits = {r["voivodeship"]: r["n_with_skill_group"] for r in stats_l1["rows"]}
+            df["pct_within"] = [
+                round(r["n_with_skill_group"] / l1_hits[r["voivodeship"]] * 100, 1)
+                if l1_hits.get(r["voivodeship"], 0) > 0 else 0.0
+                for r in stats["rows"]
+            ]
+            nat_within = (
+                round(stats["national_hits"] / stats_l1["national_hits"] * 100, 1)
+                if stats_l1["national_hits"] > 0 else 0.0
+            )
+            plot_col = "pct_within"
+            x_title = "% of skill-category trainings with this subcategory"
+            national_val = nat_within
+            nat_label = f"National {nat_within}%"
+        else:
+            use_within = False  # fallback
+
+    if not use_within:
+        plot_col = "pct_trainings"
+        x_title = "% of trainings with at least one skill in group"
+        national_val = stats["national_pct"]
+        nat_label = f"National {stats['national_pct']}%"
+
     st.caption(
-        f"National average: **{stats['national_pct']}%** "
+        f"National average: **{national_val}%** "
         f"({stats['national_hits']:,} of {stats['national_n']:,} trainings "
         f"have at least one skill in this group)"
     )
 
-    df = pd.DataFrame(stats["rows"])
+    # ── Sort descending by value, display table ──
+    df = df.sort_values(plot_col, ascending=False)
     df["pct_vs_national_pp"] = (df["pct_trainings"] - stats["national_pct"]).round(2)
     df_disp = df.rename(
         columns={
@@ -1128,26 +1176,31 @@ def _render_trainings_tab():
             "pct_vs_national_pp": "Diff. vs national (pp)",
         }
     )
-    st.dataframe(df_disp, use_container_width=True, hide_index=True)
+    disp_cols = ["Voivodeship", "Trainings", "With skill in group", "% of trainings", "Diff. vs national (pp)"]
+    st.dataframe(df_disp[disp_cols], use_container_width=True, hide_index=True)
+
+    # ── Bar chart (sorted descending = highest at top) ──
+    bar_vals = df[plot_col].tolist()
+    bar_voivs = df["voivodeship"].tolist()
 
     fig = pgo.Figure()
     fig.add_trace(
         pgo.Bar(
-            x=df["pct_trainings"],
-            y=df["voivodeship"],
+            x=bar_vals,
+            y=bar_voivs,
             orientation="h",
             marker=dict(color="#E55B52", cornerradius=4),
-            text=[f"{v:.1f}%" for v in df["pct_trainings"]],
+            text=[f"{v:.1f}%" for v in bar_vals],
             textposition="outside",
             cliponaxis=False,
-            name="% trainings",
+            name=plot_col,
         )
     )
     fig.add_vline(
-        x=stats["national_pct"],
+        x=national_val,
         line_dash="dash",
         line_color="#94a3b8",
-        annotation_text=f"National {stats['national_pct']}%",
+        annotation_text=nat_label,
         annotation_position="top",
     )
     fig.update_layout(
@@ -1156,23 +1209,10 @@ def _render_trainings_tab():
         margin=dict(l=10, r=80, t=40, b=40),
         plot_bgcolor="#fff",
         paper_bgcolor="#fff",
-        xaxis=dict(
-            title="% of trainings with at least one skill in group",
-            ticksuffix="%",
-            rangemode="tozero",
-        ),
+        xaxis=dict(title=x_title, ticksuffix="%", rangemode="tozero"),
         yaxis=dict(autorange="reversed", title=""),
     )
     st.plotly_chart(fig, use_container_width=True)
-
-    with st.expander("Technical details"):
-        meta = treg.get("meta") or {}
-        st.markdown(
-            f"- **ESCO URIs in group:** {stats['n_uris_in_group']:,}\n"
-            f"- **Similarity threshold:** {meta.get('similarity_threshold', '?')}\n"
-            f"- **Trainings with voivodeship:** {meta.get('n_trainings_with_voivodeship', '?'):,}\n"
-            f"- **Source:** `{meta.get('source_parquet', '?')}`"
-        )
 
 
 def _render_skills_search_tab():
