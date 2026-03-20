@@ -1296,6 +1296,232 @@ def _render_trainings_tab():
     st.plotly_chart(fig, use_container_width=True)
 
 
+def _render_mismatch_tab():
+    st.markdown(
+        '<div class="sec-label">Competence Mismatch: Demand vs Supply</div>',
+        unsafe_allow_html=True,
+    )
+
+    # ── Load data ──
+    if not os.path.isfile(TRAININGS_REGIONAL_CACHE):
+        st.warning("Training data cache not found.")
+        return
+    treg = _load_trainings_regional_cache(_trainings_regional_cache_mtime())
+    if not treg:
+        st.error("Could not load training data cache.")
+        return
+    try:
+        cache = load_skills_cache(_cache_mtime())
+    except Exception as e:
+        st.error(f"Could not load competence stats cache: {e}")
+        return
+
+    tree = cache.get("tree") or {}
+    l1_data = treg.get("L1") or {}
+
+    _LEVEL_LABELS = {"L1": "Competence category", "L2": "Competence subcategory"}
+    group_level = st.radio(
+        "Aggregation level",
+        ["L1", "L2"],
+        format_func=lambda x: _LEVEL_LABELS[x],
+        horizontal=True,
+        key="mismatch_lvl",
+    )
+
+    # ── Build demand vs supply table ──
+    rows = []
+    if group_level == "L1":
+        for code, node in tree.items():
+            demand_count = node.get("count", 0)
+            if demand_count == 0:
+                continue
+            title = node.get("title", code)
+            if code.startswith("L"):
+                continue  # handled as aggregate
+            supply_block = l1_data.get(code)
+            supply_hits = supply_block["national_n_with_group"] if supply_block else 0
+            rows.append({
+                "code": code,
+                "title": title,
+                "demand_count": demand_count,
+                "supply_count": supply_hits,
+            })
+        # Aggregate languages
+        lang_demand = sum(
+            tree[c].get("count", 0) for c in tree if c.startswith("L")
+        )
+        lang_supply = sum(
+            l1_data[c]["national_n_with_group"]
+            for c in l1_data if c.startswith("L")
+        )
+        if lang_demand > 0:
+            rows.append({
+                "code": "L_ALL",
+                "title": "Languages",
+                "demand_count": lang_demand,
+                "supply_count": lang_supply,
+            })
+    else:
+        l2_data = treg.get("L2") or {}
+        for l1_code, l1_node in tree.items():
+            if l1_code.startswith("L"):
+                demand_count = l1_node.get("count", 0)
+                if demand_count == 0:
+                    continue
+                supply_block = l1_data.get(l1_code)
+                supply_hits = supply_block["national_n_with_group"] if supply_block else 0
+                rows.append({
+                    "code": l1_code,
+                    "title": l1_node.get("title", l1_code),
+                    "demand_count": demand_count,
+                    "supply_count": supply_hits,
+                })
+                continue
+            for l2_code, l2_node in (l1_node.get("children") or {}).items():
+                demand_count = l2_node.get("count", 0)
+                if demand_count == 0:
+                    continue
+                supply_block = l2_data.get(l2_code)
+                supply_hits = supply_block["national_n_with_group"] if supply_block else 0
+                rows.append({
+                    "code": l2_code,
+                    "title": l2_node.get("title", l2_code),
+                    "demand_count": demand_count,
+                    "supply_count": supply_hits,
+                })
+
+    if not rows:
+        st.info("No data available.")
+        return
+
+    df = pd.DataFrame(rows)
+    total_demand = df["demand_count"].sum()
+    total_supply = df["supply_count"].sum()
+    df["demand_pct"] = (df["demand_count"] / total_demand * 100).round(2)
+    df["supply_pct"] = (df["supply_count"] / total_supply * 100).round(2) if total_supply > 0 else 0.0
+    df["gap_pp"] = (df["demand_pct"] - df["supply_pct"]).round(2)
+    df = df.sort_values("gap_pp", ascending=False)
+
+    # ── Summary metrics ──
+    col1, col2, col3 = st.columns(3)
+    col1.metric("Job offer skill mentions", f"{total_demand:,}")
+    col2.metric("Training competence matches", f"{total_supply:,}")
+    n_groups = len(df)
+    col3.metric(f"Groups ({_LEVEL_LABELS[group_level]})", n_groups)
+
+    # ── Table ──
+    df_disp = df[["code", "title", "demand_pct", "supply_pct", "gap_pp"]].rename(
+        columns={
+            "code": "Code",
+            "title": "Competence group",
+            "demand_pct": "Demand %",
+            "supply_pct": "Supply %",
+            "gap_pp": "Gap (pp)",
+        }
+    )
+    st.dataframe(df_disp, use_container_width=True, hide_index=True)
+
+    # ── Diverging bar chart ──
+    df_plot = df.head(30) if group_level == "L2" else df
+    labels = [
+        f"{r['title'][:45]}  ({r['code']})" for _, r in df_plot.iterrows()
+    ]
+    colors = [
+        "#E55B52" if g > 0 else "#3B82F6" for g in df_plot["gap_pp"]
+    ]
+
+    fig = pgo.Figure()
+    fig.add_trace(pgo.Bar(
+        x=df_plot["gap_pp"].tolist(),
+        y=labels,
+        orientation="h",
+        marker=dict(color=colors, cornerradius=4),
+        text=[f"{v:+.1f}" for v in df_plot["gap_pp"]],
+        textposition="outside",
+        cliponaxis=False,
+    ))
+    fig.add_vline(x=0, line_color="#333", line_width=1)
+    fig.update_layout(
+        title=dict(
+            text="Demand − Supply gap (percentage points)",
+            font=dict(size=14),
+        ),
+        height=max(400, len(df_plot) * 26 + 80),
+        margin=dict(l=10, r=60, t=40, b=40),
+        plot_bgcolor="#fff",
+        paper_bgcolor="#fff",
+        xaxis=dict(
+            title="Gap (pp): positive = under-supplied, negative = over-supplied",
+            zeroline=True,
+        ),
+        yaxis=dict(autorange="reversed", title=""),
+    )
+    st.plotly_chart(fig, use_container_width=True)
+
+    # ── Scatter: demand % vs supply % ──
+    fig2 = pgo.Figure()
+    fig2.add_trace(pgo.Scatter(
+        x=df["demand_pct"],
+        y=df["supply_pct"],
+        mode="markers+text",
+        text=df["code"],
+        textposition="top center",
+        textfont=dict(size=10),
+        marker=dict(
+            size=10,
+            color=df["gap_pp"],
+            colorscale=[[0, "#3B82F6"], [0.5, "#e0e0e0"], [1, "#E55B52"]],
+            cmid=0,
+            colorbar=dict(title="Gap (pp)"),
+            line=dict(width=0.5, color="#666"),
+        ),
+        hovertemplate=(
+            "<b>%{text}</b><br>"
+            "Demand: %{x:.1f}%<br>"
+            "Supply: %{y:.1f}%<br>"
+            "<extra></extra>"
+        ),
+    ))
+    max_val = max(df["demand_pct"].max(), df["supply_pct"].max()) * 1.1
+    fig2.add_shape(
+        type="line", x0=0, y0=0, x1=max_val, y1=max_val,
+        line=dict(dash="dash", color="#94a3b8", width=1),
+    )
+    fig2.update_layout(
+        title=dict(text="Demand vs Supply share", font=dict(size=14)),
+        height=500,
+        margin=dict(l=60, r=20, t=40, b=60),
+        plot_bgcolor="#fff",
+        paper_bgcolor="#fff",
+        xaxis=dict(title="Demand share (%)", rangemode="tozero"),
+        yaxis=dict(title="Supply share (%)", rangemode="tozero"),
+    )
+    st.plotly_chart(fig2, use_container_width=True)
+
+    # ── Methodology ──
+    with st.expander("Methodology"):
+        st.markdown(
+            "**Demand** is measured as the share of each competence group in "
+            "total ESCO skill/knowledge mentions extracted from ~750k job offers "
+            "on Pracuj.pl (2025). Each mention is mapped to the ESCO hierarchy "
+            "and counted at the selected aggregation level.\n\n"
+            "**Supply** is measured as the share of each competence group in "
+            "total ESCO competence matches across ~130k BUR training services "
+            "that could be matched to at least one ESCO concept (similarity "
+            "threshold ≥ 0.7). A training is counted once per group if it "
+            "contains at least one matching ESCO URI.\n\n"
+            "**Gap** = Demand % − Supply %. A positive gap indicates the "
+            "competence group is *under-supplied* by the training system "
+            "relative to labour market demand. A negative gap indicates "
+            "*over-supply*.\n\n"
+            "**Limitations:** Demand and supply are measured using different "
+            "units (skill mentions vs training-level matches), so the "
+            "comparison captures *structural composition*, not absolute "
+            "volumes. Language competences are aggregated into a single "
+            "category at the top level."
+        )
+
+
 def _render_skills_search_tab():
     st.markdown('<div class="sec-label">Top Skills in Job Offers</div>', unsafe_allow_html=True)
     st.components.v1.iframe(
@@ -1635,6 +1861,7 @@ def main():
             "Skill Trends",
             "AI Skills",
             "Trainings",
+            "Skills Mismatch",
         ]
         skills_view = st.selectbox(
             "View",
@@ -1654,6 +1881,8 @@ def main():
             _render_ai_tab()
         elif skills_view == "Trainings":
             _render_trainings_tab()
+        elif skills_view == "Skills Mismatch":
+            _render_mismatch_tab()
 
     # ── Tab 3: NACE ──
     with tab3:
