@@ -1001,23 +1001,36 @@ def _trainings_l1_options_bur(skills_cache: dict, treg: dict) -> list:
     tree = skills_cache.get("tree") or {}
     have = set((treg.get("L1") or {}).keys())
     opts = []
+    has_lang = False
     for code, node in tree.items():
+        if code.startswith("L"):
+            if code in have:
+                has_lang = True
+            continue
         if (_is_skills_code(code) or _is_knowledge_code(code)) and code in have:
             title = node.get("title", code)
             opts.append((code, title, f"{title}  ({code})"))
+    if has_lang:
+        opts.append(("L_ALL", "Languages", "Languages  (L)"))
     opts.sort(key=lambda x: _trainings_code_sort_key(x[0]))
     return opts
 
 
 def _trainings_l2_options_bur(skills_cache: dict, treg: dict) -> list:
     tree = skills_cache.get("tree") or {}
-    have = set((treg.get("L2") or {}).keys())
+    have_l2 = set((treg.get("L2") or {}).keys())
+    have_l1 = set((treg.get("L1") or {}).keys())
     out = []
     for l1, n1 in tree.items():
+        if l1.startswith("L"):
+            if l1 in have_l1:
+                title = n1.get("title", l1)
+                out.append((l1, title, f"{title}  ({l1})"))
+            continue
         if not (_is_skills_code(l1) or _is_knowledge_code(l1)):
             continue
         for l2, n2 in (n1.get("children") or {}).items():
-            if l2 not in have:
+            if l2 not in have_l2:
                 continue
             t2 = n2.get("title", l2)
             out.append((l2, t2, f"{t2}  ({l2})"))
@@ -1025,8 +1038,56 @@ def _trainings_l2_options_bur(skills_cache: dict, treg: dict) -> list:
     return out
 
 
+def _aggregate_language_stats(treg: dict):
+    """Aggregate all individual L* groups into a single Languages block."""
+    l1_data = treg.get("L1") or {}
+    lang_codes = [c for c in l1_data if c.startswith("L")]
+    if not lang_codes:
+        return None
+    all_voivs: set = set()
+    for code in lang_codes:
+        all_voivs.update((l1_data[code].get("by_voivodeship") or {}).keys())
+    rows = []
+    total_uris = sum(l1_data[c].get("n_uris_in_group", 0) for c in lang_codes)
+    for voiv in all_voivs:
+        n_trainings = 0
+        n_with_group = 0
+        for code in lang_codes:
+            r = (l1_data[code].get("by_voivodeship") or {}).get(voiv)
+            if r:
+                n_trainings = r["n_trainings"]
+                n_with_group += r["n_with_group"]
+        n_with_group = min(n_with_group, n_trainings)
+        pct = round(n_with_group / n_trainings * 100, 1) if n_trainings > 0 else 0.0
+        rows.append({
+            "voivodeship": voiv,
+            "n_trainings": n_trainings,
+            "n_with_skill_group": n_with_group,
+            "pct_trainings": pct,
+        })
+    first = l1_data[lang_codes[0]]
+    national_n = first.get("national_n_trainings", 0)
+    national_hits = min(
+        sum(l1_data[c].get("national_n_with_group", 0) for c in lang_codes),
+        national_n,
+    )
+    national_pct = round(national_hits / national_n * 100, 1) if national_n > 0 else 0.0
+    return {
+        "rows": rows,
+        "national_pct": national_pct,
+        "national_n": national_n,
+        "national_hits": national_hits,
+        "n_uris_in_group": total_uris,
+    }
+
+
 def _trainings_stats_from_cache(treg: dict, group_level: str, group_code: str):
-    block = (treg.get(group_level) or {}).get(group_code)
+    if group_level == "L1" and group_code == "L_ALL":
+        return _aggregate_language_stats(treg)
+    lookup_level = group_level
+    if group_level == "L2" and group_code.startswith("L"):
+        lookup_level = "L1"
+    block = (treg.get(lookup_level) or {}).get(group_code)
     if not block:
         return None
     by_voiv = block.get("by_voivodeship") or {}
@@ -1120,10 +1181,13 @@ def _render_trainings_tab():
     if use_within:
         tree = cache.get("tree") or {}
         parent_l1_code = None
-        for l1c, l1n in tree.items():
-            if group_code in (l1n.get("children") or {}):
-                parent_l1_code = l1c
-                break
+        if group_code.startswith("L"):
+            parent_l1_code = "L_ALL"
+        else:
+            for l1c, l1n in tree.items():
+                if group_code in (l1n.get("children") or {}):
+                    parent_l1_code = l1c
+                    break
         stats_l1 = _trainings_stats_from_cache(treg, "L1", parent_l1_code) if parent_l1_code else None
         if stats_l1 and stats_l1["rows"]:
             l1_hits = {r["voivodeship"]: r["n_with_skill_group"] for r in stats_l1["rows"]}
