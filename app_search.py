@@ -1402,12 +1402,6 @@ def _render_mismatch_tab():
     df["gap_pp"] = (df["demand_pct"] - df["supply_pct"]).round(2)
     df = df.sort_values("gap_pp", ascending=False)
 
-    # ── Summary metrics ──
-    col1, col2, col3 = st.columns(3)
-    col1.metric("Job offer skill mentions", f"{total_demand:,}")
-    col2.metric("Training competence matches", f"{total_supply:,}")
-    n_groups = len(df)
-    col3.metric(f"Groups ({_LEVEL_LABELS[group_level]})", n_groups)
 
     # ── Table ──
     df_disp = df[["code", "title", "demand_pct", "supply_pct", "gap_pp"]].rename(
@@ -1467,6 +1461,7 @@ def _render_mismatch_tab():
         text=df["code"],
         textposition="top center",
         textfont=dict(size=10),
+        customdata=df["title"],
         marker=dict(
             size=10,
             color=df["gap_pp"],
@@ -1476,7 +1471,7 @@ def _render_mismatch_tab():
             line=dict(width=0.5, color="#666"),
         ),
         hovertemplate=(
-            "<b>%{text}</b><br>"
+            "<b>%{text}</b> %{customdata}<br>"
             "Demand: %{x:.1f}%<br>"
             "Supply: %{y:.1f}%<br>"
             "<extra></extra>"

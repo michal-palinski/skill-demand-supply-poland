@@ -2546,8 +2546,6 @@ for ~40 AI-specific terms and phrases, including both English and Polish variant
 `TensorFlow`, `PyTorch`, `scikit-learn`, `MLOps`, `data scientist`, `big data`,
 `reinforcement learning`, `predictive model`, etc.
 
-Word boundaries (`\\b`) are used to avoid false positives.
-
 ---
 
 #### Combined result
