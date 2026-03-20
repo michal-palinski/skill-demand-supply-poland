@@ -1,0 +1,704 @@
+{
+  "id_kategorii_uslugi": [
+    {
+      "id": 412,
+      "nazwa": "Prawo i administracja"
+    },
+    {
+      "id": 444,
+      "nazwa": "Języki"
+    },
+    {
+      "id": 454,
+      "nazwa": "Techniczne"
+    },
+    {
+      "id": 469,
+      "nazwa": "Finanse i bankowość"
+    },
+    {
+      "id": 479,
+      "nazwa": "Informatyka i telekomunikacja"
+    },
+    {
+      "id": 489,
+      "nazwa": "Ekologia i rolnictwo"
+    },
+    {
+      "id": 505,
+      "nazwa": "Inne"
+    },
+    {
+      "id": 506,
+      "nazwa": "Prawo jazdy"
+    },
+    {
+      "id": 546,
+      "nazwa": "Zdrowie i medycyna"
+    },
+    {
+      "id": 555,
+      "nazwa": "Styl życia"
+    },
+    {
+      "id": 559,
+      "nazwa": "Biznes"
+    },
+    {
+      "id": 568,
+      "nazwa": "Transport i motoryzacja"
+    }
+  ],
+  "id_podkategorii_uslugi": [
+    {
+      "id": 413,
+      "nazwa": "Administracja publiczna",
+      "id_kategorii": 412,
+      "kategoria": "Prawo i administracja"
+    },
+    {
+      "id": 414,
+      "nazwa": "Prawo pozostałe",
+      "id_kategorii": 412,
+      "kategoria": "Prawo i administracja"
+    },
+    {
+      "id": 415,
+      "nazwa": "Prawo administracyjne",
+      "id_kategorii": 412,
+      "kategoria": "Prawo i administracja"
+    },
+    {
+      "id": 416,
+      "nazwa": "Prawo budowlane",
+      "id_kategorii": 412,
+      "kategoria": "Prawo i administracja"
+    },
+    {
+      "id": 417,
+      "nazwa": "Prawo handlowe",
+      "id_kategorii": 412,
+      "kategoria": "Prawo i administracja"
+    },
+    {
+      "id": 418,
+      "nazwa": "Prawo ogólne",
+      "id_kategorii": 412,
+      "kategoria": "Prawo i administracja"
+    },
+    {
+      "id": 419,
+      "nazwa": "Prawo pracy",
+      "id_kategorii": 412,
+      "kategoria": "Prawo i administracja"
+    },
+    {
+      "id": 420,
+      "nazwa": "Prawo Unii Europejskiej",
+      "id_kategorii": 412,
+      "kategoria": "Prawo i administracja"
+    },
+    {
+      "id": 421,
+      "nazwa": "Zamówienia publiczne",
+      "id_kategorii": 412,
+      "kategoria": "Prawo i administracja"
+    },
+    {
+      "id": 422,
+      "nazwa": "Ochrona informacji niejawnych",
+      "id_kategorii": 412,
+      "kategoria": "Prawo i administracja"
+    },
+    {
+      "id": 424,
+      "nazwa": "Organizacje pozarządowe ( NGO)",
+      "id_kategorii": 412,
+      "kategoria": "Prawo i administracja"
+    },
+    {
+      "id": 425,
+      "nazwa": "Pomoc społeczna",
+      "id_kategorii": 412,
+      "kategoria": "Prawo i administracja"
+    },
+    {
+      "id": 445,
+      "nazwa": "Angielski",
+      "id_kategorii": 444,
+      "kategoria": "Języki"
+    },
+    {
+      "id": 446,
+      "nazwa": "Francuski",
+      "id_kategorii": 444,
+      "kategoria": "Języki"
+    },
+    {
+      "id": 447,
+      "nazwa": "Hiszpański",
+      "id_kategorii": 444,
+      "kategoria": "Języki"
+    },
+    {
+      "id": 448,
+      "nazwa": "Niemiecki",
+      "id_kategorii": 444,
+      "kategoria": "Języki"
+    },
+    {
+      "id": 449,
+      "nazwa": "Rosyjski",
+      "id_kategorii": 444,
+      "kategoria": "Języki"
+    },
+    {
+      "id": 450,
+      "nazwa": "Włoski",
+      "id_kategorii": 444,
+      "kategoria": "Języki"
+    },
+    {
+      "id": 452,
+      "nazwa": "Języki europejskie",
+      "id_kategorii": 444,
+      "kategoria": "Języki"
+    },
+    {
+      "id": 453,
+      "nazwa": "Pozostałe języki",
+      "id_kategorii": 444,
+      "kategoria": "Języki"
+    },
+    {
+      "id": 455,
+      "nazwa": "Automatyka i robotyka",
+      "id_kategorii": 454,
+      "kategoria": "Techniczne"
+    },
+    {
+      "id": 460,
+      "nazwa": "Geodezja i kartografia",
+      "id_kategorii": 454,
+      "kategoria": "Techniczne"
+    },
+    {
+      "id": 461,
+      "nazwa": "Hydraulika",
+      "id_kategorii": 454,
+      "kategoria": "Techniczne"
+    },
+    {
+      "id": 462,
+      "nazwa": "Papiernictwo i poligrafia",
+      "id_kategorii": 454,
+      "kategoria": "Techniczne"
+    },
+    {
+      "id": 464,
+      "nazwa": "Elektronika i elektrotechnika",
+      "id_kategorii": 454,
+      "kategoria": "Techniczne"
+    },
+    {
+      "id": 465,
+      "nazwa": "Inżynieria i metrologia",
+      "id_kategorii": 454,
+      "kategoria": "Techniczne"
+    },
+    {
+      "id": 466,
+      "nazwa": "Mechanika i mechatronika",
+      "id_kategorii": 454,
+      "kategoria": "Techniczne"
+    },
+    {
+      "id": 467,
+      "nazwa": "Metalurgia i spawalnictwo",
+      "id_kategorii": 454,
+      "kategoria": "Techniczne"
+    },
+    {
+      "id": 571,
+      "nazwa": "Budownictwo i projektowanie",
+      "id_kategorii": 454,
+      "kategoria": "Techniczne"
+    },
+    {
+      "id": 572,
+      "nazwa": "Energetyka i gazownictwo",
+      "id_kategorii": 454,
+      "kategoria": "Techniczne"
+    },
+    {
+      "id": 573,
+      "nazwa": "Obsługa maszyn i urządzeń",
+      "id_kategorii": 454,
+      "kategoria": "Techniczne"
+    },
+    {
+      "id": 574,
+      "nazwa": "Pozostałe techniczne",
+      "id_kategorii": 454,
+      "kategoria": "Techniczne"
+    },
+    {
+      "id": 470,
+      "nazwa": "Audyt",
+      "id_kategorii": 469,
+      "kategoria": "Finanse i bankowość"
+    },
+    {
+      "id": 471,
+      "nazwa": "Rachunkowość/księgowość",
+      "id_kategorii": 469,
+      "kategoria": "Finanse i bankowość"
+    },
+    {
+      "id": 472,
+      "nazwa": "Bankowość",
+      "id_kategorii": 469,
+      "kategoria": "Finanse i bankowość"
+    },
+    {
+      "id": 475,
+      "nazwa": "Inwestycje",
+      "id_kategorii": 469,
+      "kategoria": "Finanse i bankowość"
+    },
+    {
+      "id": 476,
+      "nazwa": "Podatki",
+      "id_kategorii": 469,
+      "kategoria": "Finanse i bankowość"
+    },
+    {
+      "id": 477,
+      "nazwa": "Ubezpieczenia",
+      "id_kategorii": 469,
+      "kategoria": "Finanse i bankowość"
+    },
+    {
+      "id": 478,
+      "nazwa": "Windykacja",
+      "id_kategorii": 469,
+      "kategoria": "Finanse i bankowość"
+    },
+    {
+      "id": 541,
+      "nazwa": "Finanse i doradztwo finansowe",
+      "id_kategorii": 469,
+      "kategoria": "Finanse i bankowość"
+    },
+    {
+      "id": 481,
+      "nazwa": "Aplikacje biznesowe",
+      "id_kategorii": 479,
+      "kategoria": "Informatyka i telekomunikacja"
+    },
+    {
+      "id": 482,
+      "nazwa": "Bezpieczeństwo IT",
+      "id_kategorii": 479,
+      "kategoria": "Informatyka i telekomunikacja"
+    },
+    {
+      "id": 483,
+      "nazwa": "Internet",
+      "id_kategorii": 479,
+      "kategoria": "Informatyka i telekomunikacja"
+    },
+    {
+      "id": 484,
+      "nazwa": "Obsługa komputera",
+      "id_kategorii": 479,
+      "kategoria": "Informatyka i telekomunikacja"
+    },
+    {
+      "id": 485,
+      "nazwa": "Programowanie",
+      "id_kategorii": 479,
+      "kategoria": "Informatyka i telekomunikacja"
+    },
+    {
+      "id": 488,
+      "nazwa": "Telekomunikacja",
+      "id_kategorii": 479,
+      "kategoria": "Informatyka i telekomunikacja"
+    },
+    {
+      "id": 542,
+      "nazwa": "Administracja IT i systemy komputerowe",
+      "id_kategorii": 479,
+      "kategoria": "Informatyka i telekomunikacja"
+    },
+    {
+      "id": 543,
+      "nazwa": "Projektowanie graficzne i wspomagane komputerowo",
+      "id_kategorii": 479,
+      "kategoria": "Informatyka i telekomunikacja"
+    },
+    {
+      "id": 544,
+      "nazwa": "Bazy danych",
+      "id_kategorii": 479,
+      "kategoria": "Informatyka i telekomunikacja"
+    },
+    {
+      "id": 490,
+      "nazwa": "Ochrona środowiska",
+      "id_kategorii": 489,
+      "kategoria": "Ekologia i rolnictwo"
+    },
+    {
+      "id": 492,
+      "nazwa": "Rolnictwo",
+      "id_kategorii": 489,
+      "kategoria": "Ekologia i rolnictwo"
+    },
+    {
+      "id": 540,
+      "nazwa": "Weterynaria",
+      "id_kategorii": 489,
+      "kategoria": "Ekologia i rolnictwo"
+    },
+    {
+      "id": 575,
+      "nazwa": "Artystyczne",
+      "id_kategorii": 505,
+      "kategoria": "Inne"
+    },
+    {
+      "id": 576,
+      "nazwa": "Turystyka i hotelarstwo",
+      "id_kategorii": 505,
+      "kategoria": "Inne"
+    },
+    {
+      "id": 577,
+      "nazwa": "Gastronomia",
+      "id_kategorii": 505,
+      "kategoria": "Inne"
+    },
+    {
+      "id": 578,
+      "nazwa": "Edukacja",
+      "id_kategorii": 505,
+      "kategoria": "Inne"
+    },
+    {
+      "id": 510,
+      "nazwa": "Kurs prawa jazdy kat.A",
+      "id_kategorii": 506,
+      "kategoria": "Prawo jazdy"
+    },
+    {
+      "id": 511,
+      "nazwa": "Kurs prawa jazdy kat.A1",
+      "id_kategorii": 506,
+      "kategoria": "Prawo jazdy"
+    },
+    {
+      "id": 512,
+      "nazwa": "Kurs prawa jazdy kat.A2",
+      "id_kategorii": 506,
+      "kategoria": "Prawo jazdy"
+    },
+    {
+      "id": 513,
+      "nazwa": "Kurs prawa jazdy kat.B",
+      "id_kategorii": 506,
+      "kategoria": "Prawo jazdy"
+    },
+    {
+      "id": 514,
+      "nazwa": "Kurs prawa jazdy kat.B+E",
+      "id_kategorii": 506,
+      "kategoria": "Prawo jazdy"
+    },
+    {
+      "id": 515,
+      "nazwa": "Kurs prawa jazdy kat.B1",
+      "id_kategorii": 506,
+      "kategoria": "Prawo jazdy"
+    },
+    {
+      "id": 516,
+      "nazwa": "Kurs prawa jazdy kat.C",
+      "id_kategorii": 506,
+      "kategoria": "Prawo jazdy"
+    },
+    {
+      "id": 517,
+      "nazwa": "Kurs prawa jazdy kat.C+E",
+      "id_kategorii": 506,
+      "kategoria": "Prawo jazdy"
+    },
+    {
+      "id": 518,
+      "nazwa": "Kurs prawa jazdy kat.C1",
+      "id_kategorii": 506,
+      "kategoria": "Prawo jazdy"
+    },
+    {
+      "id": 519,
+      "nazwa": "Kurs prawa jazdy kat.C1+E",
+      "id_kategorii": 506,
+      "kategoria": "Prawo jazdy"
+    },
+    {
+      "id": 520,
+      "nazwa": "Kurs prawa jazdy kat.D",
+      "id_kategorii": 506,
+      "kategoria": "Prawo jazdy"
+    },
+    {
+      "id": 526,
+      "nazwa": "Kursy mieszane lub specjalistyczne",
+      "id_kategorii": 506,
+      "kategoria": "Prawo jazdy"
+    },
+    {
+      "id": 539,
+      "nazwa": "Kurs prawa jazdy kat.D+E",
+      "id_kategorii": 506,
+      "kategoria": "Prawo jazdy"
+    },
+    {
+      "id": 545,
+      "nazwa": "Kurs na instruktora/egzaminatora prawa jazdy",
+      "id_kategorii": 506,
+      "kategoria": "Prawo jazdy"
+    },
+    {
+      "id": 579,
+      "nazwa": "Kurs prawa jazdy kat.AM",
+      "id_kategorii": 506,
+      "kategoria": "Prawo jazdy"
+    },
+    {
+      "id": 580,
+      "nazwa": "Kurs prawa jazdy kat.D1",
+      "id_kategorii": 506,
+      "kategoria": "Prawo jazdy"
+    },
+    {
+      "id": 581,
+      "nazwa": "Kurs prawa jazdy kat.D1+E",
+      "id_kategorii": 506,
+      "kategoria": "Prawo jazdy"
+    },
+    {
+      "id": 582,
+      "nazwa": "Kwalifikacje na przewóz osób lub rzeczy",
+      "id_kategorii": 506,
+      "kategoria": "Prawo jazdy"
+    },
+    {
+      "id": 547,
+      "nazwa": "Farmacja",
+      "id_kategorii": 546,
+      "kategoria": "Zdrowie i medycyna"
+    },
+    {
+      "id": 548,
+      "nazwa": "Logopedia",
+      "id_kategorii": 546,
+      "kategoria": "Zdrowie i medycyna"
+    },
+    {
+      "id": 549,
+      "nazwa": "Psychologia i rozwój osobisty",
+      "id_kategorii": 546,
+      "kategoria": "Zdrowie i medycyna"
+    },
+    {
+      "id": 550,
+      "nazwa": "Medycyna",
+      "id_kategorii": 546,
+      "kategoria": "Zdrowie i medycyna"
+    },
+    {
+      "id": 551,
+      "nazwa": "Medycyna estetyczna i kosmetologia",
+      "id_kategorii": 546,
+      "kategoria": "Zdrowie i medycyna"
+    },
+    {
+      "id": 552,
+      "nazwa": "Optyka",
+      "id_kategorii": 546,
+      "kategoria": "Zdrowie i medycyna"
+    },
+    {
+      "id": 553,
+      "nazwa": "Stomatologia",
+      "id_kategorii": 546,
+      "kategoria": "Zdrowie i medycyna"
+    },
+    {
+      "id": 554,
+      "nazwa": "Zdrowie publiczne",
+      "id_kategorii": 546,
+      "kategoria": "Zdrowie i medycyna"
+    },
+    {
+      "id": 556,
+      "nazwa": "Dietetyka",
+      "id_kategorii": 555,
+      "kategoria": "Styl życia"
+    },
+    {
+      "id": 557,
+      "nazwa": "Sport",
+      "id_kategorii": 555,
+      "kategoria": "Styl życia"
+    },
+    {
+      "id": 558,
+      "nazwa": "Uroda",
+      "id_kategorii": 555,
+      "kategoria": "Styl życia"
+    },
+    {
+      "id": 560,
+      "nazwa": "Marketing",
+      "id_kategorii": 559,
+      "kategoria": "Biznes"
+    },
+    {
+      "id": 561,
+      "nazwa": "PR",
+      "id_kategorii": 559,
+      "kategoria": "Biznes"
+    },
+    {
+      "id": 562,
+      "nazwa": "Sprzedaż",
+      "id_kategorii": 559,
+      "kategoria": "Biznes"
+    },
+    {
+      "id": 563,
+      "nazwa": "Logistyka",
+      "id_kategorii": 559,
+      "kategoria": "Biznes"
+    },
+    {
+      "id": 564,
+      "nazwa": "Organizacja",
+      "id_kategorii": 559,
+      "kategoria": "Biznes"
+    },
+    {
+      "id": 565,
+      "nazwa": "Negocjacje",
+      "id_kategorii": 559,
+      "kategoria": "Biznes"
+    },
+    {
+      "id": 566,
+      "nazwa": "Zarządzanie zasobami ludzkimi",
+      "id_kategorii": 559,
+      "kategoria": "Biznes"
+    },
+    {
+      "id": 567,
+      "nazwa": "Zarządzanie przedsiębiorstwem",
+      "id_kategorii": 559,
+      "kategoria": "Biznes"
+    },
+    {
+      "id": 569,
+      "nazwa": "Motoryzacja",
+      "id_kategorii": 568,
+      "kategoria": "Transport i motoryzacja"
+    },
+    {
+      "id": 570,
+      "nazwa": "Transport i logistyka",
+      "id_kategorii": 568,
+      "kategoria": "Transport i motoryzacja"
+    }
+  ],
+  "id_rodzaju_uslugi": [
+    {
+      "id": 144,
+      "nazwa": "Usługa szkoleniowa"
+    },
+    {
+      "id": 150,
+      "nazwa": "Usługa doradcza"
+    }
+  ],
+  "id_podrodzaju_uslugi": [
+    {
+      "id": 145,
+      "nazwa": "Usługa szkoleniowa",
+      "id_rodzaju": 144,
+      "rodzaj": "Usługa szkoleniowa"
+    },
+    {
+      "id": 146,
+      "nazwa": "Usługa o charakterze zawodowym",
+      "id_rodzaju": 144,
+      "rodzaj": "Usługa szkoleniowa"
+    },
+    {
+      "id": 147,
+      "nazwa": "Studia podyplomowe",
+      "id_rodzaju": 144,
+      "rodzaj": "Usługa szkoleniowa"
+    },
+    {
+      "id": 148,
+      "nazwa": "Egzamin",
+      "id_rodzaju": 144,
+      "rodzaj": "Usługa szkoleniowa"
+    },
+    {
+      "id": 1721,
+      "nazwa": "Doradztwo biznesowe",
+      "id_rodzaju": 150,
+      "rodzaj": "Usługa doradcza"
+    },
+    {
+      "id": 152,
+      "nazwa": "Coaching",
+      "id_rodzaju": 150,
+      "rodzaj": "Usługa doradcza"
+    },
+    {
+      "id": 153,
+      "nazwa": "Mentoring",
+      "id_rodzaju": 150,
+      "rodzaj": "Usługa doradcza"
+    }
+  ],
+  "id_formy_swiadczenia": [
+    {
+      "id": 1,
+      "nazwa": "stacjonarna"
+    },
+    {
+      "id": 2,
+      "nazwa": "zdalna w czasie rzeczywistym"
+    },
+    {
+      "id": 3,
+      "nazwa": "zdalna"
+    },
+    {
+      "id": 4,
+      "nazwa": "mieszana (stacjonarna połączona z usługą zdalną w czasie rzeczywistym)"
+    },
+    {
+      "id": 5,
+      "nazwa": "mieszana (stacjonarna połączona z usługą zdalną)"
+    },
+    {
+      "id": 6,
+      "nazwa": "mieszana (zdalna połączona z usługą zdalną w czasie rzeczywistym)"
+    }
+  ]
+}

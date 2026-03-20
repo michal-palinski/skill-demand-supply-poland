@@ -1,0 +1,31 @@
+{
+  "lista": [
+    {
+      "id": 1,
+      "nazwa": "stacjonarna"
+    },
+    {
+      "id": 2,
+      "nazwa": "zdalna w czasie rzeczywistym"
+    },
+    {
+      "id": 3,
+      "nazwa": "zdalna"
+    },
+    {
+      "id": 4,
+      "nazwa": "mieszana (stacjonarna połączona z usługą zdalną w czasie rzeczywistym)"
+    },
+    {
+      "id": 5,
+      "nazwa": "mieszana (stacjonarna połączona z usługą zdalną)"
+    },
+    {
+      "id": 6,
+      "nazwa": "mieszana (zdalna połączona z usługą zdalną w czasie rzeczywistym)"
+    }
+  ],
+  "strona": 1,
+  "elementyNaStrone": 25,
+  "wszystkieElementy": 6
+}

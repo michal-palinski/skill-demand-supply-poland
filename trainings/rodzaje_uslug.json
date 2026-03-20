@@ -1,0 +1,47 @@
+{
+  "lista": [
+    {
+      "id": 144,
+      "nazwa": "Usługa szkoleniowa",
+      "pozycjePodrzedne": [
+        {
+          "id": 145,
+          "nazwa": "Usługa szkoleniowa"
+        },
+        {
+          "id": 146,
+          "nazwa": "Usługa o charakterze zawodowym"
+        },
+        {
+          "id": 147,
+          "nazwa": "Studia podyplomowe"
+        },
+        {
+          "id": 148,
+          "nazwa": "Egzamin"
+        }
+      ]
+    },
+    {
+      "id": 150,
+      "nazwa": "Usługa doradcza",
+      "pozycjePodrzedne": [
+        {
+          "id": 1721,
+          "nazwa": "Doradztwo biznesowe"
+        },
+        {
+          "id": 152,
+          "nazwa": "Coaching"
+        },
+        {
+          "id": 153,
+          "nazwa": "Mentoring"
+        }
+      ]
+    }
+  ],
+  "strona": 1,
+  "elementyNaStrone": 25,
+  "wszystkieElementy": 2
+}

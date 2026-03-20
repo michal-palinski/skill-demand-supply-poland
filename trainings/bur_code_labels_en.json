@@ -1,0 +1,826 @@
+{
+  "id_kategorii_uslugi": [
+    {
+      "id": 412,
+      "nazwa": "Prawo i administracja",
+      "nazwa_en": "Law and administration"
+    },
+    {
+      "id": 444,
+      "nazwa": "Języki",
+      "nazwa_en": "Languages"
+    },
+    {
+      "id": 454,
+      "nazwa": "Techniczne",
+      "nazwa_en": "Technical"
+    },
+    {
+      "id": 469,
+      "nazwa": "Finanse i bankowość",
+      "nazwa_en": "Finance and Banking"
+    },
+    {
+      "id": 479,
+      "nazwa": "Informatyka i telekomunikacja",
+      "nazwa_en": "Computer Science and Telecommunications"
+    },
+    {
+      "id": 489,
+      "nazwa": "Ekologia i rolnictwo",
+      "nazwa_en": "Ecology and agriculture"
+    },
+    {
+      "id": 505,
+      "nazwa": "Inne",
+      "nazwa_en": "Other"
+    },
+    {
+      "id": 506,
+      "nazwa": "Prawo jazdy",
+      "nazwa_en": "Driver's license"
+    },
+    {
+      "id": 546,
+      "nazwa": "Zdrowie i medycyna",
+      "nazwa_en": "Health and medicine"
+    },
+    {
+      "id": 555,
+      "nazwa": "Styl życia",
+      "nazwa_en": "Lifestyle"
+    },
+    {
+      "id": 559,
+      "nazwa": "Biznes",
+      "nazwa_en": "Business"
+    },
+    {
+      "id": 568,
+      "nazwa": "Transport i motoryzacja",
+      "nazwa_en": "Transport and automotive"
+    }
+  ],
+  "id_podkategorii_uslugi": [
+    {
+      "id": 413,
+      "nazwa": "Administracja publiczna",
+      "id_kategorii": 412,
+      "kategoria": "Prawo i administracja",
+      "nazwa_en": "Public administration"
+    },
+    {
+      "id": 414,
+      "nazwa": "Prawo pozostałe",
+      "id_kategorii": 412,
+      "kategoria": "Prawo i administracja",
+      "nazwa_en": "Other law"
+    },
+    {
+      "id": 415,
+      "nazwa": "Prawo administracyjne",
+      "id_kategorii": 412,
+      "kategoria": "Prawo i administracja",
+      "nazwa_en": "Administrative law"
+    },
+    {
+      "id": 416,
+      "nazwa": "Prawo budowlane",
+      "id_kategorii": 412,
+      "kategoria": "Prawo i administracja",
+      "nazwa_en": "Construction Law"
+    },
+    {
+      "id": 417,
+      "nazwa": "Prawo handlowe",
+      "id_kategorii": 412,
+      "kategoria": "Prawo i administracja",
+      "nazwa_en": "Commercial law"
+    },
+    {
+      "id": 418,
+      "nazwa": "Prawo ogólne",
+      "id_kategorii": 412,
+      "kategoria": "Prawo i administracja",
+      "nazwa_en": "General law"
+    },
+    {
+      "id": 419,
+      "nazwa": "Prawo pracy",
+      "id_kategorii": 412,
+      "kategoria": "Prawo i administracja",
+      "nazwa_en": "Labor law"
+    },
+    {
+      "id": 420,
+      "nazwa": "Prawo Unii Europejskiej",
+      "id_kategorii": 412,
+      "kategoria": "Prawo i administracja",
+      "nazwa_en": "European Union law"
+    },
+    {
+      "id": 421,
+      "nazwa": "Zamówienia publiczne",
+      "id_kategorii": 412,
+      "kategoria": "Prawo i administracja",
+      "nazwa_en": "Public procurement"
+    },
+    {
+      "id": 422,
+      "nazwa": "Ochrona informacji niejawnych",
+      "id_kategorii": 412,
+      "kategoria": "Prawo i administracja",
+      "nazwa_en": "Protection of classified information"
+    },
+    {
+      "id": 424,
+      "nazwa": "Organizacje pozarządowe ( NGO)",
+      "id_kategorii": 412,
+      "kategoria": "Prawo i administracja",
+      "nazwa_en": "Non-governmental organizations (NGOs)"
+    },
+    {
+      "id": 425,
+      "nazwa": "Pomoc społeczna",
+      "id_kategorii": 412,
+      "kategoria": "Prawo i administracja",
+      "nazwa_en": "Social welfare"
+    },
+    {
+      "id": 445,
+      "nazwa": "Angielski",
+      "id_kategorii": 444,
+      "kategoria": "Języki",
+      "nazwa_en": "English"
+    },
+    {
+      "id": 446,
+      "nazwa": "Francuski",
+      "id_kategorii": 444,
+      "kategoria": "Języki",
+      "nazwa_en": "French"
+    },
+    {
+      "id": 447,
+      "nazwa": "Hiszpański",
+      "id_kategorii": 444,
+      "kategoria": "Języki",
+      "nazwa_en": "Spanish"
+    },
+    {
+      "id": 448,
+      "nazwa": "Niemiecki",
+      "id_kategorii": 444,
+      "kategoria": "Języki",
+      "nazwa_en": "German"
+    },
+    {
+      "id": 449,
+      "nazwa": "Rosyjski",
+      "id_kategorii": 444,
+      "kategoria": "Języki",
+      "nazwa_en": "Russian"
+    },
+    {
+      "id": 450,
+      "nazwa": "Włoski",
+      "id_kategorii": 444,
+      "kategoria": "Języki",
+      "nazwa_en": "Italian"
+    },
+    {
+      "id": 452,
+      "nazwa": "Języki europejskie",
+      "id_kategorii": 444,
+      "kategoria": "Języki",
+      "nazwa_en": "European languages"
+    },
+    {
+      "id": 453,
+      "nazwa": "Pozostałe języki",
+      "id_kategorii": 444,
+      "kategoria": "Języki",
+      "nazwa_en": "Other languages"
+    },
+    {
+      "id": 455,
+      "nazwa": "Automatyka i robotyka",
+      "id_kategorii": 454,
+      "kategoria": "Techniczne",
+      "nazwa_en": "Automation and Robotics"
+    },
+    {
+      "id": 460,
+      "nazwa": "Geodezja i kartografia",
+      "id_kategorii": 454,
+      "kategoria": "Techniczne",
+      "nazwa_en": "Geodesy and Cartography"
+    },
+    {
+      "id": 461,
+      "nazwa": "Hydraulika",
+      "id_kategorii": 454,
+      "kategoria": "Techniczne",
+      "nazwa_en": "Hydraulics"
+    },
+    {
+      "id": 462,
+      "nazwa": "Papiernictwo i poligrafia",
+      "id_kategorii": 454,
+      "kategoria": "Techniczne",
+      "nazwa_en": "Paper and printing"
+    },
+    {
+      "id": 464,
+      "nazwa": "Elektronika i elektrotechnika",
+      "id_kategorii": 454,
+      "kategoria": "Techniczne",
+      "nazwa_en": "Electronics and electrical engineering"
+    },
+    {
+      "id": 465,
+      "nazwa": "Inżynieria i metrologia",
+      "id_kategorii": 454,
+      "kategoria": "Techniczne",
+      "nazwa_en": "Engineering and Metrology"
+    },
+    {
+      "id": 466,
+      "nazwa": "Mechanika i mechatronika",
+      "id_kategorii": 454,
+      "kategoria": "Techniczne",
+      "nazwa_en": "Mechanics and Mechatronics"
+    },
+    {
+      "id": 467,
+      "nazwa": "Metalurgia i spawalnictwo",
+      "id_kategorii": 454,
+      "kategoria": "Techniczne",
+      "nazwa_en": "Metallurgy and welding"
+    },
+    {
+      "id": 571,
+      "nazwa": "Budownictwo i projektowanie",
+      "id_kategorii": 454,
+      "kategoria": "Techniczne",
+      "nazwa_en": "Construction and design"
+    },
+    {
+      "id": 572,
+      "nazwa": "Energetyka i gazownictwo",
+      "id_kategorii": 454,
+      "kategoria": "Techniczne",
+      "nazwa_en": "Energy and Gas Industry"
+    },
+    {
+      "id": 573,
+      "nazwa": "Obsługa maszyn i urządzeń",
+      "id_kategorii": 454,
+      "kategoria": "Techniczne",
+      "nazwa_en": "Operation of machines and equipment"
+    },
+    {
+      "id": 574,
+      "nazwa": "Pozostałe techniczne",
+      "id_kategorii": 454,
+      "kategoria": "Techniczne",
+      "nazwa_en": "Other technical"
+    },
+    {
+      "id": 470,
+      "nazwa": "Audyt",
+      "id_kategorii": 469,
+      "kategoria": "Finanse i bankowość",
+      "nazwa_en": "Audit"
+    },
+    {
+      "id": 471,
+      "nazwa": "Rachunkowość/księgowość",
+      "id_kategorii": 469,
+      "kategoria": "Finanse i bankowość",
+      "nazwa_en": "Accounting/bookkeeping"
+    },
+    {
+      "id": 472,
+      "nazwa": "Bankowość",
+      "id_kategorii": 469,
+      "kategoria": "Finanse i bankowość",
+      "nazwa_en": "Banking"
+    },
+    {
+      "id": 475,
+      "nazwa": "Inwestycje",
+      "id_kategorii": 469,
+      "kategoria": "Finanse i bankowość",
+      "nazwa_en": "Investments"
+    },
+    {
+      "id": 476,
+      "nazwa": "Podatki",
+      "id_kategorii": 469,
+      "kategoria": "Finanse i bankowość",
+      "nazwa_en": "Taxes"
+    },
+    {
+      "id": 477,
+      "nazwa": "Ubezpieczenia",
+      "id_kategorii": 469,
+      "kategoria": "Finanse i bankowość",
+      "nazwa_en": "Insurance"
+    },
+    {
+      "id": 478,
+      "nazwa": "Windykacja",
+      "id_kategorii": 469,
+      "kategoria": "Finanse i bankowość",
+      "nazwa_en": "Debt collection"
+    },
+    {
+      "id": 541,
+      "nazwa": "Finanse i doradztwo finansowe",
+      "id_kategorii": 469,
+      "kategoria": "Finanse i bankowość",
+      "nazwa_en": "Finance and financial advisory"
+    },
+    {
+      "id": 481,
+      "nazwa": "Aplikacje biznesowe",
+      "id_kategorii": 479,
+      "kategoria": "Informatyka i telekomunikacja",
+      "nazwa_en": "Business applications"
+    },
+    {
+      "id": 482,
+      "nazwa": "Bezpieczeństwo IT",
+      "id_kategorii": 479,
+      "kategoria": "Informatyka i telekomunikacja",
+      "nazwa_en": "IT Security"
+    },
+    {
+      "id": 483,
+      "nazwa": "Internet",
+      "id_kategorii": 479,
+      "kategoria": "Informatyka i telekomunikacja",
+      "nazwa_en": "Internet"
+    },
+    {
+      "id": 484,
+      "nazwa": "Obsługa komputera",
+      "id_kategorii": 479,
+      "kategoria": "Informatyka i telekomunikacja",
+      "nazwa_en": "Operating a computer"
+    },
+    {
+      "id": 485,
+      "nazwa": "Programowanie",
+      "id_kategorii": 479,
+      "kategoria": "Informatyka i telekomunikacja",
+      "nazwa_en": "Programming"
+    },
+    {
+      "id": 488,
+      "nazwa": "Telekomunikacja",
+      "id_kategorii": 479,
+      "kategoria": "Informatyka i telekomunikacja",
+      "nazwa_en": "Telecommunications"
+    },
+    {
+      "id": 542,
+      "nazwa": "Administracja IT i systemy komputerowe",
+      "id_kategorii": 479,
+      "kategoria": "Informatyka i telekomunikacja",
+      "nazwa_en": "IT administration and computer systems"
+    },
+    {
+      "id": 543,
+      "nazwa": "Projektowanie graficzne i wspomagane komputerowo",
+      "id_kategorii": 479,
+      "kategoria": "Informatyka i telekomunikacja",
+      "nazwa_en": "Graphic and computer-aided design"
+    },
+    {
+      "id": 544,
+      "nazwa": "Bazy danych",
+      "id_kategorii": 479,
+      "kategoria": "Informatyka i telekomunikacja",
+      "nazwa_en": "Databases"
+    },
+    {
+      "id": 490,
+      "nazwa": "Ochrona środowiska",
+      "id_kategorii": 489,
+      "kategoria": "Ekologia i rolnictwo",
+      "nazwa_en": "Environmental protection"
+    },
+    {
+      "id": 492,
+      "nazwa": "Rolnictwo",
+      "id_kategorii": 489,
+      "kategoria": "Ekologia i rolnictwo",
+      "nazwa_en": "Agriculture"
+    },
+    {
+      "id": 540,
+      "nazwa": "Weterynaria",
+      "id_kategorii": 489,
+      "kategoria": "Ekologia i rolnictwo",
+      "nazwa_en": "Veterinary medicine"
+    },
+    {
+      "id": 575,
+      "nazwa": "Artystyczne",
+      "id_kategorii": 505,
+      "kategoria": "Inne",
+      "nazwa_en": "Artistic"
+    },
+    {
+      "id": 576,
+      "nazwa": "Turystyka i hotelarstwo",
+      "id_kategorii": 505,
+      "kategoria": "Inne",
+      "nazwa_en": "Tourism and Hospitality"
+    },
+    {
+      "id": 577,
+      "nazwa": "Gastronomia",
+      "id_kategorii": 505,
+      "kategoria": "Inne",
+      "nazwa_en": "Gastronomy"
+    },
+    {
+      "id": 578,
+      "nazwa": "Edukacja",
+      "id_kategorii": 505,
+      "kategoria": "Inne",
+      "nazwa_en": "Education"
+    },
+    {
+      "id": 510,
+      "nazwa": "Kurs prawa jazdy kat.A",
+      "id_kategorii": 506,
+      "kategoria": "Prawo jazdy",
+      "nazwa_en": "Category A driving license course"
+    },
+    {
+      "id": 511,
+      "nazwa": "Kurs prawa jazdy kat.A1",
+      "id_kategorii": 506,
+      "kategoria": "Prawo jazdy",
+      "nazwa_en": "A1 driving license course"
+    },
+    {
+      "id": 512,
+      "nazwa": "Kurs prawa jazdy kat.A2",
+      "id_kategorii": 506,
+      "kategoria": "Prawo jazdy",
+      "nazwa_en": "A2 driving license course"
+    },
+    {
+      "id": 513,
+      "nazwa": "Kurs prawa jazdy kat.B",
+      "id_kategorii": 506,
+      "kategoria": "Prawo jazdy",
+      "nazwa_en": "Category B driving license course"
+    },
+    {
+      "id": 514,
+      "nazwa": "Kurs prawa jazdy kat.B+E",
+      "id_kategorii": 506,
+      "kategoria": "Prawo jazdy",
+      "nazwa_en": "Category B+E driving license course"
+    },
+    {
+      "id": 515,
+      "nazwa": "Kurs prawa jazdy kat.B1",
+      "id_kategorii": 506,
+      "kategoria": "Prawo jazdy",
+      "nazwa_en": "Category B1 driving license course"
+    },
+    {
+      "id": 516,
+      "nazwa": "Kurs prawa jazdy kat.C",
+      "id_kategorii": 506,
+      "kategoria": "Prawo jazdy",
+      "nazwa_en": "Category C driving license course"
+    },
+    {
+      "id": 517,
+      "nazwa": "Kurs prawa jazdy kat.C+E",
+      "id_kategorii": 506,
+      "kategoria": "Prawo jazdy",
+      "nazwa_en": "Category C+E driving license course"
+    },
+    {
+      "id": 518,
+      "nazwa": "Kurs prawa jazdy kat.C1",
+      "id_kategorii": 506,
+      "kategoria": "Prawo jazdy",
+      "nazwa_en": "Category C1 driving license course"
+    },
+    {
+      "id": 519,
+      "nazwa": "Kurs prawa jazdy kat.C1+E",
+      "id_kategorii": 506,
+      "kategoria": "Prawo jazdy",
+      "nazwa_en": "Category C1+E driving licence course"
+    },
+    {
+      "id": 520,
+      "nazwa": "Kurs prawa jazdy kat.D",
+      "id_kategorii": 506,
+      "kategoria": "Prawo jazdy",
+      "nazwa_en": "Category D driving license course"
+    },
+    {
+      "id": 526,
+      "nazwa": "Kursy mieszane lub specjalistyczne",
+      "id_kategorii": 506,
+      "kategoria": "Prawo jazdy",
+      "nazwa_en": "Mixed or specialized courses"
+    },
+    {
+      "id": 539,
+      "nazwa": "Kurs prawa jazdy kat.D+E",
+      "id_kategorii": 506,
+      "kategoria": "Prawo jazdy",
+      "nazwa_en": "Category D+E driving license course."
+    },
+    {
+      "id": 545,
+      "nazwa": "Kurs na instruktora/egzaminatora prawa jazdy",
+      "id_kategorii": 506,
+      "kategoria": "Prawo jazdy",
+      "nazwa_en": "Course for driving instructor/examiner"
+    },
+    {
+      "id": 579,
+      "nazwa": "Kurs prawa jazdy kat.AM",
+      "id_kategorii": 506,
+      "kategoria": "Prawo jazdy",
+      "nazwa_en": "Category AM driving license course"
+    },
+    {
+      "id": 580,
+      "nazwa": "Kurs prawa jazdy kat.D1",
+      "id_kategorii": 506,
+      "kategoria": "Prawo jazdy",
+      "nazwa_en": "Category D1 driver's license course"
+    },
+    {
+      "id": 581,
+      "nazwa": "Kurs prawa jazdy kat.D1+E",
+      "id_kategorii": 506,
+      "kategoria": "Prawo jazdy",
+      "nazwa_en": "Driving licence course category D1+E"
+    },
+    {
+      "id": 582,
+      "nazwa": "Kwalifikacje na przewóz osób lub rzeczy",
+      "id_kategorii": 506,
+      "kategoria": "Prawo jazdy",
+      "nazwa_en": "Qualifications for the transport of passengers or goods"
+    },
+    {
+      "id": 547,
+      "nazwa": "Farmacja",
+      "id_kategorii": 546,
+      "kategoria": "Zdrowie i medycyna",
+      "nazwa_en": "Pharmacy"
+    },
+    {
+      "id": 548,
+      "nazwa": "Logopedia",
+      "id_kategorii": 546,
+      "kategoria": "Zdrowie i medycyna",
+      "nazwa_en": "Speech therapy"
+    },
+    {
+      "id": 549,
+      "nazwa": "Psychologia i rozwój osobisty",
+      "id_kategorii": 546,
+      "kategoria": "Zdrowie i medycyna",
+      "nazwa_en": "Psychology and personal development"
+    },
+    {
+      "id": 550,
+      "nazwa": "Medycyna",
+      "id_kategorii": 546,
+      "kategoria": "Zdrowie i medycyna",
+      "nazwa_en": "Medicine"
+    },
+    {
+      "id": 551,
+      "nazwa": "Medycyna estetyczna i kosmetologia",
+      "id_kategorii": 546,
+      "kategoria": "Zdrowie i medycyna",
+      "nazwa_en": "Aesthetic medicine and cosmetology"
+    },
+    {
+      "id": 552,
+      "nazwa": "Optyka",
+      "id_kategorii": 546,
+      "kategoria": "Zdrowie i medycyna",
+      "nazwa_en": "Optics"
+    },
+    {
+      "id": 553,
+      "nazwa": "Stomatologia",
+      "id_kategorii": 546,
+      "kategoria": "Zdrowie i medycyna",
+      "nazwa_en": "Dentistry"
+    },
+    {
+      "id": 554,
+      "nazwa": "Zdrowie publiczne",
+      "id_kategorii": 546,
+      "kategoria": "Zdrowie i medycyna",
+      "nazwa_en": "Public health"
+    },
+    {
+      "id": 556,
+      "nazwa": "Dietetyka",
+      "id_kategorii": 555,
+      "kategoria": "Styl życia",
+      "nazwa_en": "Dietetics"
+    },
+    {
+      "id": 557,
+      "nazwa": "Sport",
+      "id_kategorii": 555,
+      "kategoria": "Styl życia",
+      "nazwa_en": "Sport"
+    },
+    {
+      "id": 558,
+      "nazwa": "Uroda",
+      "id_kategorii": 555,
+      "kategoria": "Styl życia",
+      "nazwa_en": "Beauty"
+    },
+    {
+      "id": 560,
+      "nazwa": "Marketing",
+      "id_kategorii": 559,
+      "kategoria": "Biznes",
+      "nazwa_en": "Marketing"
+    },
+    {
+      "id": 561,
+      "nazwa": "PR",
+      "id_kategorii": 559,
+      "kategoria": "Biznes",
+      "nazwa_en": "PR"
+    },
+    {
+      "id": 562,
+      "nazwa": "Sprzedaż",
+      "id_kategorii": 559,
+      "kategoria": "Biznes",
+      "nazwa_en": "Sales"
+    },
+    {
+      "id": 563,
+      "nazwa": "Logistyka",
+      "id_kategorii": 559,
+      "kategoria": "Biznes",
+      "nazwa_en": "Logistics"
+    },
+    {
+      "id": 564,
+      "nazwa": "Organizacja",
+      "id_kategorii": 559,
+      "kategoria": "Biznes",
+      "nazwa_en": "Organization"
+    },
+    {
+      "id": 565,
+      "nazwa": "Negocjacje",
+      "id_kategorii": 559,
+      "kategoria": "Biznes",
+      "nazwa_en": "Negotiations"
+    },
+    {
+      "id": 566,
+      "nazwa": "Zarządzanie zasobami ludzkimi",
+      "id_kategorii": 559,
+      "kategoria": "Biznes",
+      "nazwa_en": "Human resource management"
+    },
+    {
+      "id": 567,
+      "nazwa": "Zarządzanie przedsiębiorstwem",
+      "id_kategorii": 559,
+      "kategoria": "Biznes",
+      "nazwa_en": "Business management"
+    },
+    {
+      "id": 569,
+      "nazwa": "Motoryzacja",
+      "id_kategorii": 568,
+      "kategoria": "Transport i motoryzacja",
+      "nazwa_en": "Automotive"
+    },
+    {
+      "id": 570,
+      "nazwa": "Transport i logistyka",
+      "id_kategorii": 568,
+      "kategoria": "Transport i motoryzacja",
+      "nazwa_en": "Transport and logistics"
+    }
+  ],
+  "id_rodzaju_uslugi": [
+    {
+      "id": 144,
+      "nazwa": "Usługa szkoleniowa",
+      "nazwa_en": "Training service"
+    },
+    {
+      "id": 150,
+      "nazwa": "Usługa doradcza",
+      "nazwa_en": "Advisory service"
+    }
+  ],
+  "id_podrodzaju_uslugi": [
+    {
+      "id": 145,
+      "nazwa": "Usługa szkoleniowa",
+      "id_rodzaju": 144,
+      "rodzaj": "Usługa szkoleniowa",
+      "nazwa_en": "Training service"
+    },
+    {
+      "id": 146,
+      "nazwa": "Usługa o charakterze zawodowym",
+      "id_rodzaju": 144,
+      "rodzaj": "Usługa szkoleniowa",
+      "nazwa_en": "A service of a professional nature"
+    },
+    {
+      "id": 147,
+      "nazwa": "Studia podyplomowe",
+      "id_rodzaju": 144,
+      "rodzaj": "Usługa szkoleniowa",
+      "nazwa_en": "Postgraduate studies"
+    },
+    {
+      "id": 148,
+      "nazwa": "Egzamin",
+      "id_rodzaju": 144,
+      "rodzaj": "Usługa szkoleniowa",
+      "nazwa_en": "Exam"
+    },
+    {
+      "id": 1721,
+      "nazwa": "Doradztwo biznesowe",
+      "id_rodzaju": 150,
+      "rodzaj": "Usługa doradcza",
+      "nazwa_en": "Business consulting"
+    },
+    {
+      "id": 152,
+      "nazwa": "Coaching",
+      "id_rodzaju": 150,
+      "rodzaj": "Usługa doradcza",
+      "nazwa_en": "Coaching"
+    },
+    {
+      "id": 153,
+      "nazwa": "Mentoring",
+      "id_rodzaju": 150,
+      "rodzaj": "Usługa doradcza",
+      "nazwa_en": "Mentoring"
+    }
+  ],
+  "id_formy_swiadczenia": [
+    {
+      "id": 1,
+      "nazwa": "stacjonarna",
+      "nazwa_en": "stationary"
+    },
+    {
+      "id": 2,
+      "nazwa": "zdalna w czasie rzeczywistym",
+      "nazwa_en": "remote in real time"
+    },
+    {
+      "id": 3,
+      "nazwa": "zdalna",
+      "nazwa_en": "remote"
+    },
+    {
+      "id": 4,
+      "nazwa": "mieszana (stacjonarna połączona z usługą zdalną w czasie rzeczywistym)",
+      "nazwa_en": "hybrid (in-person combined with a real-time remote service)"
+    },
+    {
+      "id": 5,
+      "nazwa": "mieszana (stacjonarna połączona z usługą zdalną)",
+      "nazwa_en": "Hybrid (on-site combined with remote service)"
+    },
+    {
+      "id": 6,
+      "nazwa": "mieszana (zdalna połączona z usługą zdalną w czasie rzeczywistym)",
+      "nazwa_en": "mixed (remote combined with a real-time remote service)"
+    }
+  ]
+}

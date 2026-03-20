@@ -1,0 +1,9 @@
+streamlit>=1.40.0
+sentence-transformers
+torch
+faiss-cpu
+transformers
+accelerate
+huggingface_hub
+pandas
+pyarrow
