@@ -1024,24 +1024,26 @@ def _trainings_l1_options_bur(skills_cache: dict, treg: dict) -> list[tuple[str,
     return opts
 
 
-def _trainings_l2_options_bur(skills_cache: dict, treg: dict) -> list[tuple[str, str, str]]:
+def _trainings_l2_options_bur(
+    skills_cache: dict, treg: dict, parent_l1_code: str,
+) -> list[tuple[str, str, str]]:
     tree = skills_cache.get("tree") or {}
     have_l2 = set((treg.get("L2") or {}).keys())
     have_l1 = set((treg.get("L1") or {}).keys())
     out = []
-    for l1, n1 in tree.items():
-        if l1.startswith("L"):
-            if l1 in have_l1:
+    if parent_l1_code == "L_ALL":
+        for l1, n1 in tree.items():
+            if l1.startswith("L") and l1 in have_l1:
                 title = n1.get("title", l1)
                 out.append((l1, title, f"{title}  ({l1})"))
-            continue
-        if not (_is_skills_code(l1) or _is_knowledge_code(l1)):
-            continue
-        for l2, n2 in (n1.get("children") or {}).items():
-            if l2 not in have_l2:
-                continue
-            t2 = n2.get("title", l2)
-            out.append((l2, t2, f"{t2}  ({l2})"))
+    else:
+        node = tree.get(parent_l1_code)
+        if node:
+            for l2, n2 in (node.get("children") or {}).items():
+                if l2 not in have_l2:
+                    continue
+                t2 = n2.get("title", l2)
+                out.append((l2, t2, f"{t2}  ({l2})"))
     out.sort(key=lambda x: _trainings_code_sort_key(x[0]))
     return out
 
@@ -1126,7 +1128,7 @@ def _render_trainings_tab():
     )
     st.caption(
         "Share of BUR training services in each voivodeship that cover "
-        "at least one ESCO skill from the selected category."
+        "at least one ESCO competence from the selected category."
     )
     if not os.path.isfile(TRAININGS_REGIONAL_CACHE):
         st.warning("Training data cache not found. Please rebuild and redeploy.")
@@ -1138,10 +1140,10 @@ def _render_trainings_tab():
     try:
         cache = load_skills_cache(_cache_mtime())
     except Exception as e:
-        st.error(f"Could not load skills stats cache: {e}")
+        st.error(f"Could not load competence stats cache: {e}")
         return
 
-    _LEVEL_LABELS = {"L1": "Skill category", "L2": "Skill subcategory"}
+    _LEVEL_LABELS = {"L1": "Competence category", "L2": "Competence subcategory"}
     group_level = st.radio(
         "Aggregation level",
         ["L1", "L2"],
@@ -1149,54 +1151,72 @@ def _render_trainings_tab():
         horizontal=True,
         key="trainings_lvl",
     )
-    if group_level == "L1":
-        choices = _trainings_l1_options_bur(cache, treg)
-    else:
-        choices = _trainings_l2_options_bur(cache, treg)
-    if not choices:
-        st.info("No skill groups available for this level.")
+
+    # ── Always show category picker ──
+    cat_choices = _trainings_l1_options_bur(cache, treg)
+    if not cat_choices:
+        st.info("No competence groups available.")
         return
-    display_labels = [x[2] for x in choices]
-    codes = [x[0] for x in choices]
-    titles = [x[1] for x in choices]
-    ix = st.selectbox(
-        _LEVEL_LABELS[group_level],
-        range(len(choices)),
-        format_func=lambda i: display_labels[i],
-        key="trainings_group_ix",
-    )
-    group_code = codes[ix]
-    group_title = titles[ix]
+
+    if group_level == "L1":
+        display_labels = [x[2] for x in cat_choices]
+        codes = [x[0] for x in cat_choices]
+        titles = [x[1] for x in cat_choices]
+        ix = st.selectbox(
+            "Competence category",
+            range(len(cat_choices)),
+            format_func=lambda i: display_labels[i],
+            key="trainings_cat_ix",
+        )
+        group_code = codes[ix]
+        group_title = titles[ix]
+    else:
+        cat_display = [x[2] for x in cat_choices]
+        cat_codes = [x[0] for x in cat_choices]
+        cat_titles = [x[1] for x in cat_choices]
+        cat_ix = st.selectbox(
+            "Competence category",
+            range(len(cat_choices)),
+            format_func=lambda i: cat_display[i],
+            key="trainings_cat_ix",
+        )
+        parent_code = cat_codes[cat_ix]
+        sub_choices = _trainings_l2_options_bur(cache, treg, parent_code)
+        if not sub_choices:
+            st.info("No subcategories available for this category.")
+            return
+        sub_display = [x[2] for x in sub_choices]
+        sub_codes = [x[0] for x in sub_choices]
+        sub_titles = [x[1] for x in sub_choices]
+        sub_ix = st.selectbox(
+            "Competence subcategory",
+            range(len(sub_choices)),
+            format_func=lambda i: sub_display[i],
+            key="trainings_sub_ix",
+        )
+        group_code = sub_codes[sub_ix]
+        group_title = sub_titles[sub_ix]
+
     stats = _trainings_stats_from_cache(treg, group_level, group_code)
     if not stats or not stats["rows"]:
         st.info("No regional data for this group.")
         return
 
-    # ── Metric toggle (% all trainings OR % within skill category for L2) ──
+    # ── Metric toggle (% all trainings OR % within category for L2) ──
     use_within = False
     if group_level == "L2":
         metric_mode = st.radio(
             "Metric",
-            ["% of all trainings", "% within skill category"],
+            ["% of all trainings", "% within competence category"],
             horizontal=True,
             key="trainings_metric",
         )
-        use_within = metric_mode == "% within skill category"
+        use_within = metric_mode == "% within competence category"
 
-    # ── Build DataFrame ──
     df = pd.DataFrame(stats["rows"])
 
     if use_within:
-        tree = cache.get("tree") or {}
-        parent_l1_code = None
-        if group_code.startswith("L"):
-            parent_l1_code = "L_ALL"
-        else:
-            for l1c, l1n in tree.items():
-                if group_code in (l1n.get("children") or {}):
-                    parent_l1_code = l1c
-                    break
-        stats_l1 = _trainings_stats_from_cache(treg, "L1", parent_l1_code) if parent_l1_code else None
+        stats_l1 = _trainings_stats_from_cache(treg, "L1", parent_code)
         if stats_l1 and stats_l1["rows"]:
             l1_hits = {r["voivodeship"]: r["n_with_skill_group"] for r in stats_l1["rows"]}
             df["pct_within"] = [
@@ -1209,40 +1229,38 @@ def _render_trainings_tab():
                 if stats_l1["national_hits"] > 0 else 0.0
             )
             plot_col = "pct_within"
-            x_title = "% of skill-category trainings with this subcategory"
+            x_title = "% of category trainings with this subcategory"
             national_val = nat_within
             nat_label = f"National {nat_within}%"
         else:
-            use_within = False  # fallback
+            use_within = False
 
     if not use_within:
         plot_col = "pct_trainings"
-        x_title = "% of trainings with at least one skill in group"
+        x_title = "% of trainings with at least one competence in group"
         national_val = stats["national_pct"]
         nat_label = f"National {stats['national_pct']}%"
 
     st.caption(
         f"National average: **{national_val}%** "
         f"({stats['national_hits']:,} of {stats['national_n']:,} trainings "
-        f"have at least one skill in this group)"
+        f"have at least one competence in this group)"
     )
 
-    # ── Sort descending by value, display table ──
     df = df.sort_values(plot_col, ascending=False)
     df["pct_vs_national_pp"] = (df["pct_trainings"] - stats["national_pct"]).round(2)
     df_disp = df.rename(
         columns={
             "voivodeship": "Voivodeship",
             "n_trainings": "Trainings",
-            "n_with_skill_group": "With skill in group",
+            "n_with_skill_group": "With competence in group",
             "pct_trainings": "% of trainings",
             "pct_vs_national_pp": "Diff. vs national (pp)",
         }
     )
-    disp_cols = ["Voivodeship", "Trainings", "With skill in group", "% of trainings", "Diff. vs national (pp)"]
+    disp_cols = ["Voivodeship", "Trainings", "With competence in group", "% of trainings", "Diff. vs national (pp)"]
     st.dataframe(df_disp[disp_cols], use_container_width=True, hide_index=True)
 
-    # ── Bar chart (sorted descending = highest at top) ──
     bar_vals = df[plot_col].tolist()
     bar_voivs = df["voivodeship"].tolist()
 

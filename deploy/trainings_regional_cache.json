@@ -27,6 +27,974 @@
     "n_esco_source_rows": 410868
   },
   "L1": {
+    "00": {
+      "national_n_trainings": 719265,
+      "national_n_with_group": 515,
+      "national_pct": 0.07,
+      "n_uris_in_group": 21,
+      "by_voivodeship": {
+        "dolnośląskie": {
+          "n_trainings": 51742,
+          "n_with_group": 54,
+          "pct_trainings": 0.1
+        },
+        "kujawsko-pomorskie": {
+          "n_trainings": 24936,
+          "n_with_group": 41,
+          "pct_trainings": 0.16
+        },
+        "lubelskie": {
+          "n_trainings": 22747,
+          "n_with_group": 22,
+          "pct_trainings": 0.1
+        },
+        "lubuskie": {
+          "n_trainings": 10757,
+          "n_with_group": 4,
+          "pct_trainings": 0.04
+        },
+        "mazowieckie": {
+          "n_trainings": 102473,
+          "n_with_group": 79,
+          "pct_trainings": 0.08
+        },
+        "małopolskie": {
+          "n_trainings": 107371,
+          "n_with_group": 77,
+          "pct_trainings": 0.07
+        },
+        "opolskie": {
+          "n_trainings": 11583,
+          "n_with_group": 5,
+          "pct_trainings": 0.04
+        },
+        "podkarpackie": {
+          "n_trainings": 44454,
+          "n_with_group": 13,
+          "pct_trainings": 0.03
+        },
+        "podlaskie": {
+          "n_trainings": 30793,
+          "n_with_group": 21,
+          "pct_trainings": 0.07
+        },
+        "pomorskie": {
+          "n_trainings": 24976,
+          "n_with_group": 24,
+          "pct_trainings": 0.1
+        },
+        "warmińsko-mazurskie": {
+          "n_trainings": 24895,
+          "n_with_group": 15,
+          "pct_trainings": 0.06
+        },
+        "wielkopolskie": {
+          "n_trainings": 68940,
+          "n_with_group": 33,
+          "pct_trainings": 0.05
+        },
+        "zachodniopomorskie": {
+          "n_trainings": 24993,
+          "n_with_group": 30,
+          "pct_trainings": 0.12
+        },
+        "łódzkie": {
+          "n_trainings": 39043,
+          "n_with_group": 30,
+          "pct_trainings": 0.08
+        },
+        "śląskie": {
+          "n_trainings": 104841,
+          "n_with_group": 49,
+          "pct_trainings": 0.05
+        },
+        "świętokrzyskie": {
+          "n_trainings": 24721,
+          "n_with_group": 18,
+          "pct_trainings": 0.07
+        }
+      }
+    },
+    "01": {
+      "national_n_trainings": 719265,
+      "national_n_with_group": 2381,
+      "national_pct": 0.33,
+      "n_uris_in_group": 48,
+      "by_voivodeship": {
+        "dolnośląskie": {
+          "n_trainings": 51742,
+          "n_with_group": 247,
+          "pct_trainings": 0.48
+        },
+        "kujawsko-pomorskie": {
+          "n_trainings": 24936,
+          "n_with_group": 165,
+          "pct_trainings": 0.66
+        },
+        "lubelskie": {
+          "n_trainings": 22747,
+          "n_with_group": 81,
+          "pct_trainings": 0.36
+        },
+        "lubuskie": {
+          "n_trainings": 10757,
+          "n_with_group": 42,
+          "pct_trainings": 0.39
+        },
+        "mazowieckie": {
+          "n_trainings": 102473,
+          "n_with_group": 331,
+          "pct_trainings": 0.32
+        },
+        "małopolskie": {
+          "n_trainings": 107371,
+          "n_with_group": 199,
+          "pct_trainings": 0.19
+        },
+        "opolskie": {
+          "n_trainings": 11583,
+          "n_with_group": 71,
+          "pct_trainings": 0.61
+        },
+        "podkarpackie": {
+          "n_trainings": 44454,
+          "n_with_group": 166,
+          "pct_trainings": 0.37
+        },
+        "podlaskie": {
+          "n_trainings": 30793,
+          "n_with_group": 83,
+          "pct_trainings": 0.27
+        },
+        "pomorskie": {
+          "n_trainings": 24976,
+          "n_with_group": 119,
+          "pct_trainings": 0.48
+        },
+        "warmińsko-mazurskie": {
+          "n_trainings": 24895,
+          "n_with_group": 48,
+          "pct_trainings": 0.19
+        },
+        "wielkopolskie": {
+          "n_trainings": 68940,
+          "n_with_group": 199,
+          "pct_trainings": 0.29
+        },
+        "zachodniopomorskie": {
+          "n_trainings": 24993,
+          "n_with_group": 61,
+          "pct_trainings": 0.24
+        },
+        "łódzkie": {
+          "n_trainings": 39043,
+          "n_with_group": 105,
+          "pct_trainings": 0.27
+        },
+        "śląskie": {
+          "n_trainings": 104841,
+          "n_with_group": 378,
+          "pct_trainings": 0.36
+        },
+        "świętokrzyskie": {
+          "n_trainings": 24721,
+          "n_with_group": 86,
+          "pct_trainings": 0.35
+        }
+      }
+    },
+    "02": {
+      "national_n_trainings": 719265,
+      "national_n_with_group": 2102,
+      "national_pct": 0.29,
+      "n_uris_in_group": 280,
+      "by_voivodeship": {
+        "dolnośląskie": {
+          "n_trainings": 51742,
+          "n_with_group": 175,
+          "pct_trainings": 0.34
+        },
+        "kujawsko-pomorskie": {
+          "n_trainings": 24936,
+          "n_with_group": 55,
+          "pct_trainings": 0.22
+        },
+        "lubelskie": {
+          "n_trainings": 22747,
+          "n_with_group": 90,
+          "pct_trainings": 0.4
+        },
+        "lubuskie": {
+          "n_trainings": 10757,
+          "n_with_group": 21,
+          "pct_trainings": 0.2
+        },
+        "mazowieckie": {
+          "n_trainings": 102473,
+          "n_with_group": 182,
+          "pct_trainings": 0.18
+        },
+        "małopolskie": {
+          "n_trainings": 107371,
+          "n_with_group": 270,
+          "pct_trainings": 0.25
+        },
+        "opolskie": {
+          "n_trainings": 11583,
+          "n_with_group": 2,
+          "pct_trainings": 0.02
+        },
+        "podkarpackie": {
+          "n_trainings": 44454,
+          "n_with_group": 163,
+          "pct_trainings": 0.37
+        },
+        "podlaskie": {
+          "n_trainings": 30793,
+          "n_with_group": 92,
+          "pct_trainings": 0.3
+        },
+        "pomorskie": {
+          "n_trainings": 24976,
+          "n_with_group": 140,
+          "pct_trainings": 0.56
+        },
+        "warmińsko-mazurskie": {
+          "n_trainings": 24895,
+          "n_with_group": 120,
+          "pct_trainings": 0.48
+        },
+        "wielkopolskie": {
+          "n_trainings": 68940,
+          "n_with_group": 176,
+          "pct_trainings": 0.26
+        },
+        "zachodniopomorskie": {
+          "n_trainings": 24993,
+          "n_with_group": 52,
+          "pct_trainings": 0.21
+        },
+        "łódzkie": {
+          "n_trainings": 39043,
+          "n_with_group": 132,
+          "pct_trainings": 0.34
+        },
+        "śląskie": {
+          "n_trainings": 104841,
+          "n_with_group": 378,
+          "pct_trainings": 0.36
+        },
+        "świętokrzyskie": {
+          "n_trainings": 24721,
+          "n_with_group": 54,
+          "pct_trainings": 0.22
+        }
+      }
+    },
+    "03": {
+      "national_n_trainings": 719265,
+      "national_n_with_group": 2162,
+      "national_pct": 0.3,
+      "n_uris_in_group": 166,
+      "by_voivodeship": {
+        "dolnośląskie": {
+          "n_trainings": 51742,
+          "n_with_group": 92,
+          "pct_trainings": 0.18
+        },
+        "kujawsko-pomorskie": {
+          "n_trainings": 24936,
+          "n_with_group": 73,
+          "pct_trainings": 0.29
+        },
+        "lubelskie": {
+          "n_trainings": 22747,
+          "n_with_group": 67,
+          "pct_trainings": 0.29
+        },
+        "lubuskie": {
+          "n_trainings": 10757,
+          "n_with_group": 9,
+          "pct_trainings": 0.08
+        },
+        "mazowieckie": {
+          "n_trainings": 102473,
+          "n_with_group": 183,
+          "pct_trainings": 0.18
+        },
+        "małopolskie": {
+          "n_trainings": 107371,
+          "n_with_group": 115,
+          "pct_trainings": 0.11
+        },
+        "opolskie": {
+          "n_trainings": 11583,
+          "n_with_group": 21,
+          "pct_trainings": 0.18
+        },
+        "podkarpackie": {
+          "n_trainings": 44454,
+          "n_with_group": 61,
+          "pct_trainings": 0.14
+        },
+        "podlaskie": {
+          "n_trainings": 30793,
+          "n_with_group": 35,
+          "pct_trainings": 0.11
+        },
+        "pomorskie": {
+          "n_trainings": 24976,
+          "n_with_group": 98,
+          "pct_trainings": 0.39
+        },
+        "warmińsko-mazurskie": {
+          "n_trainings": 24895,
+          "n_with_group": 65,
+          "pct_trainings": 0.26
+        },
+        "wielkopolskie": {
+          "n_trainings": 68940,
+          "n_with_group": 72,
+          "pct_trainings": 0.1
+        },
+        "zachodniopomorskie": {
+          "n_trainings": 24993,
+          "n_with_group": 27,
+          "pct_trainings": 0.11
+        },
+        "łódzkie": {
+          "n_trainings": 39043,
+          "n_with_group": 107,
+          "pct_trainings": 0.27
+        },
+        "śląskie": {
+          "n_trainings": 104841,
+          "n_with_group": 1096,
+          "pct_trainings": 1.05
+        },
+        "świętokrzyskie": {
+          "n_trainings": 24721,
+          "n_with_group": 41,
+          "pct_trainings": 0.17
+        }
+      }
+    },
+    "04": {
+      "national_n_trainings": 719265,
+      "national_n_with_group": 26990,
+      "national_pct": 3.75,
+      "n_uris_in_group": 447,
+      "by_voivodeship": {
+        "dolnośląskie": {
+          "n_trainings": 51742,
+          "n_with_group": 1699,
+          "pct_trainings": 3.28
+        },
+        "kujawsko-pomorskie": {
+          "n_trainings": 24936,
+          "n_with_group": 1050,
+          "pct_trainings": 4.21
+        },
+        "lubelskie": {
+          "n_trainings": 22747,
+          "n_with_group": 2169,
+          "pct_trainings": 9.54
+        },
+        "lubuskie": {
+          "n_trainings": 10757,
+          "n_with_group": 187,
+          "pct_trainings": 1.74
+        },
+        "mazowieckie": {
+          "n_trainings": 102473,
+          "n_with_group": 1904,
+          "pct_trainings": 1.86
+        },
+        "małopolskie": {
+          "n_trainings": 107371,
+          "n_with_group": 5487,
+          "pct_trainings": 5.11
+        },
+        "opolskie": {
+          "n_trainings": 11583,
+          "n_with_group": 776,
+          "pct_trainings": 6.7
+        },
+        "podkarpackie": {
+          "n_trainings": 44454,
+          "n_with_group": 2781,
+          "pct_trainings": 6.26
+        },
+        "podlaskie": {
+          "n_trainings": 30793,
+          "n_with_group": 662,
+          "pct_trainings": 2.15
+        },
+        "pomorskie": {
+          "n_trainings": 24976,
+          "n_with_group": 1102,
+          "pct_trainings": 4.41
+        },
+        "warmińsko-mazurskie": {
+          "n_trainings": 24895,
+          "n_with_group": 803,
+          "pct_trainings": 3.23
+        },
+        "wielkopolskie": {
+          "n_trainings": 68940,
+          "n_with_group": 2150,
+          "pct_trainings": 3.12
+        },
+        "zachodniopomorskie": {
+          "n_trainings": 24993,
+          "n_with_group": 788,
+          "pct_trainings": 3.15
+        },
+        "łódzkie": {
+          "n_trainings": 39043,
+          "n_with_group": 1103,
+          "pct_trainings": 2.83
+        },
+        "śląskie": {
+          "n_trainings": 104841,
+          "n_with_group": 3072,
+          "pct_trainings": 2.93
+        },
+        "świętokrzyskie": {
+          "n_trainings": 24721,
+          "n_with_group": 1257,
+          "pct_trainings": 5.08
+        }
+      }
+    },
+    "05": {
+      "national_n_trainings": 719265,
+      "national_n_with_group": 2796,
+      "national_pct": 0.39,
+      "n_uris_in_group": 300,
+      "by_voivodeship": {
+        "dolnośląskie": {
+          "n_trainings": 51742,
+          "n_with_group": 207,
+          "pct_trainings": 0.4
+        },
+        "kujawsko-pomorskie": {
+          "n_trainings": 24936,
+          "n_with_group": 204,
+          "pct_trainings": 0.82
+        },
+        "lubelskie": {
+          "n_trainings": 22747,
+          "n_with_group": 67,
+          "pct_trainings": 0.29
+        },
+        "lubuskie": {
+          "n_trainings": 10757,
+          "n_with_group": 111,
+          "pct_trainings": 1.03
+        },
+        "mazowieckie": {
+          "n_trainings": 102473,
+          "n_with_group": 407,
+          "pct_trainings": 0.4
+        },
+        "małopolskie": {
+          "n_trainings": 107371,
+          "n_with_group": 214,
+          "pct_trainings": 0.2
+        },
+        "opolskie": {
+          "n_trainings": 11583,
+          "n_with_group": 30,
+          "pct_trainings": 0.26
+        },
+        "podkarpackie": {
+          "n_trainings": 44454,
+          "n_with_group": 98,
+          "pct_trainings": 0.22
+        },
+        "podlaskie": {
+          "n_trainings": 30793,
+          "n_with_group": 101,
+          "pct_trainings": 0.33
+        },
+        "pomorskie": {
+          "n_trainings": 24976,
+          "n_with_group": 74,
+          "pct_trainings": 0.3
+        },
+        "warmińsko-mazurskie": {
+          "n_trainings": 24895,
+          "n_with_group": 123,
+          "pct_trainings": 0.49
+        },
+        "wielkopolskie": {
+          "n_trainings": 68940,
+          "n_with_group": 310,
+          "pct_trainings": 0.45
+        },
+        "zachodniopomorskie": {
+          "n_trainings": 24993,
+          "n_with_group": 98,
+          "pct_trainings": 0.39
+        },
+        "łódzkie": {
+          "n_trainings": 39043,
+          "n_with_group": 128,
+          "pct_trainings": 0.33
+        },
+        "śląskie": {
+          "n_trainings": 104841,
+          "n_with_group": 532,
+          "pct_trainings": 0.51
+        },
+        "świętokrzyskie": {
+          "n_trainings": 24721,
+          "n_with_group": 92,
+          "pct_trainings": 0.37
+        }
+      }
+    },
+    "06": {
+      "national_n_trainings": 719265,
+      "national_n_with_group": 1799,
+      "national_pct": 0.25,
+      "n_uris_in_group": 341,
+      "by_voivodeship": {
+        "dolnośląskie": {
+          "n_trainings": 51742,
+          "n_with_group": 63,
+          "pct_trainings": 0.12
+        },
+        "kujawsko-pomorskie": {
+          "n_trainings": 24936,
+          "n_with_group": 62,
+          "pct_trainings": 0.25
+        },
+        "lubelskie": {
+          "n_trainings": 22747,
+          "n_with_group": 64,
+          "pct_trainings": 0.28
+        },
+        "lubuskie": {
+          "n_trainings": 10757,
+          "n_with_group": 6,
+          "pct_trainings": 0.06
+        },
+        "mazowieckie": {
+          "n_trainings": 102473,
+          "n_with_group": 276,
+          "pct_trainings": 0.27
+        },
+        "małopolskie": {
+          "n_trainings": 107371,
+          "n_with_group": 167,
+          "pct_trainings": 0.16
+        },
+        "opolskie": {
+          "n_trainings": 11583,
+          "n_with_group": 9,
+          "pct_trainings": 0.08
+        },
+        "podkarpackie": {
+          "n_trainings": 44454,
+          "n_with_group": 97,
+          "pct_trainings": 0.22
+        },
+        "podlaskie": {
+          "n_trainings": 30793,
+          "n_with_group": 63,
+          "pct_trainings": 0.2
+        },
+        "pomorskie": {
+          "n_trainings": 24976,
+          "n_with_group": 125,
+          "pct_trainings": 0.5
+        },
+        "warmińsko-mazurskie": {
+          "n_trainings": 24895,
+          "n_with_group": 102,
+          "pct_trainings": 0.41
+        },
+        "wielkopolskie": {
+          "n_trainings": 68940,
+          "n_with_group": 123,
+          "pct_trainings": 0.18
+        },
+        "zachodniopomorskie": {
+          "n_trainings": 24993,
+          "n_with_group": 36,
+          "pct_trainings": 0.14
+        },
+        "łódzkie": {
+          "n_trainings": 39043,
+          "n_with_group": 69,
+          "pct_trainings": 0.18
+        },
+        "śląskie": {
+          "n_trainings": 104841,
+          "n_with_group": 490,
+          "pct_trainings": 0.47
+        },
+        "świętokrzyskie": {
+          "n_trainings": 24721,
+          "n_with_group": 47,
+          "pct_trainings": 0.19
+        }
+      }
+    },
+    "07": {
+      "national_n_trainings": 719265,
+      "national_n_with_group": 7320,
+      "national_pct": 1.02,
+      "n_uris_in_group": 896,
+      "by_voivodeship": {
+        "dolnośląskie": {
+          "n_trainings": 51742,
+          "n_with_group": 501,
+          "pct_trainings": 0.97
+        },
+        "kujawsko-pomorskie": {
+          "n_trainings": 24936,
+          "n_with_group": 256,
+          "pct_trainings": 1.03
+        },
+        "lubelskie": {
+          "n_trainings": 22747,
+          "n_with_group": 268,
+          "pct_trainings": 1.18
+        },
+        "lubuskie": {
+          "n_trainings": 10757,
+          "n_with_group": 55,
+          "pct_trainings": 0.51
+        },
+        "mazowieckie": {
+          "n_trainings": 102473,
+          "n_with_group": 607,
+          "pct_trainings": 0.59
+        },
+        "małopolskie": {
+          "n_trainings": 107371,
+          "n_with_group": 713,
+          "pct_trainings": 0.66
+        },
+        "opolskie": {
+          "n_trainings": 11583,
+          "n_with_group": 105,
+          "pct_trainings": 0.91
+        },
+        "podkarpackie": {
+          "n_trainings": 44454,
+          "n_with_group": 398,
+          "pct_trainings": 0.9
+        },
+        "podlaskie": {
+          "n_trainings": 30793,
+          "n_with_group": 151,
+          "pct_trainings": 0.49
+        },
+        "pomorskie": {
+          "n_trainings": 24976,
+          "n_with_group": 217,
+          "pct_trainings": 0.87
+        },
+        "warmińsko-mazurskie": {
+          "n_trainings": 24895,
+          "n_with_group": 197,
+          "pct_trainings": 0.79
+        },
+        "wielkopolskie": {
+          "n_trainings": 68940,
+          "n_with_group": 437,
+          "pct_trainings": 0.63
+        },
+        "zachodniopomorskie": {
+          "n_trainings": 24993,
+          "n_with_group": 163,
+          "pct_trainings": 0.65
+        },
+        "łódzkie": {
+          "n_trainings": 39043,
+          "n_with_group": 240,
+          "pct_trainings": 0.61
+        },
+        "śląskie": {
+          "n_trainings": 104841,
+          "n_with_group": 2803,
+          "pct_trainings": 2.67
+        },
+        "świętokrzyskie": {
+          "n_trainings": 24721,
+          "n_with_group": 209,
+          "pct_trainings": 0.85
+        }
+      }
+    },
+    "08": {
+      "national_n_trainings": 719265,
+      "national_n_with_group": 337,
+      "national_pct": 0.05,
+      "n_uris_in_group": 133,
+      "by_voivodeship": {
+        "dolnośląskie": {
+          "n_trainings": 51742,
+          "n_with_group": 17,
+          "pct_trainings": 0.03
+        },
+        "kujawsko-pomorskie": {
+          "n_trainings": 24936,
+          "n_with_group": 16,
+          "pct_trainings": 0.06
+        },
+        "lubelskie": {
+          "n_trainings": 22747,
+          "n_with_group": 10,
+          "pct_trainings": 0.04
+        },
+        "lubuskie": {
+          "n_trainings": 10757,
+          "n_with_group": 1,
+          "pct_trainings": 0.01
+        },
+        "mazowieckie": {
+          "n_trainings": 102473,
+          "n_with_group": 19,
+          "pct_trainings": 0.02
+        },
+        "małopolskie": {
+          "n_trainings": 107371,
+          "n_with_group": 20,
+          "pct_trainings": 0.02
+        },
+        "opolskie": {
+          "n_trainings": 11583,
+          "n_with_group": 4,
+          "pct_trainings": 0.03
+        },
+        "podkarpackie": {
+          "n_trainings": 44454,
+          "n_with_group": 15,
+          "pct_trainings": 0.03
+        },
+        "podlaskie": {
+          "n_trainings": 30793,
+          "n_with_group": 2,
+          "pct_trainings": 0.01
+        },
+        "pomorskie": {
+          "n_trainings": 24976,
+          "n_with_group": 28,
+          "pct_trainings": 0.11
+        },
+        "warmińsko-mazurskie": {
+          "n_trainings": 24895,
+          "n_with_group": 15,
+          "pct_trainings": 0.06
+        },
+        "wielkopolskie": {
+          "n_trainings": 68940,
+          "n_with_group": 15,
+          "pct_trainings": 0.02
+        },
+        "zachodniopomorskie": {
+          "n_trainings": 24993,
+          "n_with_group": 6,
+          "pct_trainings": 0.02
+        },
+        "łódzkie": {
+          "n_trainings": 39043,
+          "n_with_group": 23,
+          "pct_trainings": 0.06
+        },
+        "śląskie": {
+          "n_trainings": 104841,
+          "n_with_group": 142,
+          "pct_trainings": 0.14
+        },
+        "świętokrzyskie": {
+          "n_trainings": 24721,
+          "n_with_group": 4,
+          "pct_trainings": 0.02
+        }
+      }
+    },
+    "09": {
+      "national_n_trainings": 719265,
+      "national_n_with_group": 10479,
+      "national_pct": 1.46,
+      "n_uris_in_group": 389,
+      "by_voivodeship": {
+        "dolnośląskie": {
+          "n_trainings": 51742,
+          "n_with_group": 1067,
+          "pct_trainings": 2.06
+        },
+        "kujawsko-pomorskie": {
+          "n_trainings": 24936,
+          "n_with_group": 805,
+          "pct_trainings": 3.23
+        },
+        "lubelskie": {
+          "n_trainings": 22747,
+          "n_with_group": 515,
+          "pct_trainings": 2.26
+        },
+        "lubuskie": {
+          "n_trainings": 10757,
+          "n_with_group": 255,
+          "pct_trainings": 2.37
+        },
+        "mazowieckie": {
+          "n_trainings": 102473,
+          "n_with_group": 1502,
+          "pct_trainings": 1.47
+        },
+        "małopolskie": {
+          "n_trainings": 107371,
+          "n_with_group": 1274,
+          "pct_trainings": 1.19
+        },
+        "opolskie": {
+          "n_trainings": 11583,
+          "n_with_group": 85,
+          "pct_trainings": 0.73
+        },
+        "podkarpackie": {
+          "n_trainings": 44454,
+          "n_with_group": 551,
+          "pct_trainings": 1.24
+        },
+        "podlaskie": {
+          "n_trainings": 30793,
+          "n_with_group": 145,
+          "pct_trainings": 0.47
+        },
+        "pomorskie": {
+          "n_trainings": 24976,
+          "n_with_group": 464,
+          "pct_trainings": 1.86
+        },
+        "warmińsko-mazurskie": {
+          "n_trainings": 24895,
+          "n_with_group": 409,
+          "pct_trainings": 1.64
+        },
+        "wielkopolskie": {
+          "n_trainings": 68940,
+          "n_with_group": 931,
+          "pct_trainings": 1.35
+        },
+        "zachodniopomorskie": {
+          "n_trainings": 24993,
+          "n_with_group": 294,
+          "pct_trainings": 1.18
+        },
+        "łódzkie": {
+          "n_trainings": 39043,
+          "n_with_group": 356,
+          "pct_trainings": 0.91
+        },
+        "śląskie": {
+          "n_trainings": 104841,
+          "n_with_group": 1338,
+          "pct_trainings": 1.28
+        },
+        "świętokrzyskie": {
+          "n_trainings": 24721,
+          "n_with_group": 488,
+          "pct_trainings": 1.97
+        }
+      }
+    },
+    "10": {
+      "national_n_trainings": 719265,
+      "national_n_with_group": 23334,
+      "national_pct": 3.24,
+      "n_uris_in_group": 275,
+      "by_voivodeship": {
+        "dolnośląskie": {
+          "n_trainings": 51742,
+          "n_with_group": 1514,
+          "pct_trainings": 2.93
+        },
+        "kujawsko-pomorskie": {
+          "n_trainings": 24936,
+          "n_with_group": 1148,
+          "pct_trainings": 4.6
+        },
+        "lubelskie": {
+          "n_trainings": 22747,
+          "n_with_group": 1931,
+          "pct_trainings": 8.49
+        },
+        "lubuskie": {
+          "n_trainings": 10757,
+          "n_with_group": 210,
+          "pct_trainings": 1.95
+        },
+        "mazowieckie": {
+          "n_trainings": 102473,
+          "n_with_group": 1076,
+          "pct_trainings": 1.05
+        },
+        "małopolskie": {
+          "n_trainings": 107371,
+          "n_with_group": 4939,
+          "pct_trainings": 4.6
+        },
+        "opolskie": {
+          "n_trainings": 11583,
+          "n_with_group": 689,
+          "pct_trainings": 5.95
+        },
+        "podkarpackie": {
+          "n_trainings": 44454,
+          "n_with_group": 2978,
+          "pct_trainings": 6.7
+        },
+        "podlaskie": {
+          "n_trainings": 30793,
+          "n_with_group": 593,
+          "pct_trainings": 1.93
+        },
+        "pomorskie": {
+          "n_trainings": 24976,
+          "n_with_group": 690,
+          "pct_trainings": 2.76
+        },
+        "warmińsko-mazurskie": {
+          "n_trainings": 24895,
+          "n_with_group": 709,
+          "pct_trainings": 2.85
+        },
+        "wielkopolskie": {
+          "n_trainings": 68940,
+          "n_with_group": 1738,
+          "pct_trainings": 2.52
+        },
+        "zachodniopomorskie": {
+          "n_trainings": 24993,
+          "n_with_group": 732,
+          "pct_trainings": 2.93
+        },
+        "łódzkie": {
+          "n_trainings": 39043,
+          "n_with_group": 873,
+          "pct_trainings": 2.24
+        },
+        "śląskie": {
+          "n_trainings": 104841,
+          "n_with_group": 2420,
+          "pct_trainings": 2.31
+        },
+        "świętokrzyskie": {
+          "n_trainings": 24721,
+          "n_with_group": 1094,
+          "pct_trainings": 4.43
+        }
+      }
+    },
     "L2": {
       "national_n_trainings": 719265,
       "national_n_with_group": 1,
@@ -3813,6 +4781,3086 @@
     }
   },
   "L2": {
+    "003": {
+      "national_n_trainings": 719265,
+      "national_n_with_group": 515,
+      "national_pct": 0.07,
+      "n_uris_in_group": 11,
+      "by_voivodeship": {
+        "dolnośląskie": {
+          "n_trainings": 51742,
+          "n_with_group": 54,
+          "pct_trainings": 0.1
+        },
+        "kujawsko-pomorskie": {
+          "n_trainings": 24936,
+          "n_with_group": 41,
+          "pct_trainings": 0.16
+        },
+        "lubelskie": {
+          "n_trainings": 22747,
+          "n_with_group": 22,
+          "pct_trainings": 0.1
+        },
+        "lubuskie": {
+          "n_trainings": 10757,
+          "n_with_group": 4,
+          "pct_trainings": 0.04
+        },
+        "mazowieckie": {
+          "n_trainings": 102473,
+          "n_with_group": 79,
+          "pct_trainings": 0.08
+        },
+        "małopolskie": {
+          "n_trainings": 107371,
+          "n_with_group": 77,
+          "pct_trainings": 0.07
+        },
+        "opolskie": {
+          "n_trainings": 11583,
+          "n_with_group": 5,
+          "pct_trainings": 0.04
+        },
+        "podkarpackie": {
+          "n_trainings": 44454,
+          "n_with_group": 13,
+          "pct_trainings": 0.03
+        },
+        "podlaskie": {
+          "n_trainings": 30793,
+          "n_with_group": 21,
+          "pct_trainings": 0.07
+        },
+        "pomorskie": {
+          "n_trainings": 24976,
+          "n_with_group": 24,
+          "pct_trainings": 0.1
+        },
+        "warmińsko-mazurskie": {
+          "n_trainings": 24895,
+          "n_with_group": 15,
+          "pct_trainings": 0.06
+        },
+        "wielkopolskie": {
+          "n_trainings": 68940,
+          "n_with_group": 33,
+          "pct_trainings": 0.05
+        },
+        "zachodniopomorskie": {
+          "n_trainings": 24993,
+          "n_with_group": 30,
+          "pct_trainings": 0.12
+        },
+        "łódzkie": {
+          "n_trainings": 39043,
+          "n_with_group": 30,
+          "pct_trainings": 0.08
+        },
+        "śląskie": {
+          "n_trainings": 104841,
+          "n_with_group": 49,
+          "pct_trainings": 0.05
+        },
+        "świętokrzyskie": {
+          "n_trainings": 24721,
+          "n_with_group": 18,
+          "pct_trainings": 0.07
+        }
+      }
+    },
+    "009": {
+      "national_n_trainings": 719265,
+      "national_n_with_group": 0,
+      "national_pct": 0.0,
+      "n_uris_in_group": 3,
+      "by_voivodeship": {
+        "dolnośląskie": {
+          "n_trainings": 51742,
+          "n_with_group": 0,
+          "pct_trainings": 0.0
+        },
+        "kujawsko-pomorskie": {
+          "n_trainings": 24936,
+          "n_with_group": 0,
+          "pct_trainings": 0.0
+        },
+        "lubelskie": {
+          "n_trainings": 22747,
+          "n_with_group": 0,
+          "pct_trainings": 0.0
+        },
+        "lubuskie": {
+          "n_trainings": 10757,
+          "n_with_group": 0,
+          "pct_trainings": 0.0
+        },
+        "mazowieckie": {
+          "n_trainings": 102473,
+          "n_with_group": 0,
+          "pct_trainings": 0.0
+        },
+        "małopolskie": {
+          "n_trainings": 107371,
+          "n_with_group": 0,
+          "pct_trainings": 0.0
+        },
+        "opolskie": {
+          "n_trainings": 11583,
+          "n_with_group": 0,
+          "pct_trainings": 0.0
+        },
+        "podkarpackie": {
+          "n_trainings": 44454,
+          "n_with_group": 0,
+          "pct_trainings": 0.0
+        },
+        "podlaskie": {
+          "n_trainings": 30793,
+          "n_with_group": 0,
+          "pct_trainings": 0.0
+        },
+        "pomorskie": {
+          "n_trainings": 24976,
+          "n_with_group": 0,
+          "pct_trainings": 0.0
+        },
+        "warmińsko-mazurskie": {
+          "n_trainings": 24895,
+          "n_with_group": 0,
+          "pct_trainings": 0.0
+        },
+        "wielkopolskie": {
+          "n_trainings": 68940,
+          "n_with_group": 0,
+          "pct_trainings": 0.0
+        },
+        "zachodniopomorskie": {
+          "n_trainings": 24993,
+          "n_with_group": 0,
+          "pct_trainings": 0.0
+        },
+        "łódzkie": {
+          "n_trainings": 39043,
+          "n_with_group": 0,
+          "pct_trainings": 0.0
+        },
+        "śląskie": {
+          "n_trainings": 104841,
+          "n_with_group": 0,
+          "pct_trainings": 0.0
+        },
+        "świętokrzyskie": {
+          "n_trainings": 24721,
+          "n_with_group": 0,
+          "pct_trainings": 0.0
+        }
+      }
+    },
+    "011": {
+      "national_n_trainings": 719265,
+      "national_n_with_group": 2067,
+      "national_pct": 0.29,
+      "n_uris_in_group": 40,
+      "by_voivodeship": {
+        "dolnośląskie": {
+          "n_trainings": 51742,
+          "n_with_group": 223,
+          "pct_trainings": 0.43
+        },
+        "kujawsko-pomorskie": {
+          "n_trainings": 24936,
+          "n_with_group": 154,
+          "pct_trainings": 0.62
+        },
+        "lubelskie": {
+          "n_trainings": 22747,
+          "n_with_group": 66,
+          "pct_trainings": 0.29
+        },
+        "lubuskie": {
+          "n_trainings": 10757,
+          "n_with_group": 38,
+          "pct_trainings": 0.35
+        },
+        "mazowieckie": {
+          "n_trainings": 102473,
+          "n_with_group": 240,
+          "pct_trainings": 0.23
+        },
+        "małopolskie": {
+          "n_trainings": 107371,
+          "n_with_group": 153,
+          "pct_trainings": 0.14
+        },
+        "opolskie": {
+          "n_trainings": 11583,
+          "n_with_group": 70,
+          "pct_trainings": 0.6
+        },
+        "podkarpackie": {
+          "n_trainings": 44454,
+          "n_with_group": 163,
+          "pct_trainings": 0.37
+        },
+        "podlaskie": {
+          "n_trainings": 30793,
+          "n_with_group": 75,
+          "pct_trainings": 0.24
+        },
+        "pomorskie": {
+          "n_trainings": 24976,
+          "n_with_group": 101,
+          "pct_trainings": 0.4
+        },
+        "warmińsko-mazurskie": {
+          "n_trainings": 24895,
+          "n_with_group": 43,
+          "pct_trainings": 0.17
+        },
+        "wielkopolskie": {
+          "n_trainings": 68940,
+          "n_with_group": 182,
+          "pct_trainings": 0.26
+        },
+        "zachodniopomorskie": {
+          "n_trainings": 24993,
+          "n_with_group": 44,
+          "pct_trainings": 0.18
+        },
+        "łódzkie": {
+          "n_trainings": 39043,
+          "n_with_group": 93,
+          "pct_trainings": 0.24
+        },
+        "śląskie": {
+          "n_trainings": 104841,
+          "n_with_group": 340,
+          "pct_trainings": 0.32
+        },
+        "świętokrzyskie": {
+          "n_trainings": 24721,
+          "n_with_group": 82,
+          "pct_trainings": 0.33
+        }
+      }
+    },
+    "018": {
+      "national_n_trainings": 719265,
+      "national_n_with_group": 342,
+      "national_pct": 0.05,
+      "n_uris_in_group": 7,
+      "by_voivodeship": {
+        "dolnośląskie": {
+          "n_trainings": 51742,
+          "n_with_group": 28,
+          "pct_trainings": 0.05
+        },
+        "kujawsko-pomorskie": {
+          "n_trainings": 24936,
+          "n_with_group": 16,
+          "pct_trainings": 0.06
+        },
+        "lubelskie": {
+          "n_trainings": 22747,
+          "n_with_group": 17,
+          "pct_trainings": 0.07
+        },
+        "lubuskie": {
+          "n_trainings": 10757,
+          "n_with_group": 5,
+          "pct_trainings": 0.05
+        },
+        "mazowieckie": {
+          "n_trainings": 102473,
+          "n_with_group": 94,
+          "pct_trainings": 0.09
+        },
+        "małopolskie": {
+          "n_trainings": 107371,
+          "n_with_group": 48,
+          "pct_trainings": 0.04
+        },
+        "opolskie": {
+          "n_trainings": 11583,
+          "n_with_group": 1,
+          "pct_trainings": 0.01
+        },
+        "podkarpackie": {
+          "n_trainings": 44454,
+          "n_with_group": 3,
+          "pct_trainings": 0.01
+        },
+        "podlaskie": {
+          "n_trainings": 30793,
+          "n_with_group": 12,
+          "pct_trainings": 0.04
+        },
+        "pomorskie": {
+          "n_trainings": 24976,
+          "n_with_group": 19,
+          "pct_trainings": 0.08
+        },
+        "warmińsko-mazurskie": {
+          "n_trainings": 24895,
+          "n_with_group": 5,
+          "pct_trainings": 0.02
+        },
+        "wielkopolskie": {
+          "n_trainings": 68940,
+          "n_with_group": 18,
+          "pct_trainings": 0.03
+        },
+        "zachodniopomorskie": {
+          "n_trainings": 24993,
+          "n_with_group": 17,
+          "pct_trainings": 0.07
+        },
+        "łódzkie": {
+          "n_trainings": 39043,
+          "n_with_group": 12,
+          "pct_trainings": 0.03
+        },
+        "śląskie": {
+          "n_trainings": 104841,
+          "n_with_group": 43,
+          "pct_trainings": 0.04
+        },
+        "świętokrzyskie": {
+          "n_trainings": 24721,
+          "n_with_group": 4,
+          "pct_trainings": 0.02
+        }
+      }
+    },
+    "021": {
+      "national_n_trainings": 719265,
+      "national_n_with_group": 1740,
+      "national_pct": 0.24,
+      "n_uris_in_group": 167,
+      "by_voivodeship": {
+        "dolnośląskie": {
+          "n_trainings": 51742,
+          "n_with_group": 160,
+          "pct_trainings": 0.31
+        },
+        "kujawsko-pomorskie": {
+          "n_trainings": 24936,
+          "n_with_group": 41,
+          "pct_trainings": 0.16
+        },
+        "lubelskie": {
+          "n_trainings": 22747,
+          "n_with_group": 70,
+          "pct_trainings": 0.31
+        },
+        "lubuskie": {
+          "n_trainings": 10757,
+          "n_with_group": 19,
+          "pct_trainings": 0.18
+        },
+        "mazowieckie": {
+          "n_trainings": 102473,
+          "n_with_group": 151,
+          "pct_trainings": 0.15
+        },
+        "małopolskie": {
+          "n_trainings": 107371,
+          "n_with_group": 221,
+          "pct_trainings": 0.21
+        },
+        "opolskie": {
+          "n_trainings": 11583,
+          "n_with_group": 2,
+          "pct_trainings": 0.02
+        },
+        "podkarpackie": {
+          "n_trainings": 44454,
+          "n_with_group": 155,
+          "pct_trainings": 0.35
+        },
+        "podlaskie": {
+          "n_trainings": 30793,
+          "n_with_group": 50,
+          "pct_trainings": 0.16
+        },
+        "pomorskie": {
+          "n_trainings": 24976,
+          "n_with_group": 86,
+          "pct_trainings": 0.34
+        },
+        "warmińsko-mazurskie": {
+          "n_trainings": 24895,
+          "n_with_group": 109,
+          "pct_trainings": 0.44
+        },
+        "wielkopolskie": {
+          "n_trainings": 68940,
+          "n_with_group": 167,
+          "pct_trainings": 0.24
+        },
+        "zachodniopomorskie": {
+          "n_trainings": 24993,
+          "n_with_group": 45,
+          "pct_trainings": 0.18
+        },
+        "łódzkie": {
+          "n_trainings": 39043,
+          "n_with_group": 117,
+          "pct_trainings": 0.3
+        },
+        "śląskie": {
+          "n_trainings": 104841,
+          "n_with_group": 306,
+          "pct_trainings": 0.29
+        },
+        "świętokrzyskie": {
+          "n_trainings": 24721,
+          "n_with_group": 41,
+          "pct_trainings": 0.17
+        }
+      }
+    },
+    "022": {
+      "national_n_trainings": 719265,
+      "national_n_with_group": 59,
+      "national_pct": 0.01,
+      "n_uris_in_group": 54,
+      "by_voivodeship": {
+        "dolnośląskie": {
+          "n_trainings": 51742,
+          "n_with_group": 1,
+          "pct_trainings": 0.0
+        },
+        "kujawsko-pomorskie": {
+          "n_trainings": 24936,
+          "n_with_group": 3,
+          "pct_trainings": 0.01
+        },
+        "lubelskie": {
+          "n_trainings": 22747,
+          "n_with_group": 4,
+          "pct_trainings": 0.02
+        },
+        "lubuskie": {
+          "n_trainings": 10757,
+          "n_with_group": 0,
+          "pct_trainings": 0.0
+        },
+        "mazowieckie": {
+          "n_trainings": 102473,
+          "n_with_group": 2,
+          "pct_trainings": 0.0
+        },
+        "małopolskie": {
+          "n_trainings": 107371,
+          "n_with_group": 8,
+          "pct_trainings": 0.01
+        },
+        "opolskie": {
+          "n_trainings": 11583,
+          "n_with_group": 0,
+          "pct_trainings": 0.0
+        },
+        "podkarpackie": {
+          "n_trainings": 44454,
+          "n_with_group": 5,
+          "pct_trainings": 0.01
+        },
+        "podlaskie": {
+          "n_trainings": 30793,
+          "n_with_group": 4,
+          "pct_trainings": 0.01
+        },
+        "pomorskie": {
+          "n_trainings": 24976,
+          "n_with_group": 5,
+          "pct_trainings": 0.02
+        },
+        "warmińsko-mazurskie": {
+          "n_trainings": 24895,
+          "n_with_group": 0,
+          "pct_trainings": 0.0
+        },
+        "wielkopolskie": {
+          "n_trainings": 68940,
+          "n_with_group": 1,
+          "pct_trainings": 0.0
+        },
+        "zachodniopomorskie": {
+          "n_trainings": 24993,
+          "n_with_group": 5,
+          "pct_trainings": 0.02
+        },
+        "łódzkie": {
+          "n_trainings": 39043,
+          "n_with_group": 5,
+          "pct_trainings": 0.01
+        },
+        "śląskie": {
+          "n_trainings": 104841,
+          "n_with_group": 15,
+          "pct_trainings": 0.01
+        },
+        "świętokrzyskie": {
+          "n_trainings": 24721,
+          "n_with_group": 1,
+          "pct_trainings": 0.0
+        }
+      }
+    },
+    "023": {
+      "national_n_trainings": 719265,
+      "national_n_with_group": 332,
+      "national_pct": 0.05,
+      "n_uris_in_group": 52,
+      "by_voivodeship": {
+        "dolnośląskie": {
+          "n_trainings": 51742,
+          "n_with_group": 15,
+          "pct_trainings": 0.03
+        },
+        "kujawsko-pomorskie": {
+          "n_trainings": 24936,
+          "n_with_group": 13,
+          "pct_trainings": 0.05
+        },
+        "lubelskie": {
+          "n_trainings": 22747,
+          "n_with_group": 20,
+          "pct_trainings": 0.09
+        },
+        "lubuskie": {
+          "n_trainings": 10757,
+          "n_with_group": 2,
+          "pct_trainings": 0.02
+        },
+        "mazowieckie": {
+          "n_trainings": 102473,
+          "n_with_group": 34,
+          "pct_trainings": 0.03
+        },
+        "małopolskie": {
+          "n_trainings": 107371,
+          "n_with_group": 45,
+          "pct_trainings": 0.04
+        },
+        "opolskie": {
+          "n_trainings": 11583,
+          "n_with_group": 0,
+          "pct_trainings": 0.0
+        },
+        "podkarpackie": {
+          "n_trainings": 44454,
+          "n_with_group": 4,
+          "pct_trainings": 0.01
+        },
+        "podlaskie": {
+          "n_trainings": 30793,
+          "n_with_group": 40,
+          "pct_trainings": 0.13
+        },
+        "pomorskie": {
+          "n_trainings": 24976,
+          "n_with_group": 49,
+          "pct_trainings": 0.2
+        },
+        "warmińsko-mazurskie": {
+          "n_trainings": 24895,
+          "n_with_group": 14,
+          "pct_trainings": 0.06
+        },
+        "wielkopolskie": {
+          "n_trainings": 68940,
+          "n_with_group": 11,
+          "pct_trainings": 0.02
+        },
+        "zachodniopomorskie": {
+          "n_trainings": 24993,
+          "n_with_group": 2,
+          "pct_trainings": 0.01
+        },
+        "łódzkie": {
+          "n_trainings": 39043,
+          "n_with_group": 12,
+          "pct_trainings": 0.03
+        },
+        "śląskie": {
+          "n_trainings": 104841,
+          "n_with_group": 59,
+          "pct_trainings": 0.06
+        },
+        "świętokrzyskie": {
+          "n_trainings": 24721,
+          "n_with_group": 12,
+          "pct_trainings": 0.05
+        }
+      }
+    },
+    "031": {
+      "national_n_trainings": 719265,
+      "national_n_with_group": 1803,
+      "national_pct": 0.25,
+      "n_uris_in_group": 119,
+      "by_voivodeship": {
+        "dolnośląskie": {
+          "n_trainings": 51742,
+          "n_with_group": 77,
+          "pct_trainings": 0.15
+        },
+        "kujawsko-pomorskie": {
+          "n_trainings": 24936,
+          "n_with_group": 58,
+          "pct_trainings": 0.23
+        },
+        "lubelskie": {
+          "n_trainings": 22747,
+          "n_with_group": 51,
+          "pct_trainings": 0.22
+        },
+        "lubuskie": {
+          "n_trainings": 10757,
+          "n_with_group": 4,
+          "pct_trainings": 0.04
+        },
+        "mazowieckie": {
+          "n_trainings": 102473,
+          "n_with_group": 134,
+          "pct_trainings": 0.13
+        },
+        "małopolskie": {
+          "n_trainings": 107371,
+          "n_with_group": 92,
+          "pct_trainings": 0.09
+        },
+        "opolskie": {
+          "n_trainings": 11583,
+          "n_with_group": 14,
+          "pct_trainings": 0.12
+        },
+        "podkarpackie": {
+          "n_trainings": 44454,
+          "n_with_group": 37,
+          "pct_trainings": 0.08
+        },
+        "podlaskie": {
+          "n_trainings": 30793,
+          "n_with_group": 21,
+          "pct_trainings": 0.07
+        },
+        "pomorskie": {
+          "n_trainings": 24976,
+          "n_with_group": 77,
+          "pct_trainings": 0.31
+        },
+        "warmińsko-mazurskie": {
+          "n_trainings": 24895,
+          "n_with_group": 46,
+          "pct_trainings": 0.18
+        },
+        "wielkopolskie": {
+          "n_trainings": 68940,
+          "n_with_group": 48,
+          "pct_trainings": 0.07
+        },
+        "zachodniopomorskie": {
+          "n_trainings": 24993,
+          "n_with_group": 24,
+          "pct_trainings": 0.1
+        },
+        "łódzkie": {
+          "n_trainings": 39043,
+          "n_with_group": 90,
+          "pct_trainings": 0.23
+        },
+        "śląskie": {
+          "n_trainings": 104841,
+          "n_with_group": 1011,
+          "pct_trainings": 0.96
+        },
+        "świętokrzyskie": {
+          "n_trainings": 24721,
+          "n_with_group": 19,
+          "pct_trainings": 0.08
+        }
+      }
+    },
+    "032": {
+      "national_n_trainings": 719265,
+      "national_n_with_group": 309,
+      "national_pct": 0.04,
+      "n_uris_in_group": 34,
+      "by_voivodeship": {
+        "dolnośląskie": {
+          "n_trainings": 51742,
+          "n_with_group": 9,
+          "pct_trainings": 0.02
+        },
+        "kujawsko-pomorskie": {
+          "n_trainings": 24936,
+          "n_with_group": 12,
+          "pct_trainings": 0.05
+        },
+        "lubelskie": {
+          "n_trainings": 22747,
+          "n_with_group": 11,
+          "pct_trainings": 0.05
+        },
+        "lubuskie": {
+          "n_trainings": 10757,
+          "n_with_group": 5,
+          "pct_trainings": 0.05
+        },
+        "mazowieckie": {
+          "n_trainings": 102473,
+          "n_with_group": 41,
+          "pct_trainings": 0.04
+        },
+        "małopolskie": {
+          "n_trainings": 107371,
+          "n_with_group": 22,
+          "pct_trainings": 0.02
+        },
+        "opolskie": {
+          "n_trainings": 11583,
+          "n_with_group": 7,
+          "pct_trainings": 0.06
+        },
+        "podkarpackie": {
+          "n_trainings": 44454,
+          "n_with_group": 24,
+          "pct_trainings": 0.05
+        },
+        "podlaskie": {
+          "n_trainings": 30793,
+          "n_with_group": 13,
+          "pct_trainings": 0.04
+        },
+        "pomorskie": {
+          "n_trainings": 24976,
+          "n_with_group": 13,
+          "pct_trainings": 0.05
+        },
+        "warmińsko-mazurskie": {
+          "n_trainings": 24895,
+          "n_with_group": 14,
+          "pct_trainings": 0.06
+        },
+        "wielkopolskie": {
+          "n_trainings": 68940,
+          "n_with_group": 13,
+          "pct_trainings": 0.02
+        },
+        "zachodniopomorskie": {
+          "n_trainings": 24993,
+          "n_with_group": 2,
+          "pct_trainings": 0.01
+        },
+        "łódzkie": {
+          "n_trainings": 39043,
+          "n_with_group": 20,
+          "pct_trainings": 0.05
+        },
+        "śląskie": {
+          "n_trainings": 104841,
+          "n_with_group": 88,
+          "pct_trainings": 0.08
+        },
+        "świętokrzyskie": {
+          "n_trainings": 24721,
+          "n_with_group": 15,
+          "pct_trainings": 0.06
+        }
+      }
+    },
+    "038": {
+      "national_n_trainings": 719265,
+      "national_n_with_group": 74,
+      "national_pct": 0.01,
+      "n_uris_in_group": 8,
+      "by_voivodeship": {
+        "dolnośląskie": {
+          "n_trainings": 51742,
+          "n_with_group": 7,
+          "pct_trainings": 0.01
+        },
+        "kujawsko-pomorskie": {
+          "n_trainings": 24936,
+          "n_with_group": 3,
+          "pct_trainings": 0.01
+        },
+        "lubelskie": {
+          "n_trainings": 22747,
+          "n_with_group": 7,
+          "pct_trainings": 0.03
+        },
+        "lubuskie": {
+          "n_trainings": 10757,
+          "n_with_group": 0,
+          "pct_trainings": 0.0
+        },
+        "mazowieckie": {
+          "n_trainings": 102473,
+          "n_with_group": 8,
+          "pct_trainings": 0.01
+        },
+        "małopolskie": {
+          "n_trainings": 107371,
+          "n_with_group": 2,
+          "pct_trainings": 0.0
+        },
+        "opolskie": {
+          "n_trainings": 11583,
+          "n_with_group": 0,
+          "pct_trainings": 0.0
+        },
+        "podkarpackie": {
+          "n_trainings": 44454,
+          "n_with_group": 2,
+          "pct_trainings": 0.0
+        },
+        "podlaskie": {
+          "n_trainings": 30793,
+          "n_with_group": 3,
+          "pct_trainings": 0.01
+        },
+        "pomorskie": {
+          "n_trainings": 24976,
+          "n_with_group": 8,
+          "pct_trainings": 0.03
+        },
+        "warmińsko-mazurskie": {
+          "n_trainings": 24895,
+          "n_with_group": 6,
+          "pct_trainings": 0.02
+        },
+        "wielkopolskie": {
+          "n_trainings": 68940,
+          "n_with_group": 11,
+          "pct_trainings": 0.02
+        },
+        "zachodniopomorskie": {
+          "n_trainings": 24993,
+          "n_with_group": 1,
+          "pct_trainings": 0.0
+        },
+        "łódzkie": {
+          "n_trainings": 39043,
+          "n_with_group": 0,
+          "pct_trainings": 0.0
+        },
+        "śląskie": {
+          "n_trainings": 104841,
+          "n_with_group": 8,
+          "pct_trainings": 0.01
+        },
+        "świętokrzyskie": {
+          "n_trainings": 24721,
+          "n_with_group": 8,
+          "pct_trainings": 0.03
+        }
+      }
+    },
+    "041": {
+      "national_n_trainings": 719265,
+      "national_n_with_group": 8750,
+      "national_pct": 1.22,
+      "n_uris_in_group": 311,
+      "by_voivodeship": {
+        "dolnośląskie": {
+          "n_trainings": 51742,
+          "n_with_group": 560,
+          "pct_trainings": 1.08
+        },
+        "kujawsko-pomorskie": {
+          "n_trainings": 24936,
+          "n_with_group": 435,
+          "pct_trainings": 1.74
+        },
+        "lubelskie": {
+          "n_trainings": 22747,
+          "n_with_group": 355,
+          "pct_trainings": 1.56
+        },
+        "lubuskie": {
+          "n_trainings": 10757,
+          "n_with_group": 105,
+          "pct_trainings": 0.98
+        },
+        "mazowieckie": {
+          "n_trainings": 102473,
+          "n_with_group": 1245,
+          "pct_trainings": 1.21
+        },
+        "małopolskie": {
+          "n_trainings": 107371,
+          "n_with_group": 799,
+          "pct_trainings": 0.74
+        },
+        "opolskie": {
+          "n_trainings": 11583,
+          "n_with_group": 93,
+          "pct_trainings": 0.8
+        },
+        "podkarpackie": {
+          "n_trainings": 44454,
+          "n_with_group": 400,
+          "pct_trainings": 0.9
+        },
+        "podlaskie": {
+          "n_trainings": 30793,
+          "n_with_group": 259,
+          "pct_trainings": 0.84
+        },
+        "pomorskie": {
+          "n_trainings": 24976,
+          "n_with_group": 498,
+          "pct_trainings": 1.99
+        },
+        "warmińsko-mazurskie": {
+          "n_trainings": 24895,
+          "n_with_group": 401,
+          "pct_trainings": 1.61
+        },
+        "wielkopolskie": {
+          "n_trainings": 68940,
+          "n_with_group": 624,
+          "pct_trainings": 0.91
+        },
+        "zachodniopomorskie": {
+          "n_trainings": 24993,
+          "n_with_group": 253,
+          "pct_trainings": 1.01
+        },
+        "łódzkie": {
+          "n_trainings": 39043,
+          "n_with_group": 304,
+          "pct_trainings": 0.78
+        },
+        "śląskie": {
+          "n_trainings": 104841,
+          "n_with_group": 2036,
+          "pct_trainings": 1.94
+        },
+        "świętokrzyskie": {
+          "n_trainings": 24721,
+          "n_with_group": 383,
+          "pct_trainings": 1.55
+        }
+      }
+    },
+    "042": {
+      "national_n_trainings": 719265,
+      "national_n_with_group": 18881,
+      "national_pct": 2.63,
+      "n_uris_in_group": 128,
+      "by_voivodeship": {
+        "dolnośląskie": {
+          "n_trainings": 51742,
+          "n_with_group": 1186,
+          "pct_trainings": 2.29
+        },
+        "kujawsko-pomorskie": {
+          "n_trainings": 24936,
+          "n_with_group": 649,
+          "pct_trainings": 2.6
+        },
+        "lubelskie": {
+          "n_trainings": 22747,
+          "n_with_group": 1830,
+          "pct_trainings": 8.05
+        },
+        "lubuskie": {
+          "n_trainings": 10757,
+          "n_with_group": 85,
+          "pct_trainings": 0.79
+        },
+        "mazowieckie": {
+          "n_trainings": 102473,
+          "n_with_group": 746,
+          "pct_trainings": 0.73
+        },
+        "małopolskie": {
+          "n_trainings": 107371,
+          "n_with_group": 4776,
+          "pct_trainings": 4.45
+        },
+        "opolskie": {
+          "n_trainings": 11583,
+          "n_with_group": 698,
+          "pct_trainings": 6.03
+        },
+        "podkarpackie": {
+          "n_trainings": 44454,
+          "n_with_group": 2446,
+          "pct_trainings": 5.5
+        },
+        "podlaskie": {
+          "n_trainings": 30793,
+          "n_with_group": 414,
+          "pct_trainings": 1.34
+        },
+        "pomorskie": {
+          "n_trainings": 24976,
+          "n_with_group": 686,
+          "pct_trainings": 2.75
+        },
+        "warmińsko-mazurskie": {
+          "n_trainings": 24895,
+          "n_with_group": 418,
+          "pct_trainings": 1.68
+        },
+        "wielkopolskie": {
+          "n_trainings": 68940,
+          "n_with_group": 1572,
+          "pct_trainings": 2.28
+        },
+        "zachodniopomorskie": {
+          "n_trainings": 24993,
+          "n_with_group": 557,
+          "pct_trainings": 2.23
+        },
+        "łódzkie": {
+          "n_trainings": 39043,
+          "n_with_group": 816,
+          "pct_trainings": 2.09
+        },
+        "śląskie": {
+          "n_trainings": 104841,
+          "n_with_group": 1095,
+          "pct_trainings": 1.04
+        },
+        "świętokrzyskie": {
+          "n_trainings": 24721,
+          "n_with_group": 907,
+          "pct_trainings": 3.67
+        }
+      }
+    },
+    "049": {
+      "national_n_trainings": 719265,
+      "national_n_with_group": 29,
+      "national_pct": 0.0,
+      "n_uris_in_group": 3,
+      "by_voivodeship": {
+        "dolnośląskie": {
+          "n_trainings": 51742,
+          "n_with_group": 1,
+          "pct_trainings": 0.0
+        },
+        "kujawsko-pomorskie": {
+          "n_trainings": 24936,
+          "n_with_group": 7,
+          "pct_trainings": 0.03
+        },
+        "lubelskie": {
+          "n_trainings": 22747,
+          "n_with_group": 0,
+          "pct_trainings": 0.0
+        },
+        "lubuskie": {
+          "n_trainings": 10757,
+          "n_with_group": 0,
+          "pct_trainings": 0.0
+        },
+        "mazowieckie": {
+          "n_trainings": 102473,
+          "n_with_group": 1,
+          "pct_trainings": 0.0
+        },
+        "małopolskie": {
+          "n_trainings": 107371,
+          "n_with_group": 0,
+          "pct_trainings": 0.0
+        },
+        "opolskie": {
+          "n_trainings": 11583,
+          "n_with_group": 8,
+          "pct_trainings": 0.07
+        },
+        "podkarpackie": {
+          "n_trainings": 44454,
+          "n_with_group": 5,
+          "pct_trainings": 0.01
+        },
+        "podlaskie": {
+          "n_trainings": 30793,
+          "n_with_group": 2,
+          "pct_trainings": 0.01
+        },
+        "pomorskie": {
+          "n_trainings": 24976,
+          "n_with_group": 0,
+          "pct_trainings": 0.0
+        },
+        "warmińsko-mazurskie": {
+          "n_trainings": 24895,
+          "n_with_group": 0,
+          "pct_trainings": 0.0
+        },
+        "wielkopolskie": {
+          "n_trainings": 68940,
+          "n_with_group": 1,
+          "pct_trainings": 0.0
+        },
+        "zachodniopomorskie": {
+          "n_trainings": 24993,
+          "n_with_group": 0,
+          "pct_trainings": 0.0
+        },
+        "łódzkie": {
+          "n_trainings": 39043,
+          "n_with_group": 0,
+          "pct_trainings": 0.0
+        },
+        "śląskie": {
+          "n_trainings": 104841,
+          "n_with_group": 1,
+          "pct_trainings": 0.0
+        },
+        "świętokrzyskie": {
+          "n_trainings": 24721,
+          "n_with_group": 3,
+          "pct_trainings": 0.01
+        }
+      }
+    },
+    "051": {
+      "national_n_trainings": 719265,
+      "national_n_with_group": 1147,
+      "national_pct": 0.16,
+      "n_uris_in_group": 93,
+      "by_voivodeship": {
+        "dolnośląskie": {
+          "n_trainings": 51742,
+          "n_with_group": 96,
+          "pct_trainings": 0.19
+        },
+        "kujawsko-pomorskie": {
+          "n_trainings": 24936,
+          "n_with_group": 92,
+          "pct_trainings": 0.37
+        },
+        "lubelskie": {
+          "n_trainings": 22747,
+          "n_with_group": 32,
+          "pct_trainings": 0.14
+        },
+        "lubuskie": {
+          "n_trainings": 10757,
+          "n_with_group": 64,
+          "pct_trainings": 0.59
+        },
+        "mazowieckie": {
+          "n_trainings": 102473,
+          "n_with_group": 231,
+          "pct_trainings": 0.23
+        },
+        "małopolskie": {
+          "n_trainings": 107371,
+          "n_with_group": 70,
+          "pct_trainings": 0.07
+        },
+        "opolskie": {
+          "n_trainings": 11583,
+          "n_with_group": 3,
+          "pct_trainings": 0.03
+        },
+        "podkarpackie": {
+          "n_trainings": 44454,
+          "n_with_group": 25,
+          "pct_trainings": 0.06
+        },
+        "podlaskie": {
+          "n_trainings": 30793,
+          "n_with_group": 8,
+          "pct_trainings": 0.03
+        },
+        "pomorskie": {
+          "n_trainings": 24976,
+          "n_with_group": 40,
+          "pct_trainings": 0.16
+        },
+        "warmińsko-mazurskie": {
+          "n_trainings": 24895,
+          "n_with_group": 35,
+          "pct_trainings": 0.14
+        },
+        "wielkopolskie": {
+          "n_trainings": 68940,
+          "n_with_group": 138,
+          "pct_trainings": 0.2
+        },
+        "zachodniopomorskie": {
+          "n_trainings": 24993,
+          "n_with_group": 11,
+          "pct_trainings": 0.04
+        },
+        "łódzkie": {
+          "n_trainings": 39043,
+          "n_with_group": 71,
+          "pct_trainings": 0.18
+        },
+        "śląskie": {
+          "n_trainings": 104841,
+          "n_with_group": 197,
+          "pct_trainings": 0.19
+        },
+        "świętokrzyskie": {
+          "n_trainings": 24721,
+          "n_with_group": 34,
+          "pct_trainings": 0.14
+        }
+      }
+    },
+    "052": {
+      "national_n_trainings": 719265,
+      "national_n_with_group": 145,
+      "national_pct": 0.02,
+      "n_uris_in_group": 22,
+      "by_voivodeship": {
+        "dolnośląskie": {
+          "n_trainings": 51742,
+          "n_with_group": 8,
+          "pct_trainings": 0.02
+        },
+        "kujawsko-pomorskie": {
+          "n_trainings": 24936,
+          "n_with_group": 2,
+          "pct_trainings": 0.01
+        },
+        "lubelskie": {
+          "n_trainings": 22747,
+          "n_with_group": 1,
+          "pct_trainings": 0.0
+        },
+        "lubuskie": {
+          "n_trainings": 10757,
+          "n_with_group": 0,
+          "pct_trainings": 0.0
+        },
+        "mazowieckie": {
+          "n_trainings": 102473,
+          "n_with_group": 12,
+          "pct_trainings": 0.01
+        },
+        "małopolskie": {
+          "n_trainings": 107371,
+          "n_with_group": 5,
+          "pct_trainings": 0.0
+        },
+        "opolskie": {
+          "n_trainings": 11583,
+          "n_with_group": 0,
+          "pct_trainings": 0.0
+        },
+        "podkarpackie": {
+          "n_trainings": 44454,
+          "n_with_group": 7,
+          "pct_trainings": 0.02
+        },
+        "podlaskie": {
+          "n_trainings": 30793,
+          "n_with_group": 5,
+          "pct_trainings": 0.02
+        },
+        "pomorskie": {
+          "n_trainings": 24976,
+          "n_with_group": 3,
+          "pct_trainings": 0.01
+        },
+        "warmińsko-mazurskie": {
+          "n_trainings": 24895,
+          "n_with_group": 16,
+          "pct_trainings": 0.06
+        },
+        "wielkopolskie": {
+          "n_trainings": 68940,
+          "n_with_group": 7,
+          "pct_trainings": 0.01
+        },
+        "zachodniopomorskie": {
+          "n_trainings": 24993,
+          "n_with_group": 3,
+          "pct_trainings": 0.01
+        },
+        "łódzkie": {
+          "n_trainings": 39043,
+          "n_with_group": 10,
+          "pct_trainings": 0.03
+        },
+        "śląskie": {
+          "n_trainings": 104841,
+          "n_with_group": 65,
+          "pct_trainings": 0.06
+        },
+        "świętokrzyskie": {
+          "n_trainings": 24721,
+          "n_with_group": 1,
+          "pct_trainings": 0.0
+        }
+      }
+    },
+    "053": {
+      "national_n_trainings": 719265,
+      "national_n_with_group": 1348,
+      "national_pct": 0.19,
+      "n_uris_in_group": 143,
+      "by_voivodeship": {
+        "dolnośląskie": {
+          "n_trainings": 51742,
+          "n_with_group": 103,
+          "pct_trainings": 0.2
+        },
+        "kujawsko-pomorskie": {
+          "n_trainings": 24936,
+          "n_with_group": 88,
+          "pct_trainings": 0.35
+        },
+        "lubelskie": {
+          "n_trainings": 22747,
+          "n_with_group": 35,
+          "pct_trainings": 0.15
+        },
+        "lubuskie": {
+          "n_trainings": 10757,
+          "n_with_group": 45,
+          "pct_trainings": 0.42
+        },
+        "mazowieckie": {
+          "n_trainings": 102473,
+          "n_with_group": 167,
+          "pct_trainings": 0.16
+        },
+        "małopolskie": {
+          "n_trainings": 107371,
+          "n_with_group": 116,
+          "pct_trainings": 0.11
+        },
+        "opolskie": {
+          "n_trainings": 11583,
+          "n_with_group": 13,
+          "pct_trainings": 0.11
+        },
+        "podkarpackie": {
+          "n_trainings": 44454,
+          "n_with_group": 58,
+          "pct_trainings": 0.13
+        },
+        "podlaskie": {
+          "n_trainings": 30793,
+          "n_with_group": 75,
+          "pct_trainings": 0.24
+        },
+        "pomorskie": {
+          "n_trainings": 24976,
+          "n_with_group": 26,
+          "pct_trainings": 0.1
+        },
+        "warmińsko-mazurskie": {
+          "n_trainings": 24895,
+          "n_with_group": 62,
+          "pct_trainings": 0.25
+        },
+        "wielkopolskie": {
+          "n_trainings": 68940,
+          "n_with_group": 160,
+          "pct_trainings": 0.23
+        },
+        "zachodniopomorskie": {
+          "n_trainings": 24993,
+          "n_with_group": 57,
+          "pct_trainings": 0.23
+        },
+        "łódzkie": {
+          "n_trainings": 39043,
+          "n_with_group": 49,
+          "pct_trainings": 0.13
+        },
+        "śląskie": {
+          "n_trainings": 104841,
+          "n_with_group": 238,
+          "pct_trainings": 0.23
+        },
+        "świętokrzyskie": {
+          "n_trainings": 24721,
+          "n_with_group": 56,
+          "pct_trainings": 0.23
+        }
+      }
+    },
+    "054": {
+      "national_n_trainings": 719265,
+      "national_n_with_group": 231,
+      "national_pct": 0.03,
+      "n_uris_in_group": 29,
+      "by_voivodeship": {
+        "dolnośląskie": {
+          "n_trainings": 51742,
+          "n_with_group": 7,
+          "pct_trainings": 0.01
+        },
+        "kujawsko-pomorskie": {
+          "n_trainings": 24936,
+          "n_with_group": 25,
+          "pct_trainings": 0.1
+        },
+        "lubelskie": {
+          "n_trainings": 22747,
+          "n_with_group": 1,
+          "pct_trainings": 0.0
+        },
+        "lubuskie": {
+          "n_trainings": 10757,
+          "n_with_group": 2,
+          "pct_trainings": 0.02
+        },
+        "mazowieckie": {
+          "n_trainings": 102473,
+          "n_with_group": 10,
+          "pct_trainings": 0.01
+        },
+        "małopolskie": {
+          "n_trainings": 107371,
+          "n_with_group": 27,
+          "pct_trainings": 0.03
+        },
+        "opolskie": {
+          "n_trainings": 11583,
+          "n_with_group": 15,
+          "pct_trainings": 0.13
+        },
+        "podkarpackie": {
+          "n_trainings": 44454,
+          "n_with_group": 9,
+          "pct_trainings": 0.02
+        },
+        "podlaskie": {
+          "n_trainings": 30793,
+          "n_with_group": 15,
+          "pct_trainings": 0.05
+        },
+        "pomorskie": {
+          "n_trainings": 24976,
+          "n_with_group": 8,
+          "pct_trainings": 0.03
+        },
+        "warmińsko-mazurskie": {
+          "n_trainings": 24895,
+          "n_with_group": 15,
+          "pct_trainings": 0.06
+        },
+        "wielkopolskie": {
+          "n_trainings": 68940,
+          "n_with_group": 16,
+          "pct_trainings": 0.02
+        },
+        "zachodniopomorskie": {
+          "n_trainings": 24993,
+          "n_with_group": 28,
+          "pct_trainings": 0.11
+        },
+        "łódzkie": {
+          "n_trainings": 39043,
+          "n_with_group": 1,
+          "pct_trainings": 0.0
+        },
+        "śląskie": {
+          "n_trainings": 104841,
+          "n_with_group": 46,
+          "pct_trainings": 0.04
+        },
+        "świętokrzyskie": {
+          "n_trainings": 24721,
+          "n_with_group": 6,
+          "pct_trainings": 0.02
+        }
+      }
+    },
+    "058": {
+      "national_n_trainings": 719265,
+      "national_n_with_group": 3,
+      "national_pct": 0.0,
+      "n_uris_in_group": 8,
+      "by_voivodeship": {
+        "dolnośląskie": {
+          "n_trainings": 51742,
+          "n_with_group": 0,
+          "pct_trainings": 0.0
+        },
+        "kujawsko-pomorskie": {
+          "n_trainings": 24936,
+          "n_with_group": 0,
+          "pct_trainings": 0.0
+        },
+        "lubelskie": {
+          "n_trainings": 22747,
+          "n_with_group": 0,
+          "pct_trainings": 0.0
+        },
+        "lubuskie": {
+          "n_trainings": 10757,
+          "n_with_group": 0,
+          "pct_trainings": 0.0
+        },
+        "mazowieckie": {
+          "n_trainings": 102473,
+          "n_with_group": 0,
+          "pct_trainings": 0.0
+        },
+        "małopolskie": {
+          "n_trainings": 107371,
+          "n_with_group": 1,
+          "pct_trainings": 0.0
+        },
+        "opolskie": {
+          "n_trainings": 11583,
+          "n_with_group": 0,
+          "pct_trainings": 0.0
+        },
+        "podkarpackie": {
+          "n_trainings": 44454,
+          "n_with_group": 0,
+          "pct_trainings": 0.0
+        },
+        "podlaskie": {
+          "n_trainings": 30793,
+          "n_with_group": 0,
+          "pct_trainings": 0.0
+        },
+        "pomorskie": {
+          "n_trainings": 24976,
+          "n_with_group": 2,
+          "pct_trainings": 0.01
+        },
+        "warmińsko-mazurskie": {
+          "n_trainings": 24895,
+          "n_with_group": 0,
+          "pct_trainings": 0.0
+        },
+        "wielkopolskie": {
+          "n_trainings": 68940,
+          "n_with_group": 0,
+          "pct_trainings": 0.0
+        },
+        "zachodniopomorskie": {
+          "n_trainings": 24993,
+          "n_with_group": 0,
+          "pct_trainings": 0.0
+        },
+        "łódzkie": {
+          "n_trainings": 39043,
+          "n_with_group": 0,
+          "pct_trainings": 0.0
+        },
+        "śląskie": {
+          "n_trainings": 104841,
+          "n_with_group": 0,
+          "pct_trainings": 0.0
+        },
+        "świętokrzyskie": {
+          "n_trainings": 24721,
+          "n_with_group": 0,
+          "pct_trainings": 0.0
+        }
+      }
+    },
+    "061": {
+      "national_n_trainings": 719265,
+      "national_n_with_group": 1742,
+      "national_pct": 0.24,
+      "n_uris_in_group": 330,
+      "by_voivodeship": {
+        "dolnośląskie": {
+          "n_trainings": 51742,
+          "n_with_group": 63,
+          "pct_trainings": 0.12
+        },
+        "kujawsko-pomorskie": {
+          "n_trainings": 24936,
+          "n_with_group": 55,
+          "pct_trainings": 0.22
+        },
+        "lubelskie": {
+          "n_trainings": 22747,
+          "n_with_group": 60,
+          "pct_trainings": 0.26
+        },
+        "lubuskie": {
+          "n_trainings": 10757,
+          "n_with_group": 6,
+          "pct_trainings": 0.06
+        },
+        "mazowieckie": {
+          "n_trainings": 102473,
+          "n_with_group": 266,
+          "pct_trainings": 0.26
+        },
+        "małopolskie": {
+          "n_trainings": 107371,
+          "n_with_group": 164,
+          "pct_trainings": 0.15
+        },
+        "opolskie": {
+          "n_trainings": 11583,
+          "n_with_group": 9,
+          "pct_trainings": 0.08
+        },
+        "podkarpackie": {
+          "n_trainings": 44454,
+          "n_with_group": 91,
+          "pct_trainings": 0.2
+        },
+        "podlaskie": {
+          "n_trainings": 30793,
+          "n_with_group": 58,
+          "pct_trainings": 0.19
+        },
+        "pomorskie": {
+          "n_trainings": 24976,
+          "n_with_group": 118,
+          "pct_trainings": 0.47
+        },
+        "warmińsko-mazurskie": {
+          "n_trainings": 24895,
+          "n_with_group": 101,
+          "pct_trainings": 0.41
+        },
+        "wielkopolskie": {
+          "n_trainings": 68940,
+          "n_with_group": 113,
+          "pct_trainings": 0.16
+        },
+        "zachodniopomorskie": {
+          "n_trainings": 24993,
+          "n_with_group": 36,
+          "pct_trainings": 0.14
+        },
+        "łódzkie": {
+          "n_trainings": 39043,
+          "n_with_group": 69,
+          "pct_trainings": 0.18
+        },
+        "śląskie": {
+          "n_trainings": 104841,
+          "n_with_group": 489,
+          "pct_trainings": 0.47
+        },
+        "świętokrzyskie": {
+          "n_trainings": 24721,
+          "n_with_group": 44,
+          "pct_trainings": 0.18
+        }
+      }
+    },
+    "068": {
+      "national_n_trainings": 719265,
+      "national_n_with_group": 62,
+      "national_pct": 0.01,
+      "n_uris_in_group": 10,
+      "by_voivodeship": {
+        "dolnośląskie": {
+          "n_trainings": 51742,
+          "n_with_group": 0,
+          "pct_trainings": 0.0
+        },
+        "kujawsko-pomorskie": {
+          "n_trainings": 24936,
+          "n_with_group": 7,
+          "pct_trainings": 0.03
+        },
+        "lubelskie": {
+          "n_trainings": 22747,
+          "n_with_group": 5,
+          "pct_trainings": 0.02
+        },
+        "lubuskie": {
+          "n_trainings": 10757,
+          "n_with_group": 0,
+          "pct_trainings": 0.0
+        },
+        "mazowieckie": {
+          "n_trainings": 102473,
+          "n_with_group": 11,
+          "pct_trainings": 0.01
+        },
+        "małopolskie": {
+          "n_trainings": 107371,
+          "n_with_group": 3,
+          "pct_trainings": 0.0
+        },
+        "opolskie": {
+          "n_trainings": 11583,
+          "n_with_group": 0,
+          "pct_trainings": 0.0
+        },
+        "podkarpackie": {
+          "n_trainings": 44454,
+          "n_with_group": 6,
+          "pct_trainings": 0.01
+        },
+        "podlaskie": {
+          "n_trainings": 30793,
+          "n_with_group": 5,
+          "pct_trainings": 0.02
+        },
+        "pomorskie": {
+          "n_trainings": 24976,
+          "n_with_group": 7,
+          "pct_trainings": 0.03
+        },
+        "warmińsko-mazurskie": {
+          "n_trainings": 24895,
+          "n_with_group": 1,
+          "pct_trainings": 0.0
+        },
+        "wielkopolskie": {
+          "n_trainings": 68940,
+          "n_with_group": 13,
+          "pct_trainings": 0.02
+        },
+        "zachodniopomorskie": {
+          "n_trainings": 24993,
+          "n_with_group": 0,
+          "pct_trainings": 0.0
+        },
+        "łódzkie": {
+          "n_trainings": 39043,
+          "n_with_group": 0,
+          "pct_trainings": 0.0
+        },
+        "śląskie": {
+          "n_trainings": 104841,
+          "n_with_group": 1,
+          "pct_trainings": 0.0
+        },
+        "świętokrzyskie": {
+          "n_trainings": 24721,
+          "n_with_group": 3,
+          "pct_trainings": 0.01
+        }
+      }
+    },
+    "071": {
+      "national_n_trainings": 719265,
+      "national_n_with_group": 4537,
+      "national_pct": 0.63,
+      "n_uris_in_group": 436,
+      "by_voivodeship": {
+        "dolnośląskie": {
+          "n_trainings": 51742,
+          "n_with_group": 327,
+          "pct_trainings": 0.63
+        },
+        "kujawsko-pomorskie": {
+          "n_trainings": 24936,
+          "n_with_group": 119,
+          "pct_trainings": 0.48
+        },
+        "lubelskie": {
+          "n_trainings": 22747,
+          "n_with_group": 160,
+          "pct_trainings": 0.7
+        },
+        "lubuskie": {
+          "n_trainings": 10757,
+          "n_with_group": 19,
+          "pct_trainings": 0.18
+        },
+        "mazowieckie": {
+          "n_trainings": 102473,
+          "n_with_group": 356,
+          "pct_trainings": 0.35
+        },
+        "małopolskie": {
+          "n_trainings": 107371,
+          "n_with_group": 455,
+          "pct_trainings": 0.42
+        },
+        "opolskie": {
+          "n_trainings": 11583,
+          "n_with_group": 49,
+          "pct_trainings": 0.42
+        },
+        "podkarpackie": {
+          "n_trainings": 44454,
+          "n_with_group": 185,
+          "pct_trainings": 0.42
+        },
+        "podlaskie": {
+          "n_trainings": 30793,
+          "n_with_group": 59,
+          "pct_trainings": 0.19
+        },
+        "pomorskie": {
+          "n_trainings": 24976,
+          "n_with_group": 90,
+          "pct_trainings": 0.36
+        },
+        "warmińsko-mazurskie": {
+          "n_trainings": 24895,
+          "n_with_group": 111,
+          "pct_trainings": 0.45
+        },
+        "wielkopolskie": {
+          "n_trainings": 68940,
+          "n_with_group": 278,
+          "pct_trainings": 0.4
+        },
+        "zachodniopomorskie": {
+          "n_trainings": 24993,
+          "n_with_group": 60,
+          "pct_trainings": 0.24
+        },
+        "łódzkie": {
+          "n_trainings": 39043,
+          "n_with_group": 113,
+          "pct_trainings": 0.29
+        },
+        "śląskie": {
+          "n_trainings": 104841,
+          "n_with_group": 2049,
+          "pct_trainings": 1.95
+        },
+        "świętokrzyskie": {
+          "n_trainings": 24721,
+          "n_with_group": 107,
+          "pct_trainings": 0.43
+        }
+      }
+    },
+    "072": {
+      "national_n_trainings": 719265,
+      "national_n_with_group": 2078,
+      "national_pct": 0.29,
+      "n_uris_in_group": 338,
+      "by_voivodeship": {
+        "dolnośląskie": {
+          "n_trainings": 51742,
+          "n_with_group": 110,
+          "pct_trainings": 0.21
+        },
+        "kujawsko-pomorskie": {
+          "n_trainings": 24936,
+          "n_with_group": 113,
+          "pct_trainings": 0.45
+        },
+        "lubelskie": {
+          "n_trainings": 22747,
+          "n_with_group": 85,
+          "pct_trainings": 0.37
+        },
+        "lubuskie": {
+          "n_trainings": 10757,
+          "n_with_group": 22,
+          "pct_trainings": 0.2
+        },
+        "mazowieckie": {
+          "n_trainings": 102473,
+          "n_with_group": 206,
+          "pct_trainings": 0.2
+        },
+        "małopolskie": {
+          "n_trainings": 107371,
+          "n_with_group": 171,
+          "pct_trainings": 0.16
+        },
+        "opolskie": {
+          "n_trainings": 11583,
+          "n_with_group": 27,
+          "pct_trainings": 0.23
+        },
+        "podkarpackie": {
+          "n_trainings": 44454,
+          "n_with_group": 176,
+          "pct_trainings": 0.4
+        },
+        "podlaskie": {
+          "n_trainings": 30793,
+          "n_with_group": 68,
+          "pct_trainings": 0.22
+        },
+        "pomorskie": {
+          "n_trainings": 24976,
+          "n_with_group": 71,
+          "pct_trainings": 0.28
+        },
+        "warmińsko-mazurskie": {
+          "n_trainings": 24895,
+          "n_with_group": 66,
+          "pct_trainings": 0.27
+        },
+        "wielkopolskie": {
+          "n_trainings": 68940,
+          "n_with_group": 113,
+          "pct_trainings": 0.16
+        },
+        "zachodniopomorskie": {
+          "n_trainings": 24993,
+          "n_with_group": 88,
+          "pct_trainings": 0.35
+        },
+        "łódzkie": {
+          "n_trainings": 39043,
+          "n_with_group": 95,
+          "pct_trainings": 0.24
+        },
+        "śląskie": {
+          "n_trainings": 104841,
+          "n_with_group": 594,
+          "pct_trainings": 0.57
+        },
+        "świętokrzyskie": {
+          "n_trainings": 24721,
+          "n_with_group": 73,
+          "pct_trainings": 0.3
+        }
+      }
+    },
+    "073": {
+      "national_n_trainings": 719265,
+      "national_n_with_group": 1049,
+      "national_pct": 0.15,
+      "n_uris_in_group": 104,
+      "by_voivodeship": {
+        "dolnośląskie": {
+          "n_trainings": 51742,
+          "n_with_group": 98,
+          "pct_trainings": 0.19
+        },
+        "kujawsko-pomorskie": {
+          "n_trainings": 24936,
+          "n_with_group": 30,
+          "pct_trainings": 0.12
+        },
+        "lubelskie": {
+          "n_trainings": 22747,
+          "n_with_group": 26,
+          "pct_trainings": 0.11
+        },
+        "lubuskie": {
+          "n_trainings": 10757,
+          "n_with_group": 13,
+          "pct_trainings": 0.12
+        },
+        "mazowieckie": {
+          "n_trainings": 102473,
+          "n_with_group": 70,
+          "pct_trainings": 0.07
+        },
+        "małopolskie": {
+          "n_trainings": 107371,
+          "n_with_group": 99,
+          "pct_trainings": 0.09
+        },
+        "opolskie": {
+          "n_trainings": 11583,
+          "n_with_group": 30,
+          "pct_trainings": 0.26
+        },
+        "podkarpackie": {
+          "n_trainings": 44454,
+          "n_with_group": 42,
+          "pct_trainings": 0.09
+        },
+        "podlaskie": {
+          "n_trainings": 30793,
+          "n_with_group": 27,
+          "pct_trainings": 0.09
+        },
+        "pomorskie": {
+          "n_trainings": 24976,
+          "n_with_group": 57,
+          "pct_trainings": 0.23
+        },
+        "warmińsko-mazurskie": {
+          "n_trainings": 24895,
+          "n_with_group": 24,
+          "pct_trainings": 0.1
+        },
+        "wielkopolskie": {
+          "n_trainings": 68940,
+          "n_with_group": 52,
+          "pct_trainings": 0.08
+        },
+        "zachodniopomorskie": {
+          "n_trainings": 24993,
+          "n_with_group": 23,
+          "pct_trainings": 0.09
+        },
+        "łódzkie": {
+          "n_trainings": 39043,
+          "n_with_group": 45,
+          "pct_trainings": 0.12
+        },
+        "śląskie": {
+          "n_trainings": 104841,
+          "n_with_group": 384,
+          "pct_trainings": 0.37
+        },
+        "świętokrzyskie": {
+          "n_trainings": 24721,
+          "n_with_group": 29,
+          "pct_trainings": 0.12
+        }
+      }
+    },
+    "079": {
+      "national_n_trainings": 719265,
+      "national_n_with_group": 8,
+      "national_pct": 0.0,
+      "n_uris_in_group": 12,
+      "by_voivodeship": {
+        "dolnośląskie": {
+          "n_trainings": 51742,
+          "n_with_group": 0,
+          "pct_trainings": 0.0
+        },
+        "kujawsko-pomorskie": {
+          "n_trainings": 24936,
+          "n_with_group": 0,
+          "pct_trainings": 0.0
+        },
+        "lubelskie": {
+          "n_trainings": 22747,
+          "n_with_group": 0,
+          "pct_trainings": 0.0
+        },
+        "lubuskie": {
+          "n_trainings": 10757,
+          "n_with_group": 1,
+          "pct_trainings": 0.01
+        },
+        "mazowieckie": {
+          "n_trainings": 102473,
+          "n_with_group": 1,
+          "pct_trainings": 0.0
+        },
+        "małopolskie": {
+          "n_trainings": 107371,
+          "n_with_group": 1,
+          "pct_trainings": 0.0
+        },
+        "opolskie": {
+          "n_trainings": 11583,
+          "n_with_group": 0,
+          "pct_trainings": 0.0
+        },
+        "podkarpackie": {
+          "n_trainings": 44454,
+          "n_with_group": 0,
+          "pct_trainings": 0.0
+        },
+        "podlaskie": {
+          "n_trainings": 30793,
+          "n_with_group": 1,
+          "pct_trainings": 0.0
+        },
+        "pomorskie": {
+          "n_trainings": 24976,
+          "n_with_group": 1,
+          "pct_trainings": 0.0
+        },
+        "warmińsko-mazurskie": {
+          "n_trainings": 24895,
+          "n_with_group": 1,
+          "pct_trainings": 0.0
+        },
+        "wielkopolskie": {
+          "n_trainings": 68940,
+          "n_with_group": 0,
+          "pct_trainings": 0.0
+        },
+        "zachodniopomorskie": {
+          "n_trainings": 24993,
+          "n_with_group": 1,
+          "pct_trainings": 0.0
+        },
+        "łódzkie": {
+          "n_trainings": 39043,
+          "n_with_group": 0,
+          "pct_trainings": 0.0
+        },
+        "śląskie": {
+          "n_trainings": 104841,
+          "n_with_group": 1,
+          "pct_trainings": 0.0
+        },
+        "świętokrzyskie": {
+          "n_trainings": 24721,
+          "n_with_group": 0,
+          "pct_trainings": 0.0
+        }
+      }
+    },
+    "081": {
+      "national_n_trainings": 719265,
+      "national_n_with_group": 188,
+      "national_pct": 0.03,
+      "n_uris_in_group": 68,
+      "by_voivodeship": {
+        "dolnośląskie": {
+          "n_trainings": 51742,
+          "n_with_group": 9,
+          "pct_trainings": 0.02
+        },
+        "kujawsko-pomorskie": {
+          "n_trainings": 24936,
+          "n_with_group": 10,
+          "pct_trainings": 0.04
+        },
+        "lubelskie": {
+          "n_trainings": 22747,
+          "n_with_group": 8,
+          "pct_trainings": 0.04
+        },
+        "lubuskie": {
+          "n_trainings": 10757,
+          "n_with_group": 1,
+          "pct_trainings": 0.01
+        },
+        "mazowieckie": {
+          "n_trainings": 102473,
+          "n_with_group": 7,
+          "pct_trainings": 0.01
+        },
+        "małopolskie": {
+          "n_trainings": 107371,
+          "n_with_group": 6,
+          "pct_trainings": 0.01
+        },
+        "opolskie": {
+          "n_trainings": 11583,
+          "n_with_group": 4,
+          "pct_trainings": 0.03
+        },
+        "podkarpackie": {
+          "n_trainings": 44454,
+          "n_with_group": 14,
+          "pct_trainings": 0.03
+        },
+        "podlaskie": {
+          "n_trainings": 30793,
+          "n_with_group": 1,
+          "pct_trainings": 0.0
+        },
+        "pomorskie": {
+          "n_trainings": 24976,
+          "n_with_group": 8,
+          "pct_trainings": 0.03
+        },
+        "warmińsko-mazurskie": {
+          "n_trainings": 24895,
+          "n_with_group": 7,
+          "pct_trainings": 0.03
+        },
+        "wielkopolskie": {
+          "n_trainings": 68940,
+          "n_with_group": 12,
+          "pct_trainings": 0.02
+        },
+        "zachodniopomorskie": {
+          "n_trainings": 24993,
+          "n_with_group": 3,
+          "pct_trainings": 0.01
+        },
+        "łódzkie": {
+          "n_trainings": 39043,
+          "n_with_group": 14,
+          "pct_trainings": 0.04
+        },
+        "śląskie": {
+          "n_trainings": 104841,
+          "n_with_group": 81,
+          "pct_trainings": 0.08
+        },
+        "świętokrzyskie": {
+          "n_trainings": 24721,
+          "n_with_group": 3,
+          "pct_trainings": 0.01
+        }
+      }
+    },
+    "082": {
+      "national_n_trainings": 719265,
+      "national_n_with_group": 56,
+      "national_pct": 0.01,
+      "n_uris_in_group": 11,
+      "by_voivodeship": {
+        "dolnośląskie": {
+          "n_trainings": 51742,
+          "n_with_group": 2,
+          "pct_trainings": 0.0
+        },
+        "kujawsko-pomorskie": {
+          "n_trainings": 24936,
+          "n_with_group": 0,
+          "pct_trainings": 0.0
+        },
+        "lubelskie": {
+          "n_trainings": 22747,
+          "n_with_group": 0,
+          "pct_trainings": 0.0
+        },
+        "lubuskie": {
+          "n_trainings": 10757,
+          "n_with_group": 0,
+          "pct_trainings": 0.0
+        },
+        "mazowieckie": {
+          "n_trainings": 102473,
+          "n_with_group": 7,
+          "pct_trainings": 0.01
+        },
+        "małopolskie": {
+          "n_trainings": 107371,
+          "n_with_group": 2,
+          "pct_trainings": 0.0
+        },
+        "opolskie": {
+          "n_trainings": 11583,
+          "n_with_group": 0,
+          "pct_trainings": 0.0
+        },
+        "podkarpackie": {
+          "n_trainings": 44454,
+          "n_with_group": 1,
+          "pct_trainings": 0.0
+        },
+        "podlaskie": {
+          "n_trainings": 30793,
+          "n_with_group": 0,
+          "pct_trainings": 0.0
+        },
+        "pomorskie": {
+          "n_trainings": 24976,
+          "n_with_group": 3,
+          "pct_trainings": 0.01
+        },
+        "warmińsko-mazurskie": {
+          "n_trainings": 24895,
+          "n_with_group": 1,
+          "pct_trainings": 0.0
+        },
+        "wielkopolskie": {
+          "n_trainings": 68940,
+          "n_with_group": 3,
+          "pct_trainings": 0.0
+        },
+        "zachodniopomorskie": {
+          "n_trainings": 24993,
+          "n_with_group": 4,
+          "pct_trainings": 0.02
+        },
+        "łódzkie": {
+          "n_trainings": 39043,
+          "n_with_group": 10,
+          "pct_trainings": 0.03
+        },
+        "śląskie": {
+          "n_trainings": 104841,
+          "n_with_group": 23,
+          "pct_trainings": 0.02
+        },
+        "świętokrzyskie": {
+          "n_trainings": 24721,
+          "n_with_group": 0,
+          "pct_trainings": 0.0
+        }
+      }
+    },
+    "083": {
+      "national_n_trainings": 719265,
+      "national_n_with_group": 47,
+      "national_pct": 0.01,
+      "n_uris_in_group": 31,
+      "by_voivodeship": {
+        "dolnośląskie": {
+          "n_trainings": 51742,
+          "n_with_group": 0,
+          "pct_trainings": 0.0
+        },
+        "kujawsko-pomorskie": {
+          "n_trainings": 24936,
+          "n_with_group": 0,
+          "pct_trainings": 0.0
+        },
+        "lubelskie": {
+          "n_trainings": 22747,
+          "n_with_group": 0,
+          "pct_trainings": 0.0
+        },
+        "lubuskie": {
+          "n_trainings": 10757,
+          "n_with_group": 0,
+          "pct_trainings": 0.0
+        },
+        "mazowieckie": {
+          "n_trainings": 102473,
+          "n_with_group": 1,
+          "pct_trainings": 0.0
+        },
+        "małopolskie": {
+          "n_trainings": 107371,
+          "n_with_group": 2,
+          "pct_trainings": 0.0
+        },
+        "opolskie": {
+          "n_trainings": 11583,
+          "n_with_group": 0,
+          "pct_trainings": 0.0
+        },
+        "podkarpackie": {
+          "n_trainings": 44454,
+          "n_with_group": 0,
+          "pct_trainings": 0.0
+        },
+        "podlaskie": {
+          "n_trainings": 30793,
+          "n_with_group": 1,
+          "pct_trainings": 0.0
+        },
+        "pomorskie": {
+          "n_trainings": 24976,
+          "n_with_group": 10,
+          "pct_trainings": 0.04
+        },
+        "warmińsko-mazurskie": {
+          "n_trainings": 24895,
+          "n_with_group": 0,
+          "pct_trainings": 0.0
+        },
+        "wielkopolskie": {
+          "n_trainings": 68940,
+          "n_with_group": 0,
+          "pct_trainings": 0.0
+        },
+        "zachodniopomorskie": {
+          "n_trainings": 24993,
+          "n_with_group": 0,
+          "pct_trainings": 0.0
+        },
+        "łódzkie": {
+          "n_trainings": 39043,
+          "n_with_group": 0,
+          "pct_trainings": 0.0
+        },
+        "śląskie": {
+          "n_trainings": 104841,
+          "n_with_group": 32,
+          "pct_trainings": 0.03
+        },
+        "świętokrzyskie": {
+          "n_trainings": 24721,
+          "n_with_group": 1,
+          "pct_trainings": 0.0
+        }
+      }
+    },
+    "084": {
+      "national_n_trainings": 719265,
+      "national_n_with_group": 58,
+      "national_pct": 0.01,
+      "n_uris_in_group": 16,
+      "by_voivodeship": {
+        "dolnośląskie": {
+          "n_trainings": 51742,
+          "n_with_group": 6,
+          "pct_trainings": 0.01
+        },
+        "kujawsko-pomorskie": {
+          "n_trainings": 24936,
+          "n_with_group": 6,
+          "pct_trainings": 0.02
+        },
+        "lubelskie": {
+          "n_trainings": 22747,
+          "n_with_group": 2,
+          "pct_trainings": 0.01
+        },
+        "lubuskie": {
+          "n_trainings": 10757,
+          "n_with_group": 0,
+          "pct_trainings": 0.0
+        },
+        "mazowieckie": {
+          "n_trainings": 102473,
+          "n_with_group": 4,
+          "pct_trainings": 0.0
+        },
+        "małopolskie": {
+          "n_trainings": 107371,
+          "n_with_group": 11,
+          "pct_trainings": 0.01
+        },
+        "opolskie": {
+          "n_trainings": 11583,
+          "n_with_group": 0,
+          "pct_trainings": 0.0
+        },
+        "podkarpackie": {
+          "n_trainings": 44454,
+          "n_with_group": 0,
+          "pct_trainings": 0.0
+        },
+        "podlaskie": {
+          "n_trainings": 30793,
+          "n_with_group": 0,
+          "pct_trainings": 0.0
+        },
+        "pomorskie": {
+          "n_trainings": 24976,
+          "n_with_group": 7,
+          "pct_trainings": 0.03
+        },
+        "warmińsko-mazurskie": {
+          "n_trainings": 24895,
+          "n_with_group": 7,
+          "pct_trainings": 0.03
+        },
+        "wielkopolskie": {
+          "n_trainings": 68940,
+          "n_with_group": 0,
+          "pct_trainings": 0.0
+        },
+        "zachodniopomorskie": {
+          "n_trainings": 24993,
+          "n_with_group": 0,
+          "pct_trainings": 0.0
+        },
+        "łódzkie": {
+          "n_trainings": 39043,
+          "n_with_group": 5,
+          "pct_trainings": 0.01
+        },
+        "śląskie": {
+          "n_trainings": 104841,
+          "n_with_group": 10,
+          "pct_trainings": 0.01
+        },
+        "świętokrzyskie": {
+          "n_trainings": 24721,
+          "n_with_group": 0,
+          "pct_trainings": 0.0
+        }
+      }
+    },
+    "091": {
+      "national_n_trainings": 719265,
+      "national_n_with_group": 9868,
+      "national_pct": 1.37,
+      "n_uris_in_group": 344,
+      "by_voivodeship": {
+        "dolnośląskie": {
+          "n_trainings": 51742,
+          "n_with_group": 1042,
+          "pct_trainings": 2.01
+        },
+        "kujawsko-pomorskie": {
+          "n_trainings": 24936,
+          "n_with_group": 753,
+          "pct_trainings": 3.02
+        },
+        "lubelskie": {
+          "n_trainings": 22747,
+          "n_with_group": 422,
+          "pct_trainings": 1.86
+        },
+        "lubuskie": {
+          "n_trainings": 10757,
+          "n_with_group": 254,
+          "pct_trainings": 2.36
+        },
+        "mazowieckie": {
+          "n_trainings": 102473,
+          "n_with_group": 1448,
+          "pct_trainings": 1.41
+        },
+        "małopolskie": {
+          "n_trainings": 107371,
+          "n_with_group": 1235,
+          "pct_trainings": 1.15
+        },
+        "opolskie": {
+          "n_trainings": 11583,
+          "n_with_group": 80,
+          "pct_trainings": 0.69
+        },
+        "podkarpackie": {
+          "n_trainings": 44454,
+          "n_with_group": 457,
+          "pct_trainings": 1.03
+        },
+        "podlaskie": {
+          "n_trainings": 30793,
+          "n_with_group": 138,
+          "pct_trainings": 0.45
+        },
+        "pomorskie": {
+          "n_trainings": 24976,
+          "n_with_group": 432,
+          "pct_trainings": 1.73
+        },
+        "warmińsko-mazurskie": {
+          "n_trainings": 24895,
+          "n_with_group": 393,
+          "pct_trainings": 1.58
+        },
+        "wielkopolskie": {
+          "n_trainings": 68940,
+          "n_with_group": 847,
+          "pct_trainings": 1.23
+        },
+        "zachodniopomorskie": {
+          "n_trainings": 24993,
+          "n_with_group": 285,
+          "pct_trainings": 1.14
+        },
+        "łódzkie": {
+          "n_trainings": 39043,
+          "n_with_group": 342,
+          "pct_trainings": 0.88
+        },
+        "śląskie": {
+          "n_trainings": 104841,
+          "n_with_group": 1274,
+          "pct_trainings": 1.22
+        },
+        "świętokrzyskie": {
+          "n_trainings": 24721,
+          "n_with_group": 466,
+          "pct_trainings": 1.89
+        }
+      }
+    },
+    "092": {
+      "national_n_trainings": 719265,
+      "national_n_with_group": 664,
+      "national_pct": 0.09,
+      "n_uris_in_group": 36,
+      "by_voivodeship": {
+        "dolnośląskie": {
+          "n_trainings": 51742,
+          "n_with_group": 27,
+          "pct_trainings": 0.05
+        },
+        "kujawsko-pomorskie": {
+          "n_trainings": 24936,
+          "n_with_group": 57,
+          "pct_trainings": 0.23
+        },
+        "lubelskie": {
+          "n_trainings": 22747,
+          "n_with_group": 99,
+          "pct_trainings": 0.44
+        },
+        "lubuskie": {
+          "n_trainings": 10757,
+          "n_with_group": 2,
+          "pct_trainings": 0.02
+        },
+        "mazowieckie": {
+          "n_trainings": 102473,
+          "n_with_group": 60,
+          "pct_trainings": 0.06
+        },
+        "małopolskie": {
+          "n_trainings": 107371,
+          "n_with_group": 44,
+          "pct_trainings": 0.04
+        },
+        "opolskie": {
+          "n_trainings": 11583,
+          "n_with_group": 6,
+          "pct_trainings": 0.05
+        },
+        "podkarpackie": {
+          "n_trainings": 44454,
+          "n_with_group": 98,
+          "pct_trainings": 0.22
+        },
+        "podlaskie": {
+          "n_trainings": 30793,
+          "n_with_group": 7,
+          "pct_trainings": 0.02
+        },
+        "pomorskie": {
+          "n_trainings": 24976,
+          "n_with_group": 33,
+          "pct_trainings": 0.13
+        },
+        "warmińsko-mazurskie": {
+          "n_trainings": 24895,
+          "n_with_group": 19,
+          "pct_trainings": 0.08
+        },
+        "wielkopolskie": {
+          "n_trainings": 68940,
+          "n_with_group": 90,
+          "pct_trainings": 0.13
+        },
+        "zachodniopomorskie": {
+          "n_trainings": 24993,
+          "n_with_group": 10,
+          "pct_trainings": 0.04
+        },
+        "łódzkie": {
+          "n_trainings": 39043,
+          "n_with_group": 14,
+          "pct_trainings": 0.04
+        },
+        "śląskie": {
+          "n_trainings": 104841,
+          "n_with_group": 73,
+          "pct_trainings": 0.07
+        },
+        "świętokrzyskie": {
+          "n_trainings": 24721,
+          "n_with_group": 25,
+          "pct_trainings": 0.1
+        }
+      }
+    },
+    "098": {
+      "national_n_trainings": 719265,
+      "national_n_with_group": 17,
+      "national_pct": 0.0,
+      "n_uris_in_group": 4,
+      "by_voivodeship": {
+        "dolnośląskie": {
+          "n_trainings": 51742,
+          "n_with_group": 0,
+          "pct_trainings": 0.0
+        },
+        "kujawsko-pomorskie": {
+          "n_trainings": 24936,
+          "n_with_group": 1,
+          "pct_trainings": 0.0
+        },
+        "lubelskie": {
+          "n_trainings": 22747,
+          "n_with_group": 2,
+          "pct_trainings": 0.01
+        },
+        "lubuskie": {
+          "n_trainings": 10757,
+          "n_with_group": 0,
+          "pct_trainings": 0.0
+        },
+        "mazowieckie": {
+          "n_trainings": 102473,
+          "n_with_group": 1,
+          "pct_trainings": 0.0
+        },
+        "małopolskie": {
+          "n_trainings": 107371,
+          "n_with_group": 3,
+          "pct_trainings": 0.0
+        },
+        "opolskie": {
+          "n_trainings": 11583,
+          "n_with_group": 0,
+          "pct_trainings": 0.0
+        },
+        "podkarpackie": {
+          "n_trainings": 44454,
+          "n_with_group": 0,
+          "pct_trainings": 0.0
+        },
+        "podlaskie": {
+          "n_trainings": 30793,
+          "n_with_group": 0,
+          "pct_trainings": 0.0
+        },
+        "pomorskie": {
+          "n_trainings": 24976,
+          "n_with_group": 4,
+          "pct_trainings": 0.02
+        },
+        "warmińsko-mazurskie": {
+          "n_trainings": 24895,
+          "n_with_group": 0,
+          "pct_trainings": 0.0
+        },
+        "wielkopolskie": {
+          "n_trainings": 68940,
+          "n_with_group": 2,
+          "pct_trainings": 0.0
+        },
+        "zachodniopomorskie": {
+          "n_trainings": 24993,
+          "n_with_group": 1,
+          "pct_trainings": 0.0
+        },
+        "łódzkie": {
+          "n_trainings": 39043,
+          "n_with_group": 0,
+          "pct_trainings": 0.0
+        },
+        "śląskie": {
+          "n_trainings": 104841,
+          "n_with_group": 3,
+          "pct_trainings": 0.0
+        },
+        "świętokrzyskie": {
+          "n_trainings": 24721,
+          "n_with_group": 0,
+          "pct_trainings": 0.0
+        }
+      }
+    },
+    "101": {
+      "national_n_trainings": 719265,
+      "national_n_with_group": 6720,
+      "national_pct": 0.93,
+      "n_uris_in_group": 74,
+      "by_voivodeship": {
+        "dolnośląskie": {
+          "n_trainings": 51742,
+          "n_with_group": 717,
+          "pct_trainings": 1.39
+        },
+        "kujawsko-pomorskie": {
+          "n_trainings": 24936,
+          "n_with_group": 642,
+          "pct_trainings": 2.57
+        },
+        "lubelskie": {
+          "n_trainings": 22747,
+          "n_with_group": 313,
+          "pct_trainings": 1.38
+        },
+        "lubuskie": {
+          "n_trainings": 10757,
+          "n_with_group": 124,
+          "pct_trainings": 1.15
+        },
+        "mazowieckie": {
+          "n_trainings": 102473,
+          "n_with_group": 621,
+          "pct_trainings": 0.61
+        },
+        "małopolskie": {
+          "n_trainings": 107371,
+          "n_with_group": 806,
+          "pct_trainings": 0.75
+        },
+        "opolskie": {
+          "n_trainings": 11583,
+          "n_with_group": 112,
+          "pct_trainings": 0.97
+        },
+        "podkarpackie": {
+          "n_trainings": 44454,
+          "n_with_group": 340,
+          "pct_trainings": 0.76
+        },
+        "podlaskie": {
+          "n_trainings": 30793,
+          "n_with_group": 92,
+          "pct_trainings": 0.3
+        },
+        "pomorskie": {
+          "n_trainings": 24976,
+          "n_with_group": 181,
+          "pct_trainings": 0.72
+        },
+        "warmińsko-mazurskie": {
+          "n_trainings": 24895,
+          "n_with_group": 205,
+          "pct_trainings": 0.82
+        },
+        "wielkopolskie": {
+          "n_trainings": 68940,
+          "n_with_group": 466,
+          "pct_trainings": 0.68
+        },
+        "zachodniopomorskie": {
+          "n_trainings": 24993,
+          "n_with_group": 297,
+          "pct_trainings": 1.19
+        },
+        "łódzkie": {
+          "n_trainings": 39043,
+          "n_with_group": 269,
+          "pct_trainings": 0.69
+        },
+        "śląskie": {
+          "n_trainings": 104841,
+          "n_with_group": 1197,
+          "pct_trainings": 1.14
+        },
+        "świętokrzyskie": {
+          "n_trainings": 24721,
+          "n_with_group": 338,
+          "pct_trainings": 1.37
+        }
+      }
+    },
+    "102": {
+      "national_n_trainings": 719265,
+      "national_n_with_group": 1418,
+      "national_pct": 0.2,
+      "n_uris_in_group": 62,
+      "by_voivodeship": {
+        "dolnośląskie": {
+          "n_trainings": 51742,
+          "n_with_group": 95,
+          "pct_trainings": 0.18
+        },
+        "kujawsko-pomorskie": {
+          "n_trainings": 24936,
+          "n_with_group": 73,
+          "pct_trainings": 0.29
+        },
+        "lubelskie": {
+          "n_trainings": 22747,
+          "n_with_group": 58,
+          "pct_trainings": 0.25
+        },
+        "lubuskie": {
+          "n_trainings": 10757,
+          "n_with_group": 12,
+          "pct_trainings": 0.11
+        },
+        "mazowieckie": {
+          "n_trainings": 102473,
+          "n_with_group": 112,
+          "pct_trainings": 0.11
+        },
+        "małopolskie": {
+          "n_trainings": 107371,
+          "n_with_group": 192,
+          "pct_trainings": 0.18
+        },
+        "opolskie": {
+          "n_trainings": 11583,
+          "n_with_group": 29,
+          "pct_trainings": 0.25
+        },
+        "podkarpackie": {
+          "n_trainings": 44454,
+          "n_with_group": 170,
+          "pct_trainings": 0.38
+        },
+        "podlaskie": {
+          "n_trainings": 30793,
+          "n_with_group": 50,
+          "pct_trainings": 0.16
+        },
+        "pomorskie": {
+          "n_trainings": 24976,
+          "n_with_group": 99,
+          "pct_trainings": 0.4
+        },
+        "warmińsko-mazurskie": {
+          "n_trainings": 24895,
+          "n_with_group": 69,
+          "pct_trainings": 0.28
+        },
+        "wielkopolskie": {
+          "n_trainings": 68940,
+          "n_with_group": 92,
+          "pct_trainings": 0.13
+        },
+        "zachodniopomorskie": {
+          "n_trainings": 24993,
+          "n_with_group": 42,
+          "pct_trainings": 0.17
+        },
+        "łódzkie": {
+          "n_trainings": 39043,
+          "n_with_group": 74,
+          "pct_trainings": 0.19
+        },
+        "śląskie": {
+          "n_trainings": 104841,
+          "n_with_group": 196,
+          "pct_trainings": 0.19
+        },
+        "świętokrzyskie": {
+          "n_trainings": 24721,
+          "n_with_group": 55,
+          "pct_trainings": 0.22
+        }
+      }
+    },
+    "103": {
+      "national_n_trainings": 719265,
+      "national_n_with_group": 660,
+      "national_pct": 0.09,
+      "n_uris_in_group": 52,
+      "by_voivodeship": {
+        "dolnośląskie": {
+          "n_trainings": 51742,
+          "n_with_group": 19,
+          "pct_trainings": 0.04
+        },
+        "kujawsko-pomorskie": {
+          "n_trainings": 24936,
+          "n_with_group": 11,
+          "pct_trainings": 0.04
+        },
+        "lubelskie": {
+          "n_trainings": 22747,
+          "n_with_group": 72,
+          "pct_trainings": 0.32
+        },
+        "lubuskie": {
+          "n_trainings": 10757,
+          "n_with_group": 0,
+          "pct_trainings": 0.0
+        },
+        "mazowieckie": {
+          "n_trainings": 102473,
+          "n_with_group": 36,
+          "pct_trainings": 0.04
+        },
+        "małopolskie": {
+          "n_trainings": 107371,
+          "n_with_group": 66,
+          "pct_trainings": 0.06
+        },
+        "opolskie": {
+          "n_trainings": 11583,
+          "n_with_group": 15,
+          "pct_trainings": 0.13
+        },
+        "podkarpackie": {
+          "n_trainings": 44454,
+          "n_with_group": 173,
+          "pct_trainings": 0.39
+        },
+        "podlaskie": {
+          "n_trainings": 30793,
+          "n_with_group": 9,
+          "pct_trainings": 0.03
+        },
+        "pomorskie": {
+          "n_trainings": 24976,
+          "n_with_group": 46,
+          "pct_trainings": 0.18
+        },
+        "warmińsko-mazurskie": {
+          "n_trainings": 24895,
+          "n_with_group": 23,
+          "pct_trainings": 0.09
+        },
+        "wielkopolskie": {
+          "n_trainings": 68940,
+          "n_with_group": 31,
+          "pct_trainings": 0.04
+        },
+        "zachodniopomorskie": {
+          "n_trainings": 24993,
+          "n_with_group": 13,
+          "pct_trainings": 0.05
+        },
+        "łódzkie": {
+          "n_trainings": 39043,
+          "n_with_group": 25,
+          "pct_trainings": 0.06
+        },
+        "śląskie": {
+          "n_trainings": 104841,
+          "n_with_group": 100,
+          "pct_trainings": 0.1
+        },
+        "świętokrzyskie": {
+          "n_trainings": 24721,
+          "n_with_group": 21,
+          "pct_trainings": 0.08
+        }
+      }
+    },
+    "104": {
+      "national_n_trainings": 719265,
+      "national_n_with_group": 14882,
+      "national_pct": 2.07,
+      "n_uris_in_group": 80,
+      "by_voivodeship": {
+        "dolnośląskie": {
+          "n_trainings": 51742,
+          "n_with_group": 700,
+          "pct_trainings": 1.35
+        },
+        "kujawsko-pomorskie": {
+          "n_trainings": 24936,
+          "n_with_group": 458,
+          "pct_trainings": 1.84
+        },
+        "lubelskie": {
+          "n_trainings": 22747,
+          "n_with_group": 1492,
+          "pct_trainings": 6.56
+        },
+        "lubuskie": {
+          "n_trainings": 10757,
+          "n_with_group": 74,
+          "pct_trainings": 0.69
+        },
+        "mazowieckie": {
+          "n_trainings": 102473,
+          "n_with_group": 311,
+          "pct_trainings": 0.3
+        },
+        "małopolskie": {
+          "n_trainings": 107371,
+          "n_with_group": 3922,
+          "pct_trainings": 3.65
+        },
+        "opolskie": {
+          "n_trainings": 11583,
+          "n_with_group": 546,
+          "pct_trainings": 4.71
+        },
+        "podkarpackie": {
+          "n_trainings": 44454,
+          "n_with_group": 2382,
+          "pct_trainings": 5.36
+        },
+        "podlaskie": {
+          "n_trainings": 30793,
+          "n_with_group": 446,
+          "pct_trainings": 1.45
+        },
+        "pomorskie": {
+          "n_trainings": 24976,
+          "n_with_group": 378,
+          "pct_trainings": 1.51
+        },
+        "warmińsko-mazurskie": {
+          "n_trainings": 24895,
+          "n_with_group": 425,
+          "pct_trainings": 1.71
+        },
+        "wielkopolskie": {
+          "n_trainings": 68940,
+          "n_with_group": 1170,
+          "pct_trainings": 1.7
+        },
+        "zachodniopomorskie": {
+          "n_trainings": 24993,
+          "n_with_group": 389,
+          "pct_trainings": 1.56
+        },
+        "łódzkie": {
+          "n_trainings": 39043,
+          "n_with_group": 516,
+          "pct_trainings": 1.32
+        },
+        "śląskie": {
+          "n_trainings": 104841,
+          "n_with_group": 976,
+          "pct_trainings": 0.93
+        },
+        "świętokrzyskie": {
+          "n_trainings": 24721,
+          "n_with_group": 697,
+          "pct_trainings": 2.82
+        }
+      }
+    },
     "L2.1": {
       "national_n_trainings": 719265,
       "national_n_with_group": 0,
