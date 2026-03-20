@@ -1,3 +1,0 @@
-# Git LFS — track large SQLite databases in the deploy/ folder.
-# Run `git lfs install` and `git lfs track` before committing these files.
-deploy/*.db filter=lfs diff=lfs merge=lfs -text
