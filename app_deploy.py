@@ -5,11 +5,12 @@ Skill Demand and Supply in Poland 2025 — Streamlit Cloud deployment version.
 Differences from app_search.py:
   - No FAISS, no VoyageAI, no API keys required.
   - Job-title search uses SQLite FTS5 (built by prepare_deploy.py).
-  - Data is read from the deploy/ subfolder (~144 MB total).
+  - Data is read from the deploy/ subfolder (incl. regional_skills.db for Trainings tab).
 """
 
 import streamlit as st
 import sqlite3
+from typing import Optional
 import numpy as np
 import json
 import os
@@ -321,6 +322,8 @@ DATA_DIR     = os.path.join(os.path.dirname(__file__), "deploy")
 APP_DATA_DB  = os.path.join(DATA_DIR, "app_data.db")
 REQ_RESP_DB  = os.path.join(DATA_DIR, "req_resp_slim.db")
 TRENDS_DB    = os.path.join(DATA_DIR, "skill_trends.db")
+# Trainings tab: pre-aggregated BUR × woj. × ESCO (precompute_trainings_regional_cache.py)
+TRAININGS_REGIONAL_CACHE = os.path.join(DATA_DIR, "trainings_regional_cache.json")
 
 
 # ── FTS5 job-title search (replaces FAISS + VoyageAI) ─────────
@@ -962,6 +965,185 @@ which makes the consultancy-oriented sector a better fit than general programmin
 """)
 
 
+# ── Trainings tab: BUR (pre-aggregated L1/L2 × województwo) ──
+
+
+def _trainings_regional_cache_mtime() -> float:
+    return (
+        os.path.getmtime(TRAININGS_REGIONAL_CACHE)
+        if os.path.isfile(TRAININGS_REGIONAL_CACHE)
+        else 0.0
+    )
+
+
+@st.cache_data(show_spinner=False)
+def _load_trainings_regional_cache(_mtime: float) -> Optional[dict]:
+    if not os.path.isfile(TRAININGS_REGIONAL_CACHE):
+        return None
+    with open(TRAININGS_REGIONAL_CACHE, encoding="utf-8") as f:
+        return json.load(f)
+
+
+def _trainings_l1_options_bur(skills_cache: dict, treg: dict) -> list:
+    tree = skills_cache.get("tree") or {}
+    have = set((treg.get("L1") or {}).keys())
+    opts = []
+    for code, node in tree.items():
+        if _is_skills_code(code) and code in have:
+            opts.append((code, f"{code} — {node.get('title', '')}"))
+    opts.sort(key=lambda x: x[0])
+    return opts
+
+
+def _trainings_l2_options_bur(skills_cache: dict, treg: dict) -> list:
+    tree = skills_cache.get("tree") or {}
+    have = set((treg.get("L2") or {}).keys())
+    out = []
+    for l1, n1 in tree.items():
+        if not _is_skills_code(l1):
+            continue
+        for l2, n2 in (n1.get("children") or {}).items():
+            if l2 not in have:
+                continue
+            t2 = n2.get("title", "")
+            out.append((l2, f"{l1} › {l2} — {t2}"))
+    out.sort(key=lambda x: x[0])
+    return out
+
+
+def _trainings_stats_from_cache(treg: dict, group_level: str, group_code: str):
+    """Zwraca strukturę jak wcześniej pod wykres / tabelę (BUR = szkolenia)."""
+    block = (treg.get(group_level) or {}).get(group_code)
+    if not block:
+        return None
+    by_voiv = block.get("by_voivodeship") or {}
+    rows = []
+    for voiv in sorted(by_voiv.keys(), key=lambda v: (-by_voiv[v]["n_trainings"], v)):
+        r = by_voiv[voiv]
+        rows.append(
+            {
+                "voivodeship": voiv,
+                "n_trainings": r["n_trainings"],
+                "n_with_skill_group": r["n_with_group"],
+                "pct_trainings": r["pct_trainings"],
+            }
+        )
+    return {
+        "rows": rows,
+        "national_pct": block["national_pct"],
+        "national_n": block["national_n_trainings"],
+        "national_hits": block["national_n_with_group"],
+        "n_uris_in_group": block["n_uris_in_group"],
+    }
+
+
+def _render_trainings_tab():
+    st.markdown(
+        '<div class="sec-label">Trainings (BUR) — regional skill-group coverage</div>',
+        unsafe_allow_html=True,
+    )
+    st.caption(
+        "Share of **BUR training services** (Polish voivodeship from **adres** in source data) that have "
+        "**at least one** ESCO-matched skill in the selected **L1 or L2** group. "
+        "Values are **pre-aggregated** (no row-level data in the app). "
+        "Rebuild: `python precompute_trainings_regional_cache.py --parquet trainings/data/bur_trainings_0126.parquet`."
+    )
+    if not os.path.isfile(TRAININGS_REGIONAL_CACHE):
+        st.warning(
+            f"Brak pliku cache: `{TRAININGS_REGIONAL_CACHE}`. "
+            "Uruchom `python precompute_trainings_regional_cache.py` z właściwym parquet BUR, "
+            "potem `python prepare_deploy.py` i wdróż ponownie."
+        )
+        return
+    treg = _load_trainings_regional_cache(_trainings_regional_cache_mtime())
+    if not treg:
+        st.error("Nie udało się wczytać trainings_regional_cache.json.")
+        return
+    try:
+        cache = load_skills_cache(_cache_mtime())
+    except Exception as e:
+        st.error(f"Could not load skills stats cache: {e}")
+        return
+    group_level = st.radio(
+        "Poziom grupy ESCO",
+        ["L1", "L2"],
+        horizontal=True,
+        key="trainings_lvl",
+    )
+    if group_level == "L1":
+        choices = _trainings_l1_options_bur(cache, treg)
+    else:
+        choices = _trainings_l2_options_bur(cache, treg)
+    if not choices:
+        st.info("Brak grup w cache (albo pusty parquet / brak dopasowań ESCO).")
+        return
+    labels = [x[1] for x in choices]
+    codes = [x[0] for x in choices]
+    ix = st.selectbox(
+        "Grupa umiejętności",
+        range(len(choices)),
+        format_func=lambda i: labels[i],
+        key="trainings_group_ix",
+    )
+    group_code = codes[ix]
+    stats = _trainings_stats_from_cache(treg, group_level, group_code)
+    if not stats or not stats["rows"]:
+        st.info("Brak wierszy regionalnych dla tej grupy.")
+        return
+    meta = treg.get("meta") or {}
+    st.caption(
+        f"Kraj: **{stats['national_pct']}%** szkoleń z PL woj. "
+        f"({stats['national_hits']:,} / {stats['national_n']:,} z ≥1 skillem w grupie). "
+        f"URI ESCO w grupie: **{stats['n_uris_in_group']:,}**. "
+        f"Źródło: `{meta.get('source_parquet', '?')}`."
+    )
+    df = pd.DataFrame(stats["rows"])
+    df["pct_vs_national_pp"] = (df["pct_trainings"] - stats["national_pct"]).round(2)
+    df_disp = df.rename(
+        columns={
+            "voivodeship": "Województwo",
+            "n_trainings": "Szkolenia (PL woj.)",
+            "n_with_skill_group": "Z ≥1 skillem w grupie",
+            "pct_trainings": "% szkoleń",
+            "pct_vs_national_pp": "Δ vs kraj (pp)",
+        }
+    )
+    st.dataframe(df_disp, use_container_width=True, hide_index=True)
+    fig = pgo.Figure()
+    fig.add_trace(
+        pgo.Bar(
+            x=df["pct_trainings"],
+            y=df["voivodeship"],
+            orientation="h",
+            marker=dict(color="#E55B52", cornerradius=4),
+            text=[f"{v:.1f}%" for v in df["pct_trainings"]],
+            textposition="outside",
+            cliponaxis=False,
+            name="% szkoleń",
+        )
+    )
+    fig.add_vline(
+        x=stats["national_pct"],
+        line_dash="dash",
+        line_color="#94a3b8",
+        annotation_text=f"Kraj {stats['national_pct']}%",
+        annotation_position="top",
+    )
+    fig.update_layout(
+        height=max(360, len(df) * 28 + 80),
+        margin=dict(l=10, r=80, t=20, b=40),
+        plot_bgcolor="#fff",
+        paper_bgcolor="#fff",
+        xaxis=dict(
+            title="% szkoleń z ≥1 skillem w grupie",
+            ticksuffix="%",
+            rangemode="tozero",
+        ),
+        yaxis=dict(autorange="reversed", title=""),
+    )
+    st.plotly_chart(fig, use_container_width=True)
+
+
 # ── Main ──────────────────────────────────────────────────────
 
 def main():
@@ -973,9 +1155,9 @@ def main():
         unsafe_allow_html=True,
     )
 
-    tab1, tab2, tab3, tab4, tab5, tab6, tab7 = st.tabs([
+    tab1, tab2, tab3, tab4, tab5, tab6, tab7, tab8 = st.tabs([
         "Job titles", "Skills Search", "Skills Stats", "Skill Trends", "NACE",
-        "UA-Targeted", "AI Skills",
+        "UA-Targeted", "AI Skills", "Trainings",
     ])
 
     # ── Tab 1: Job Titles ──────────────────────────────────────
@@ -1864,6 +2046,9 @@ def main():
     # ── Tab 7: AI Skills ───────────────────────────────────────
     with tab7:
         _render_ai_tab()
+
+    with tab8:
+        _render_trainings_tab()
 
 
 # ── AI Skills tab helpers ──────────────────────────────────────────────────

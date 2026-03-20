@@ -6,8 +6,8 @@ Run once locally before committing:
     python prepare_deploy.py
 
 What it does:
-  1. Copies app_deploy/{app_data.db, req_resp_slim.db, skill_trends.db,
-     skills_stats_cache.json} to deploy/
+  1. Copies required files from app_deploy/ to deploy/ (see REQUIRED_FILES).
+     Optionally copies trainings_regional_cache.json if present (BUR Trainings tab).
   2. Adds an FTS5 full-text search index to deploy/app_data.db so that
      app_deploy.py can search job titles without FAISS or VoyageAI.
 """
@@ -19,23 +19,38 @@ import sqlite3
 SRC_DIR = os.path.join(os.path.dirname(__file__), "app_deploy")
 DST_DIR = os.path.join(os.path.dirname(__file__), "deploy")
 
-FILES = [
+REQUIRED_FILES = [
     "app_data.db",
     "req_resp_slim.db",
     "skill_trends.db",
     "skills_stats_cache.json",
 ]
 
+OPTIONAL_FILES = [
+    "trainings_regional_cache.json",  # precompute_trainings_regional_cache.py
+    "ai_tab_cache.json",
+]
+
 
 def copy_files():
     os.makedirs(DST_DIR, exist_ok=True)
-    for fname in FILES:
+    for fname in REQUIRED_FILES:
         src = os.path.join(SRC_DIR, fname)
         dst = os.path.join(DST_DIR, fname)
         if not os.path.exists(src):
-            raise FileNotFoundError(f"Source file not found: {src}")
+            raise FileNotFoundError(
+                f"Source file not found: {src}\nRun `python export_app_data.py` first."
+            )
         print(f"  Copying {fname}  ({os.path.getsize(src) / 1024 / 1024:.1f} MB)...")
         shutil.copy2(src, dst)
+    for fname in OPTIONAL_FILES:
+        src = os.path.join(SRC_DIR, fname)
+        dst = os.path.join(DST_DIR, fname)
+        if os.path.exists(src):
+            print(f"  Copying {fname}  ({os.path.getsize(src) / 1024 / 1024:.1f} MB)...")
+            shutil.copy2(src, dst)
+        else:
+            print(f"  SKIP (optional): {fname}")
 
 
 def build_fts5(db_path: str):
