@@ -984,15 +984,28 @@ def _load_trainings_regional_cache(_mtime: float) -> Optional[dict]:
         return json.load(f)
 
 
+def _trainings_code_sort_key(code: str) -> tuple:
+    """Sort order: S1-S8 → numeric knowledge (02, 03…) → L (languages) → T → other."""
+    if code.startswith("S"):
+        return (0, code)
+    elif code and code[0].isdigit():
+        return (1, code.zfill(10))
+    elif code.startswith("L"):
+        return (2, code)
+    elif code.startswith("T"):
+        return (3, code)
+    return (4, code)
+
+
 def _trainings_l1_options_bur(skills_cache: dict, treg: dict) -> list:
     tree = skills_cache.get("tree") or {}
     have = set((treg.get("L1") or {}).keys())
     opts = []
     for code, node in tree.items():
-        if _is_skills_code(code) and code in have:
+        if (_is_skills_code(code) or _is_knowledge_code(code)) and code in have:
             title = node.get("title", code)
             opts.append((code, title, f"{title}  ({code})"))
-    opts.sort(key=lambda x: x[1].lower())
+    opts.sort(key=lambda x: _trainings_code_sort_key(x[0]))
     return opts
 
 
@@ -1001,15 +1014,14 @@ def _trainings_l2_options_bur(skills_cache: dict, treg: dict) -> list:
     have = set((treg.get("L2") or {}).keys())
     out = []
     for l1, n1 in tree.items():
-        if not _is_skills_code(l1):
+        if not (_is_skills_code(l1) or _is_knowledge_code(l1)):
             continue
-        l1_title = n1.get("title", l1)
         for l2, n2 in (n1.get("children") or {}).items():
             if l2 not in have:
                 continue
             t2 = n2.get("title", l2)
             out.append((l2, t2, f"{t2}  ({l2})"))
-    out.sort(key=lambda x: x[1].lower())
+    out.sort(key=lambda x: _trainings_code_sort_key(x[0]))
     return out
 
 
