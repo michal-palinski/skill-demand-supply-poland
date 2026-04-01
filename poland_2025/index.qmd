@@ -299,11 +299,11 @@ skill signal.
         <span class="ai-flow-branch-meta">18 concepts · 296 matched Lightcast skills</span>
       </div>
       <div class="ai-flow-tags">
-        <span class="ai-flow-tag"><strong>0619.12</strong> Principles of artificial intelligence <em>2,083</em></span>
-        <span class="ai-flow-tag"><strong>0231.4</strong> Natural language processing <em>474</em></span>
-        <span class="ai-flow-tag"><strong>0612.47.0</strong> Data mining methods <em>182</em></span>
-        <span class="ai-flow-tag"><strong>0714.62</strong> Robotics <em>107</em></span>
-        <span class="ai-flow-tag"><strong>T6.6.2.0.3</strong> Data ethics <em>93</em></span>
+        <span class="ai-flow-tag"><strong>0619.12</strong> Principles of artificial intelligence</span>
+        <span class="ai-flow-tag"><strong>0231.4</strong> Natural language processing</span>
+        <span class="ai-flow-tag"><strong>0612.47.0</strong> Data mining methods</span>
+        <span class="ai-flow-tag"><strong>0714.62</strong> Robotics</span>
+        <span class="ai-flow-tag"><strong>T6.6.2.0.3</strong> Data ethics</span>
       </div>
     </div>
 
@@ -313,10 +313,10 @@ skill signal.
         <span class="ai-flow-branch-meta">4 concepts · 65 matched Lightcast skills</span>
       </div>
       <div class="ai-flow-tags">
-        <span class="ai-flow-tag"><strong>S5.5.2.5.1</strong> Analyse big data <em>5,105</em></span>
-        <span class="ai-flow-tag"><strong>S5.1.0.29</strong> Utilise machine learning <em>292</em></span>
-        <span class="ai-flow-tag"><strong>S5.1.0.33</strong> Build recommender systems <em>45</em></span>
-        <span class="ai-flow-tag"><strong>S5.1.0.9</strong> Perform dimensionality reduction <em>0</em></span>
+        <span class="ai-flow-tag"><strong>S5.5.2.5.1</strong> Analyse big data</span>
+        <span class="ai-flow-tag"><strong>S5.1.0.29</strong> Utilise machine learning</span>
+        <span class="ai-flow-tag"><strong>S5.1.0.33</strong> Build recommender systems</span>
+        <span class="ai-flow-tag"><strong>S5.1.0.9</strong> Perform dimensionality reduction</span>
       </div>
     </div>
   </div>
