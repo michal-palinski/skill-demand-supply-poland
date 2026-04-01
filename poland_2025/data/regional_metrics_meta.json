@@ -1,0 +1,19 @@
+{
+  "title": "Skill Demand and Supply in Poland 2025. Insights from Online Job Postings and Trainings",
+  "job_offers_total_mapped": 731768,
+  "job_offers_total_unassigned_or_abroad": 17801,
+  "trainings_total_with_voivodeship": 719265,
+  "population_source": "Statistics Poland (GUS), Population. Size and structure and vital statistics in Poland by territorial division in 2024. As of 31 December.",
+  "labour_force_source": "BDL API / subject P3980: Aktywni zawodowo wg płci i wieku (kwartalne BAEL). Denominator = average of Q1-Q4 2025, unit-level=2 (voivodeships).",
+  "labour_force_subject_id": "P3980",
+  "labour_force_var_ids": {
+    "Q1": 1615113,
+    "Q2": 1615155,
+    "Q3": 1615197,
+    "Q4": 1615239
+  },
+  "job_ads_source": "jobs_database.db",
+  "trainings_source": "deploy/trainings_regional_cache.json",
+  "job_ads_posted_date_min": "2025-01-01",
+  "job_ads_posted_date_max": "2025-12-31"
+}

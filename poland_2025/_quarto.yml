@@ -1,0 +1,36 @@
+project:
+  type: website
+  output-dir: _site
+  render:
+    - index.qmd
+
+website:
+  title: "Skill Demand and Supply in Poland 2025"
+
+format:
+  html:
+    theme:
+      light: cosmo
+    css: styles.css
+    toc: true
+    toc-depth: 2
+    toc-location: right
+    self-contained: false
+    smooth-scroll: true
+    grid:
+      body-width: 1000px
+      sidebar-width: 0px
+      margin-width: 250px
+
+execute:
+  echo: false
+  warning: false
+  message: false
+
+resources:
+  - data/regional_metrics.csv
+  - data/regional_metrics_meta.json
+  - data/pl_voivodeships.geojson
+  - assets/plotly.min.js
+  - assets/regional_map_data.js
+  - assets/report.js

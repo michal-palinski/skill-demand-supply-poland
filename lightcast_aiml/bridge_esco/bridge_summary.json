@@ -1,0 +1,19 @@
+{
+  "model": "voyage-4-large",
+  "dimensions": 1024,
+  "batch_size": 128,
+  "label_weight": 3,
+  "description_weight": 1,
+  "lightcast_count": 361,
+  "esco_count": 1064,
+  "esco_group_counts": {
+    "s5_skill": 442,
+    "digital_knowledge": 622
+  },
+  "top1_similarity": {
+    "min": 0.492937,
+    "mean": 0.699798,
+    "median": 0.694049,
+    "max": 0.894207
+  }
+}

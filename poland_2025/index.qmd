@@ -1,0 +1,473 @@
+---
+title: "Skill Demand and Supply in Poland 2025"
+subtitle: "Insights from Online Job Postings and Trainings"
+date: today
+---
+
+## Executive Summary
+
+::: {.hero}
+```{=html}
+<div class="hero-title">Executive Summary</div>
+```
+
+This report analyses labour demand and supply in Poland through the lens
+of online job advertisements and training provision data. It combines
+web-scraped vacancy data from <a class="paper-link" href="https://www.pracuj.pl/" target="_blank" rel="noopener noreferrer">Pracuj.pl</a>,
+the largest online job portal in Poland, with information from the
+<a class="paper-link" href="https://uslugirozwojowe.parp.gov.pl/" target="_blank" rel="noopener noreferrer">Baza Usług Rozwojowych (BUR)</a>,
+the country's main database of training and upskilling services. The analysis
+focuses on how employers signal required skills and how these relate to
+the skills offered through the training system in 2025.
+
+The study integrates labour market analysis with modern NLP methods,
+including automated text processing, classification, and LLM-assisted
+skill extraction, to transform unstructured job postings and training
+descriptions into comparable measures of skill demand and skill supply.
+
+Using ESCO-based mappings, the report compares the composition of
+requested and supplied skills across occupations, with particular
+attention to digital competencies and emerging skill needs. It also
+introduces indicators of relative labour demand, derived from job
+posting intensity, and contrasts them with the structure of available
+training.
+
+The Polish labour market is undergoing rapid transformation, with
+increasing digitalization shaping both hiring practices and skill
+development pathways. Online job postings provide a timely proxy for
+employer demand, while training data from BUR offers insight into the
+supply of skills and reskilling opportunities, enabling a joint
+assessment of potential mismatches between demand and supply.
+:::
+
+```{=html}
+<div class="kpi-grid" id="summary-cards"></div>
+```
+
+## Regional Coverage
+
+::: {.section-card .map-shell}
+### Relative labour demand
+
+```{=html}
+<div class="figure-caption-title" id="map-figure-title"></div>
+```
+
+The map shows regional demand and training density normalized by the
+average labour force in 2025. Use the switch above the map to change the
+view between job offers and BUR training services.
+
+```{=html}
+<div id="regional-map"></div>
+<div class="map-caption source-note" id="map-note"></div>
+```
+:::
+
+::: {.section-card}
+### Regional comparison table
+
+Counts are shown alongside their labour-force-normalized counterparts to
+make regional demand and supply comparable across differently sized
+voivodeships. Click a column header to sort the table.
+
+```{=html}
+<div class="data-table-wrap" id="regional-table"></div>
+```
+:::
+
+::: {.section-card}
+```{=html}
+<div class="section-head">
+  <div>
+    <p class="section-kicker">Quick read</p>
+    <h3>Key regional patterns</h3>
+    <p id="highlights-copy"></p>
+  </div>
+</div>
+<div class="rank-grid" id="highlights-grid"></div>
+```
+:::
+
+## Data and Methodology
+
+::: {.section-card}
+### Data collection
+
+We collect job advertisements from
+<a class="paper-link" href="https://www.pracuj.pl/" target="_blank" rel="noopener noreferrer">Pracuj.pl</a>,
+the largest online job portal in Poland, and training-service listings
+from
+<a class="paper-link" href="https://uslugirozwojowe.parp.gov.pl/" target="_blank" rel="noopener noreferrer">Baza Usług Rozwojowych</a>,
+the country's main public database of training and upskilling services.
+The analytical sample shown in this report focuses on records that can
+be assigned to Polish voivodeships and linked to the regional demand and
+supply comparison.
+
+For job advertisements, we retain records with sufficient textual
+content to support downstream NLP processing, including job titles and
+descriptions. For BUR, we use training-service records with usable
+regional metadata and service descriptions. We remove duplicates and
+standardize core fields before the records enter the analytical
+pipeline.
+
+```{=html}
+<p class="notes source-note" id="sources-note"></p>
+```
+:::
+
+::: {.section-card}
+### Processing pipeline
+
+Raw job postings and training descriptions contain noisy, unstructured
+information. We transform them into a standardized analytic dataset in
+six steps: we first identify the source language, translate non-Polish
+text into Polish, isolate skill-relevant sentences, map extracted skills
+to ESCO, standardize job titles to ESCO occupations using both titles
+and skill context for disambiguation, and then enrich each record with
+regional information and labour-force denominators for voivodeship-level
+comparison.
+
+```{=html}
+<div class="pipeline-diagram">
+  <div class="pipeline-step">
+    <div class="pipeline-step-top">
+      <div class="pipeline-step-number">01</div>
+      <div class="pipeline-icon" style="background:#e0f2fe;color:#0369a1;">
+        <svg viewBox="0 0 24 24" width="30" height="30" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M6 4h9a3 3 0 0 1 3 3v6a3 3 0 0 1-3 3H9l-4 4v-4H6a3 3 0 0 1-3-3V7a3 3 0 0 1 3-3z"/><path d="M8 9h5"/><path d="M8 12h3"/></svg>
+      </div>
+    </div>
+    <div class="pipeline-label">Language<br>Detection</div>
+    <div class="pipeline-detail">Automatic identification of the source language for each job posting or training description</div>
+  </div>
+  <div class="pipeline-step">
+    <div class="pipeline-step-top">
+      <div class="pipeline-step-number">02</div>
+      <div class="pipeline-icon" style="background:#fef3c7;color:#b45309;">
+        <svg viewBox="0 0 24 24" width="30" height="30" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M5 8h6"/><path d="M8 6v2c0 2.1-1 4.2-2.8 5.6"/><path d="M6 12c.8 1.2 2 2.2 3.4 2.8"/><path d="m13 7 6 10"/><path d="m19 7-6 10"/></svg>
+      </div>
+    </div>
+    <div class="pipeline-label">Translation</div>
+    <div class="pipeline-detail">Non-Polish descriptions are translated into Polish before downstream NLP processing</div>
+  </div>
+  <div class="pipeline-step">
+    <div class="pipeline-step-top">
+      <div class="pipeline-step-number">03</div>
+      <div class="pipeline-icon" style="background:#ccfbf1;color:#0d9488;">
+        <svg viewBox="0 0 24 24" width="30" height="30" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h16"/><path d="M7 12h10"/><path d="M10 18h4"/><circle cx="6.5" cy="6.5" r="1"/><circle cx="17.5" cy="12.5" r="1"/><circle cx="8.5" cy="18.5" r="1"/></svg>
+      </div>
+    </div>
+    <div class="pipeline-label">Skill-Sentence<br>Filtering</div>
+    <div class="pipeline-detail">Skill-relevant fragments are identified in vacancy and training text before structured extraction</div>
+  </div>
+  <div class="pipeline-step">
+    <div class="pipeline-step-top">
+      <div class="pipeline-step-number">04</div>
+      <div class="pipeline-icon" style="background:#ede9fe;color:#7c3aed;">
+        <svg viewBox="0 0 24 24" width="30" height="30" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="7"/><circle cx="12" cy="12" r="3"/><path d="M12 2v3"/><path d="M12 19v3"/><path d="M2 12h3"/><path d="M19 12h3"/></svg>
+      </div>
+    </div>
+    <div class="pipeline-label">ESCO<br>Mapping</div>
+    <div class="pipeline-detail">Extracted skills are mapped to the ESCO taxonomy to make demand and supply directly comparable</div>
+  </div>
+  <div class="pipeline-step">
+    <div class="pipeline-step-top">
+      <div class="pipeline-step-number">05</div>
+      <div class="pipeline-icon" style="background:#dbeafe;color:#1d4ed8;">
+        <svg viewBox="0 0 24 24" width="30" height="30" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M7 4h10"/><path d="M9 8h6"/><path d="M12 8v9"/><path d="M8 20h8"/><path d="M5 12c1.2-1.4 2.8-2 4.7-2"/><path d="M19 12c-1.2-1.4-2.8-2-4.7-2"/></svg>
+      </div>
+    </div>
+    <div class="pipeline-label">Job Title<br>Standardisation</div>
+    <div class="pipeline-detail">Job titles are mapped to ESCO occupations using titles and extracted skills as context for disambiguation</div>
+  </div>
+  <div class="pipeline-step">
+    <div class="pipeline-step-top">
+      <div class="pipeline-step-number">06</div>
+      <div class="pipeline-icon" style="background:#dcfce7;color:#15803d;">
+        <svg viewBox="0 0 24 24" width="30" height="30" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16"/><path d="M4 12h10"/><path d="M4 17h7"/><path d="M17 11c2.2 0 4 1.8 4 4s-1.8 4-4 4-4-1.8-4-4"/><path d="m17 13 1.4 1.4L21 12"/></svg>
+      </div>
+    </div>
+    <div class="pipeline-label">Data<br>Augmentation</div>
+    <div class="pipeline-detail">Records are enriched with NACE sector information and geolocation used for regional assignment</div>
+  </div>
+</div>
+```
+
+::: {.callout-note appearance="simple"}
+Our pipeline outperforms the current state of the art by approximately
+3 percentage points in RP@5 on the HOUSE and TECH benchmark datasets
+reported by <a class="paper-link" href="https://ieeexplore.ieee.org/abstract/document/11079977/" target="_blank" rel="noopener noreferrer">Decorte et al. (2025)</a>.
+These benchmarks consist of job postings annotated with ESCO
+gold-standard skill labels by human experts, against which model
+predictions are evaluated. The reported RP@5 scores are 0.822 and 0.838,
+respectively.
+:::
+:::
+
+:::: {.section-card}
+### AI Skills Demand
+
+The demand for AI-related skills is highly dynamic, with new
+technologies and tools emerging rapidly while others become obsolete.
+This makes it difficult to track AI skill demand using static
+taxonomies alone.
+
+Standard classifications such as ESCO are not updated frequently enough
+to capture highly granular and technology-specific skills, such as
+individual AI tools, models, copilots, or chatbot platforms. At the
+same time, ESCO provides a robust and interpretable structure through
+broader concepts such as machine learning, natural language processing,
+computer vision, and digital content creation.
+
+To address this trade-off, we adopt a hybrid approach inspired by
+<a class="paper-link" href="https://documents1.worldbank.org/curated/en/099451102172652767/pdf/IDU-e779b9af-e9b1-43ae-a2c5-9679dbf2d829.pdf" target="_blank" rel="noopener noreferrer">Martins-Neto et al. (2026)</a>,
+who use Lightcast AI skills to track digital-skill demand. In their
+application, the AI skill list contains 257 items. Because the AI skill
+space evolves quickly, we extend this approach with a newer and broader
+Lightcast AI list containing 361 skills, allowing us to capture more
+recent references to specific tools, platforms, and frameworks.
+
+Lightcast's taxonomy is substantially more granular than ESCO and is
+therefore well suited to detecting early signals of technological
+change. However, relying only on highly specific Lightcast labels would
+lead to fragmented and less interpretable analysis, limiting
+comparability across time, occupations, and regions.
+
+We therefore use a two-step strategy:
+
+1. Lightcast AI skills are used to identify and track emerging AI
+signals in job postings.
+2. These signals are mapped to broader ESCO categories to enable
+consistent aggregation and comparison.
+
+The resulting bridge between Lightcast and ESCO is constructed using
+semantic similarity methods based on embeddings of both skill labels and
+descriptions from the two taxonomies. In practice, we embed Lightcast
+AI skills and a targeted ESCO subset combining the full `S5 working with
+computers` branch with ICT- and digital-related ESCO knowledge concepts.
+We then identify the closest conceptual matches between the detailed
+Lightcast skill entries and broader ESCO categories. This allows us to
+combine the granularity of real-time skill signals with the stability
+and interpretability of a standardized taxonomy, enabling robust
+analysis of AI skill demand in a rapidly evolving technological
+landscape.
+
+The figure below summarizes the conservative bridge used in the final
+AI-demand counts. The 361 Lightcast AI skills are mapped to a restricted
+set of 22 AI-specific ESCO concepts: 18 knowledge concepts and 4 skills
+concepts. This more selective bridge avoids broad non-AI categories and
+is used to identify job postings that contain at least one detailed AI
+skill signal.
+
+```{=html}
+<div class="ai-flowchart-shell">
+  <div class="ai-flowchart-top">
+    <div class="ai-flow-node ai-flow-node-source">
+      <div class="ai-flow-kicker">Input taxonomy</div>
+      <div class="ai-flow-title">361 Lightcast AI skills</div>
+      <div class="ai-flow-text">Granular tools, models, platforms, frameworks, and AI methods</div>
+    </div>
+
+    <div class="ai-flow-arrow" aria-hidden="true">→</div>
+
+    <div class="ai-flow-node ai-flow-node-bridge">
+      <div class="ai-flow-kicker">Semantic bridge</div>
+      <div class="ai-flow-title">Embedding-based matching</div>
+      <div class="ai-flow-text">Labels + descriptions embedded with <code>voyage-4-large</code></div>
+    </div>
+
+    <div class="ai-flow-arrow" aria-hidden="true">→</div>
+
+    <div class="ai-flow-node ai-flow-node-mid">
+      <div class="ai-flow-kicker">Filtered ESCO layer</div>
+      <div class="ai-flow-title">22 AI-specific ESCO concepts</div>
+      <div class="ai-flow-text">Only AI-relevant ESCO concepts are retained as valid bridge targets</div>
+    </div>
+
+    <div class="ai-flow-arrow" aria-hidden="true">→</div>
+
+    <div class="ai-flow-node ai-flow-node-final">
+      <div class="ai-flow-kicker">Offer-level metric</div>
+      <div class="ai-flow-title">AI-skill flag per posting</div>
+      <div class="ai-flow-text">A posting is AI-related if it contains at least one skill matched to the final AI bridge</div>
+    </div>
+  </div>
+
+  <div class="ai-flowchart-branches">
+    <div class="ai-flow-branch">
+      <div class="ai-flow-branch-head">
+        <span class="ai-flow-branch-title">Knowledge concepts</span>
+        <span class="ai-flow-branch-meta">18 concepts · 296 matched Lightcast skills</span>
+      </div>
+      <div class="ai-flow-tags">
+        <span class="ai-flow-tag"><strong>0619.12</strong> Principles of artificial intelligence <em>2,083</em></span>
+        <span class="ai-flow-tag"><strong>0231.4</strong> Natural language processing <em>474</em></span>
+        <span class="ai-flow-tag"><strong>0612.47.0</strong> Data mining methods <em>182</em></span>
+        <span class="ai-flow-tag"><strong>0714.62</strong> Robotics <em>107</em></span>
+        <span class="ai-flow-tag"><strong>T6.6.2.0.3</strong> Data ethics <em>93</em></span>
+      </div>
+    </div>
+
+    <div class="ai-flow-branch">
+      <div class="ai-flow-branch-head">
+        <span class="ai-flow-branch-title">Skills concepts</span>
+        <span class="ai-flow-branch-meta">4 concepts · 65 matched Lightcast skills</span>
+      </div>
+      <div class="ai-flow-tags">
+        <span class="ai-flow-tag"><strong>S5.5.2.5.1</strong> Analyse big data <em>5,105</em></span>
+        <span class="ai-flow-tag"><strong>S5.1.0.29</strong> Utilise machine learning <em>292</em></span>
+        <span class="ai-flow-tag"><strong>S5.1.0.33</strong> Build recommender systems <em>45</em></span>
+        <span class="ai-flow-tag"><strong>S5.1.0.9</strong> Perform dimensionality reduction <em>0</em></span>
+      </div>
+    </div>
+  </div>
+</div>
+```
+
+A few examples from our Lightcast-to-ESCO bridge illustrate the logic
+of the mapping:
+
+| Lightcast AI skill | ESCO match | Interpretation |
+|---|---|---|
+| `3D Reconstruction` | `image recognition` | A highly specific computer-vision signal is mapped to a clearly AI-specific ESCO concept rather than to a broader imaging task. |
+| `AdaBoost (Adaptive Boosting)` | `machine learning` | A named algorithm is aggregated into a broader and interpretable AI method category. |
+| `Aforge` | `computer vision` | Tool- or library-specific terminology is mapped to the wider technical domain it represents. |
+| `AI Assisted Content Generation` | `utilise machine learning` | Generative-AI terminology is retained within the final bridge only when it resolves to an explicitly AI-related ESCO concept. |
+| `AI Agents` | `principles of artificial intelligence` | New agentic-AI vocabulary is grouped under a broader conceptual AI category in ESCO. |
+
+```{=html}
+<p class="notes source-note">Source: Lightcast AI skills taxonomy; ESCO; authors' semantic bridge based on embedding similarity.</p>
+```
+::::
+
+## Results
+
+::: {.section-card}
+### Digital Skill Levels in Poland
+
+Using the classification proposed by
+<a class="paper-link" href="https://openknowledge.worldbank.org/entities/publication/b485a240-338e-4c86-8ade-3bf9c134ddce" target="_blank" rel="noopener noreferrer">Angel-Urdinola, Chinen, and Rodon Casarramona (2025)</a>,
+we group ESCO-linked digital skills into `basic`, `intermediate`, and
+`advanced` categories. Across Poland, 696,092 digital skill mentions
+from job postings can be classified in this way. The resulting profile
+shows that advanced digital skills account for the largest share of
+classified digital demand.
+
+```{=html}
+<div class="figure-caption-title">Figure 5. Distribution of classified digital skill mentions in Poland</div>
+<div class="digital-stack-card">
+  <div class="digital-stack-topline">
+    <span class="digital-stack-total">696,092</span>
+    <span class="digital-stack-subtext">classified digital skill mentions</span>
+  </div>
+  <div class="digital-stack-bar" aria-label="Stacked distribution of digital skill levels in Poland">
+    <div class="digital-stack-segment digital-stack-advanced" style="width:43.45%">
+      <span>43.45%</span>
+    </div>
+    <div class="digital-stack-segment digital-stack-basic" style="width:33.13%">
+      <span>33.13%</span>
+    </div>
+    <div class="digital-stack-segment digital-stack-intermediate" style="width:23.42%">
+      <span>23.42%</span>
+    </div>
+  </div>
+  <div class="digital-stack-legend">
+    <div class="digital-stack-legend-item">
+      <span class="digital-stack-dot digital-stack-advanced"></span>
+      <span class="digital-stack-name">Advanced</span>
+      <span class="digital-stack-share">43.45%</span>
+    </div>
+    <div class="digital-stack-legend-item">
+      <span class="digital-stack-dot digital-stack-basic"></span>
+      <span class="digital-stack-name">Basic</span>
+      <span class="digital-stack-share">33.13%</span>
+    </div>
+    <div class="digital-stack-legend-item">
+      <span class="digital-stack-dot digital-stack-intermediate"></span>
+      <span class="digital-stack-name">Intermediate</span>
+      <span class="digital-stack-share">23.42%</span>
+    </div>
+  </div>
+</div>
+<p class="notes source-note">Source: Angel-Urdinola, D., Chinen, M. H., and Rodon Casarramona, G. 2025. <em>Digital Skills Development: Competence Frameworks, Assessment Tools, and Pedagogical Approaches</em>. Education Notes, 203091; Pracuj.pl job postings; authors' mapping of classified ESCO-linked digital skill mentions.</p>
+```
+:::
+
+::: {.section-card}
+### AI Demand Snapshot
+
+```{=html}
+<div class="ai-stats-grid">
+  <article class="ai-stat-card">
+    <p class="ai-stat-label">Share of all job postings with at least one AI skill</p>
+    <p class="ai-stat-value">1.08%</p>
+    <p class="ai-stat-subtext">8,116 of 749,569 postings under the conservative Lightcast-to-ESCO bridge.</p>
+  </article>
+</div>
+```
+
+```{=html}
+<div class="figure-caption-title">Figure 4. Most demanded AI skills and knowledge in Poland</div>
+<div class="ai-bar-legend">
+  <span class="ai-bar-legend-item"><span class="ai-bar-type ai-bar-type-s">S</span> Skill</span>
+  <span class="ai-bar-legend-item"><span class="ai-bar-type ai-bar-type-k">K</span> Knowledge</span>
+</div>
+<div class="ai-bars-card ai-bars-card-wide" style="margin-top:1rem;">
+  <div class="ai-bars-list">
+    <div class="ai-bar-row"><div class="ai-bar-label"><span class="ai-bar-type ai-bar-type-s">S</span> Analyse big data</div><div class="ai-bar-track"><div class="ai-bar-fill ai-bar-fill-alt" style="width:62.90%"></div></div><div class="ai-bar-value">62.90%</div></div>
+    <div class="ai-bar-row"><div class="ai-bar-label"><span class="ai-bar-type ai-bar-type-k">K</span> Principles of artificial intelligence</div><div class="ai-bar-track"><div class="ai-bar-fill" style="width:25.67%"></div></div><div class="ai-bar-value">25.67%</div></div>
+    <div class="ai-bar-row"><div class="ai-bar-label"><span class="ai-bar-type ai-bar-type-k">K</span> Natural language processing</div><div class="ai-bar-track"><div class="ai-bar-fill" style="width:5.84%"></div></div><div class="ai-bar-value">5.84%</div></div>
+    <div class="ai-bar-row"><div class="ai-bar-label"><span class="ai-bar-type ai-bar-type-s">S</span> Utilise machine learning</div><div class="ai-bar-track"><div class="ai-bar-fill ai-bar-fill-alt" style="width:3.60%"></div></div><div class="ai-bar-value">3.60%</div></div>
+    <div class="ai-bar-row"><div class="ai-bar-label"><span class="ai-bar-type ai-bar-type-k">K</span> Data mining methods</div><div class="ai-bar-track"><div class="ai-bar-fill" style="width:2.24%"></div></div><div class="ai-bar-value">2.24%</div></div>
+    <div class="ai-bar-row"><div class="ai-bar-label"><span class="ai-bar-type ai-bar-type-k">K</span> Robotics</div><div class="ai-bar-track"><div class="ai-bar-fill" style="width:1.32%"></div></div><div class="ai-bar-value">1.32%</div></div>
+    <div class="ai-bar-row"><div class="ai-bar-label"><span class="ai-bar-type ai-bar-type-k">K</span> Data ethics</div><div class="ai-bar-track"><div class="ai-bar-fill" style="width:1.15%"></div></div><div class="ai-bar-value">1.15%</div></div>
+    <div class="ai-bar-row"><div class="ai-bar-label"><span class="ai-bar-type ai-bar-type-k">K</span> Image recognition</div><div class="ai-bar-track"><div class="ai-bar-fill" style="width:0.92%"></div></div><div class="ai-bar-value">0.92%</div></div>
+    <div class="ai-bar-row"><div class="ai-bar-label"><span class="ai-bar-type ai-bar-type-k">K</span> Information extraction</div><div class="ai-bar-track"><div class="ai-bar-fill" style="width:0.80%"></div></div><div class="ai-bar-value">0.80%</div></div>
+    <div class="ai-bar-row"><div class="ai-bar-label"><span class="ai-bar-type ai-bar-type-k">K</span> Decision support systems</div><div class="ai-bar-track"><div class="ai-bar-fill" style="width:0.79%"></div></div><div class="ai-bar-value">0.79%</div></div>
+  </div>
+</div>
+<p class="notes source-note">Source: Pracuj.pl job postings; Lightcast AI skills taxonomy; ESCO; authors' semantic bridge based on embedding similarity. Values show the share of AI postings containing each skill or knowledge concept.</p>
+```
+:::
+
+::::: {.section-card .map-shell}
+### Regional AI Demand
+
+The map below shows AI demand intensity by voivodeship, measured as the
+number of postings containing at least one AI skill under the final
+Lightcast-to-ESCO bridge, normalized by the 2025 labour force. Click a
+voivodeship to inspect its three most characteristic AI skills. To
+identify AI skills and knowledge that are particularly characteristic of
+individual voivodeships, we apply the log-likelihood ratio (`G²`) test
+following Dunning (1993), comparing each region with the rest of the
+country.
+
+```{=html}
+<div class="figure-caption-title" id="ai-map-figure-title"></div>
+<div class="ai-regional-layout">
+  <div id="ai-regional-map"></div>
+  <div id="ai-regional-detail"></div>
+</div>
+<div class="map-caption source-note" id="ai-map-note"></div>
+```
+::::
+
+## References
+
+:::: {.section-card}
+```{=html}
+<div class="reference-list">
+  <p>Angel-Urdinola, D., Chinen, M. H., and Rodon Casarramona, G. 2025. <em>Digital Skills Development: Competence Frameworks, Assessment Tools, and Pedagogical Approaches</em>. Education Notes, 203091.</p>
+  <p>Decorte, J. J., Van Hautte, J., Develder, C., and Demeester, T. 2025. <em>Efficient Text Encoders for Labor Market Analysis</em>. IEEE Access.</p>
+  <p>Dunning, T. 1993. <em>Accurate Methods for the Statistics of Surprise and Coincidence</em>. Computational Linguistics 19(1): 61-74.</p>
+  <p>Martins-Neto, A., Liu, Y., Khurana, S., and Porras Lopez, J. M. 2026. <em>Click, Code, Earn: The Returns to Digital Skills</em>. World Bank.</p>
+</div>
+```
+::::
+
+```{=html}
+<script src="assets/plotly.min.js"></script>
+<script src="assets/regional_map_data.js"></script>
+<script src="assets/ai_regional_map_data.js"></script>
+<script src="assets/ai_report.js"></script>
+<script src="assets/report.js"></script>
+```
